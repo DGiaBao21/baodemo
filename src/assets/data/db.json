@@ -1,0 +1,65 @@
+{
+  "categories": [
+    {
+      "name": "Rau củ1111111111111111111111111",
+      "note": "1111111111111111",
+      "id": "1"
+    },
+    {
+      "id": "2",
+      "name": "Trái cây",
+      "note": "Không có gì"
+    },
+    {
+      "name": "dddddddddddd333333333333333",
+      "note": "1111111111111111111111111",
+      "id": "KA1SsnW7ejo"
+    }
+  ],
+  "blogs": [
+    {
+      "id": "1",
+      "title": "Súp lơ xanh hữu cơ",
+      "image": "https://images.unsplash.com/photo-1515002246390-7bf7e8f87b54?auto=format&fit=crop&q=80&w=500",
+      "content": "Súp lơ xanh chứa nhiều vitamin C, K và chất xơ, giúp tăng cường hệ miễn dịch và hỗ trợ tiêu hóa rất tốt.",
+      "category_id": 1,
+      "author": 1,
+      "create_at": "06/06/2026",
+      "updated_at": "06/06/2026",
+      "user_like": [
+        1,
+        2,
+        6,
+        7
+      ],
+      "comment": [
+        {
+          "id": 1,
+          "content": "Bài này hay quá",
+          "create_at": "06/06/2026",
+          "updated_at": "06/06/2026",
+          "user_id": 2,
+          "rely": [
+            {
+              "id": 1,
+              "content_rely": "tôi cũng nghĩ vậy",
+              "create_at": "06/06/2026",
+              "updated_at": "06/06/2026",
+              "user_id": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "fgggggggggg",
+      "content": "<h2>&nbsp;</h2><p>Yo</p><p>See this text, but the editor is not starting up? Check the browser's console for clues and guidance. It may be related to an incorrect license key if you use premium features or another feature-related requirement. If you cannot make it work, file a GitHub issue, and we will help as soon as possible!</p>",
+      "image": "http://res.cloudinary.com/daghxnnn7/image/upload/v1780988662/flower/iugw9kgr1q7zhxtbeksy.jpg",
+      "category": "1",
+      "author": "2",
+      "id": "yfiObSjA570"
+    }
+  ],
+  "users": [],
+  "$schema": "./node_modules/json-server/schema.json"
+}
