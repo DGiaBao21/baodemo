@@ -1,62 +1,69 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { UserService } from '../../../services/user.service.js'
 
-const router = useRouter()
+const router      = useRouter()
+const userService = new UserService()
 
 const form = ref({
-    name: '',
-    email: '',
-    phone: '',
-    password: '',
+    name:            '',
+    email:           '',
+    phone:           '',
+    password:        '',
     confirmPassword: '',
-    role: 'user',
-    status: true,
+    role:            'user',
+    status:          true,
 })
 
 const errors      = ref({})
 const showPass    = ref(false)
 const showConfirm = ref(false)
+const isLoading   = ref(false)
 
 function validate() {
     const errs = {}
-
     if (!form.value.name.trim())
         errs.name = 'Vui lòng nhập họ và tên.'
     else if (form.value.name.trim().length < 2)
         errs.name = 'Họ và tên phải ít nhất 2 ký tự.'
-
     if (!form.value.email.trim())
         errs.email = 'Vui lòng nhập email.'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.value.email))
         errs.email = 'Email không hợp lệ.'
-
     if (!form.value.phone.trim())
         errs.phone = 'Vui lòng nhập số điện thoại.'
     else if (!/^(0[3-9]\d{8})$/.test(form.value.phone))
         errs.phone = 'Số điện thoại không hợp lệ (10 số, bắt đầu 03-09).'
-
     if (!form.value.password)
         errs.password = 'Vui lòng nhập mật khẩu.'
     else if (form.value.password.length < 6)
         errs.password = 'Mật khẩu phải ít nhất 6 ký tự.'
-
     if (!form.value.confirmPassword)
         errs.confirmPassword = 'Vui lòng xác nhận mật khẩu.'
     else if (form.value.password !== form.value.confirmPassword)
         errs.confirmPassword = 'Mật khẩu xác nhận không khớp.'
-
     errors.value = errs
     return Object.keys(errs).length === 0
 }
 
-function handleSubmit() {
+const handleSubmit = async () => {
     if (!validate()) return
-    // TODO: gọi API POST /api/admin/users
-    const { confirmPassword, ...payload } = form.value
-    console.log('Thêm người dùng:', payload)
-    alert('Thêm người dùng thành công!')
-    router.push('/userlist')
+    isLoading.value = true
+    try {
+        const { confirmPassword, ...payload } = form.value
+        payload.avatar    = `https://i.pravatar.cc/150?u=${payload.email}`
+        payload.address   = ''
+        payload.createdAt = new Date().toISOString().split('T')[0]
+        const result = await userService.create(payload)
+        if (result.status === 201) {
+            router.push('/userlist')
+        }
+    } catch (e) {
+        console.error('Thêm người dùng thất bại', e)
+    } finally {
+        isLoading.value = false
+    }
 }
 </script>
 
@@ -239,8 +246,10 @@ function handleSubmit() {
                     <!-- Actions -->
                     <div class="d-flex gap-2">
                         <RouterLink to="/userlist" class="btn btn-outline-secondary flex-fill">Hủy</RouterLink>
-                        <button type="submit" class="btn btn-success flex-fill fw-semibold">
-                            <i class="bi bi-check-lg me-1"></i> Lưu người dùng
+                        <button type="submit" class="btn btn-success flex-fill fw-semibold" :disabled="isLoading">
+                            <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                            <i v-else class="bi bi-check-lg me-1"></i>
+                            {{ isLoading ? 'Đang lưu...' : 'Lưu người dùng' }}
                         </button>
                     </div>
 

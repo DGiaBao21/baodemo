@@ -16,7 +16,18 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll));
 // Toggle search bar trên mobile
 const searchOpen = ref(false);
 
+// Toggle dropdown profile
+const isDropdownOpen = ref(false);
+const closeDropdown = (e) => {
+    if (!e.target.closest('.user-dropdown-container')) {
+        isDropdownOpen.value = false;
+    }
+};
+onMounted(() => window.addEventListener('click', closeDropdown));
+onUnmounted(() => window.removeEventListener('click', closeDropdown));
+
 function handleLogout() {
+    isDropdownOpen.value = false;
     logout();
     router.push('/login');
 }
@@ -114,17 +125,16 @@ function handleLogout() {
                         </template>
 
                         <!-- Đã đăng nhập: dropdown -->
-                        <div v-else class="dropdown">
+                        <div v-else class="dropdown user-dropdown-container">
                             <button
                                 class="btn btn-outline-secondary rounded-pill px-3 py-1 d-flex align-items-center gap-2 dropdown-toggle"
                                 style="font-size:0.875rem"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
+                                @click="isDropdownOpen = !isDropdownOpen"
                             >
                                 <i class="bi bi-person-circle"></i>
                                 <span class="d-none d-lg-inline fw-medium">{{ currentUser?.name?.split(' ').slice(-1)[0] }}</span>
                             </button>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-1">
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-1" :class="{ show: isDropdownOpen }" @click="isDropdownOpen = false">
                                 <li>
                                     <span class="dropdown-item-text text-muted small">{{ currentUser?.email }}</span>
                                 </li>
@@ -137,6 +147,11 @@ function handleLogout() {
                                 <li>
                                     <RouterLink to="/my-comments" class="dropdown-item">
                                         <i class="bi bi-chat-dots me-2"></i>Bình luận của tôi
+                                    </RouterLink>
+                                </li>
+                                <li>
+                                    <RouterLink to="/my-posts" class="dropdown-item">
+                                        <i class="bi bi-journal-text me-2"></i>Bài viết của tôi
                                     </RouterLink>
                                 </li>
                                 <li v-if="currentUser?.role === 'admin'">

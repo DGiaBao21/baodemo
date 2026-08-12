@@ -30,6 +30,7 @@ const menuSections = [
     {
         label: 'Nội dung',
         items: [
+            { label: 'DM bài viết', icon: 'bi-folder', path: '/blogcategorylist' },
             { label: 'Bài viết',  icon: 'bi-newspaper', path: '/bloglist'    },
             { label: 'Bình luận', icon: 'bi-chat-dots', path: '/commentlist' },
         ]

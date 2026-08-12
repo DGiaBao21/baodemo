@@ -1,382 +1,359 @@
-<script setup>
-import { ref, computed, watch } from 'vue';
-import { RouterLink } from 'vue-router';
-import { useScrollReveal } from '@/composables/useScrollReveal';
-useScrollReveal('.reveal, .reveal-left, .reveal-right, .reveal-scale');
-
-const searchQuery = ref('');
-const selectedCategories = ref([]);
-const minPrice = ref('');
-const maxPrice = ref('');
-
-const categories = ['Dark Roast', 'Medium Roast', 'Light Roast', 'Espresso', 'Decaf', 'Single Origin', 'Flavored'];
-
-const products = ref([
-    { id: 1, name: 'Morning Kick', category: 'Dark Roast', price: 18.99, rating: 4, reviews: 112, badge: '', description: 'A bold and vibrant dark roast, perfect for a powerful start to your day.', img: 'https://i.pinimg.com/1200x/b2/2b/4c/b22b4c4341dc0514ba5126c917839ba7.jpg' },
-    { id: 2, name: 'Velvet Espresso', category: 'Espresso', price: 22.99, rating: 5, reviews: 94, badge: '', description: 'A rich and smooth blend with notes of chocolate and caramel, creating a luxurious espresso shot.', img: 'https://i.pinimg.com/736x/ab/c8/06/abc80650578ef473de92a69aae13c342.jpg' },
-    { id: 3, name: 'Dark Knight Roast', category: 'Dark Roast', price: 26.99, rating: 4, reviews: 178, badge: '', description: 'A powerful, smoky-flavored coffee with low acidity and a long, lingering finish.', img: 'https://i.pinimg.com/736x/44/0c/90/440c90f0128e86448c665aba221eeadf.jpg' },
-    { id: 4, name: 'House Blend', category: 'Medium Roast', price: 16.99, rating: 4, reviews: 203, badge: 'New', description: 'Our signature, medium-roast coffee, offering a perfectly balanced and consistent flavor.', img: 'https://i.pinimg.com/736x/9f/f8/d4/9ff8d46793a445dbf8781756aed736f4.jpg' },
-    { id: 5, name: 'Caramel Craze', category: 'Flavored', price: 19.99, rating: 5, reviews: 87, badge: '', description: 'A delightfully sweet and creamy coffee infused with a rich, buttery caramel flavor.', img: 'https://i.pinimg.com/736x/1f/92/5e/1f925e6b3751d194cc96e00af710f0bc.jpg' },
-    { id: 6, name: 'Mountain Peak', category: 'Single Origin', price: 24.99, rating: 4, reviews: 65, badge: 'Sale', description: 'A bright and clean single-origin coffee from the highlands, featuring a crisp, refreshing finish.', img: 'https://i.pinimg.com/736x/8a/3e/ef/8a3eeffd8e8311e24c4f2bae68d57434.jpg' },
-    { id: 7, name: 'Sunset Decaf', category: 'Decaf', price: 15.99, rating: 3, reviews: 54, badge: '', description: 'All the rich flavor of a classic roast, without the caffeine, for a relaxing evening cup.', img: 'https://i.pinimg.com/1200x/df/da/10/dfda10570d58c4d39a850516327ceb38.jpg' },
-    { id: 8, name: 'Golden Hazelnut', category: 'Flavored', price: 20.99, rating: 4, reviews: 139, badge: 'New', description: 'A warm, nutty coffee with the irresistible aroma and taste of toasted hazelnuts.', img: 'https://i.pinimg.com/736x/65/d9/1e/65d91ec708702137fedc9ab7b0ce1f0c.jpg' },
-    { id: 9, name: 'Breakfast Blend', category: 'Light Roast', price: 14.99, rating: 4, reviews: 112, badge: '', description: 'A light, bright coffee perfect for starting your morning with energy and clarity.', img: 'https://i.pinimg.com/736x/3e/a9/9a/3ea99a7e001b76b02ee2dee19a2f1cba.jpg' },
-]);
-
-function toggleCategory(cat) {
-    const idx = selectedCategories.value.indexOf(cat);
-    if (idx === -1) selectedCategories.value.push(cat);
-    else selectedCategories.value.splice(idx, 1);
-}
-
-function clearFilters() {
-    searchQuery.value = '';
-    selectedCategories.value = [];
-    minPrice.value = '';
-    maxPrice.value = '';
-}
-
-const filteredProducts = computed(() => {
-    return products.value.filter(p => {
-        const matchSearch = p.name.toLowerCase().includes(searchQuery.value.toLowerCase());
-        const matchCat = selectedCategories.value.length === 0 || selectedCategories.value.includes(p.category);
-        const matchMin = minPrice.value === '' || p.price >= Number(minPrice.value);
-        const matchMax = maxPrice.value === '' || p.price <= Number(maxPrice.value);
-        return matchSearch && matchCat && matchMin && matchMax;
-    });
-});
-
-const currentPage = ref(1);
-const itemsPerPage = ref(6);
-
-const totalPages = computed(() => Math.ceil(filteredProducts.value.length / itemsPerPage.value));
-
-const paginatedProducts = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage.value;
-    const end = start + itemsPerPage.value;
-    return filteredProducts.value.slice(start, end);
-});
-
-watch([searchQuery, selectedCategories, minPrice, maxPrice], () => {
-    currentPage.value = 1;
-});
-
-function renderStars(rating) {
-    return Array.from({ length: 5 }, (_, i) => i < rating ? '★' : '☆').join('');
-}
-</script>
-
 <template>
-    <div class="container py-4">
-        <div class="row g-4 align-items-start">
-
-            <!-- ===== THANH BÊN (Sidebar) ===== -->
-            <div class="col-lg-3 reveal-left">
-                <div class="sidebar-sticky">
-
-                    <!-- Tìm kiếm -->
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-success text-white fw-semibold border-0">
-                            <i class="bi bi-search me-2"></i> Search
-                        </div>
-                        <div class="card-body">
-                            <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0">
-                                    <i class="bi bi-search text-muted"></i>
-                                </span>
-                                <input
-                                    type="text"
-                                    class="form-control border-start-0 ps-0"
-                                    placeholder="Find your roast..."
-                                    v-model="searchQuery"
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Danh mục -->
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-success text-white fw-semibold border-0">
-                            <i class="bi bi-layers-fill me-2"></i> Categories
-                        </div>
-                        <div class="card-body pb-2 px-2">
-                            <div
-                                v-for="cat in categories"
-                                :key="cat"
-                                class="d-flex align-items-center gap-2 px-2 py-2 rounded mb-1 category-chip"
-                                :class="{ 'bg-success bg-opacity-10 fw-semibold text-success': selectedCategories.includes(cat) }"
-                                @click="toggleCategory(cat)"
-                                role="button"
-                            >
-                                <span
-                                    class="d-flex align-items-center justify-content-center rounded-1 flex-shrink-0 chip-check"
-                                    :class="selectedCategories.includes(cat) ? 'bg-success text-white border-success' : 'border'"
-                                >
-                                    <i class="bi bi-check2" style="font-size:0.65rem;"></i>
-                                </span>
-                                <span class="small">{{ cat }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Khoảng giá -->
-                    <div class="card border-0 shadow-sm mb-3">
-                        <div class="card-header bg-success text-white fw-semibold border-0">
-                            <i class="bi bi-tag-fill me-2"></i> Price Range
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-2 align-items-center">
-                                <div class="col">
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text">$</span>
-                                        <input
-                                            type="number"
-                                            class="form-control"
-                                            placeholder="Min"
-                                            v-model="minPrice"
-                                            min="0"
-                                        />
-                                    </div>
-                                </div>
-                                <div class="col-auto text-muted fw-bold">—</div>
-                                <div class="col">
-                                    <div class="input-group input-group-sm">
-                                        <span class="input-group-text">$</span>
-                                        <input
-                                            type="number"
-                                            class="form-control"
-                                            placeholder="Max"
-                                            v-model="maxPrice"
-                                            min="0"
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Nút đặt lại bộ lọc (Reset) -->
-                    <button class="btn btn-outline-success w-100 mb-3 fw-semibold" @click="clearFilters">
-                        <i class="bi bi-x-circle me-1"></i> Reset Filters
-                    </button>
-
-                    <!-- Thống kê -->
-                    <div class="card border-0 shadow-sm text-center bg-success text-white">
-                        <div class="card-body d-flex align-items-center justify-content-around py-3">
-                            <div>
-                                <div class="fs-3 fw-bold">{{ filteredProducts.length }}</div>
-                                <div class="small text-white-50 text-uppercase" style="letter-spacing:0.08em;">Products</div>
-                            </div>
-                            <div class="vr bg-white opacity-25 mx-2" style="height:40px;"></div>
-                            <div>
-                                <div class="fs-3 fw-bold">{{ categories.length }}</div>
-                                <div class="small text-white-50 text-uppercase" style="letter-spacing:0.08em;">Categories</div>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
+    <div class="organic-theme bg-cream min-vh-100 py-5">
+        <div class="container">
+            <!-- Header của trang -->
+            <div class="text-center mb-5">
+                <span class="badge bg-sand text-olive px-4 py-2 fw-bold mb-3 rounded-3 border border-olive-light tracking-widest text-uppercase">
+                    <i class="bi bi-shop me-2"></i> Trải Nghiệm Mua Sắm
+                </span>
+                <h1 class="display-5 fw-bold text-brown font-serif">Khám Phá Hương Vị <br> <span class="text-olive">Nguyên Bản</span></h1>
             </div>
 
-            <!-- ===== LƯỚI SẢN PHẨM (Product Grid) ===== -->
-            <div class="col-lg-9">
+            <div class="row g-5 align-items-start">
+                <!-- ===== SIDEBAR ===== -->
+                <div class="col-lg-3">
+                    <div class="sidebar-sticky">
 
-                <!-- Thanh hiển thị số lượng kết quả -->
-                <div class="d-flex align-items-center justify-content-between bg-white border rounded px-3 py-2 mb-4 shadow-sm reveal">
-                    <p class="mb-0 small text-secondary">
-                        Showing <strong class="text-dark">{{ filteredProducts.length }}</strong>
-                        of <strong class="text-dark">{{ products.length }}</strong> products
-                    </p>
-                </div>
-
-                <!-- Trạng thái trống (Không tìm thấy kết quả) -->
-                <div v-if="filteredProducts.length === 0" class="text-center py-5 reveal">
-                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10 mb-3" style="width:80px;height:80px;">
-                        <i class="bi bi-cup-hot fs-2 text-success"></i>
-                    </div>
-                    <h3 class="fw-bold mb-2">No Coffee Found</h3>
-                    <p class="text-muted mb-4">Try adjusting your filters or search term.</p>
-                    <button class="btn btn-outline-success fw-semibold" @click="clearFilters">Clear All Filters</button>
-                </div>
-
-                <!-- Lưới sản phẩm -->
-                <div v-else class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
-                    <div
-                        class="col reveal-scale"
-                        :style="{ transitionDelay: (paginatedProducts.indexOf(product) % 3) * 0.1 + 's' }"
-                        v-for="product in paginatedProducts"
-                        :key="product.id"
-                    >
-                        <div class="card h-100 border-0 shadow-sm product-card">
-
-                            <!-- Hình ảnh sản phẩm -->
-                            <div class="product-media position-relative overflow-hidden">
-                                <img :src="product.img" :alt="product.name" class="product-img w-100" />
-
-                                <!-- Lớp phủ (Overlay) -->
-                                <div class="product-overlay position-absolute top-0 start-0 w-100 h-100"></div>
-
-                                <!-- Nhãn (Badge) -->
-                                <span
-                                    v-if="product.badge"
-                                    class="position-absolute top-0 start-0 m-2 badge rounded-pill"
-                                    :class="product.badge === 'New' ? 'bg-primary' : 'bg-danger'"
-                                >
-                                    {{ product.badge }}
-                                </span>
-
-                                <!-- Xem nhanh / Chi tiết -->
-                                <RouterLink 
-                                    :to="`/product/${product.id}`"
-                                    class="quick-view-btn position-absolute start-50 translate-middle-x btn btn-sm btn-light rounded-pill px-3 text-decoration-none text-dark shadow-sm fw-semibold"
-                                >
-                                    <i class="bi bi-eye me-1"></i> View Details
-                                </RouterLink>
+                        <!-- Tìm kiếm -->
+                        <div class="organic-filter-card mb-4">
+                            <div class="filter-header">
+                                <i class="bi bi-search me-2"></i>Tìm kiếm
                             </div>
-
-                            <!-- Phần thân (Body) -->
-                            <div class="card-body d-flex flex-column pb-2">
-                                <span class="text-success text-uppercase fw-bold" style="font-size:0.68rem;letter-spacing:0.1em;">{{ product.category }}</span>
-                                <h5 class="fw-bold mb-2 mt-1">{{ product.name }}</h5>
-                                <p class="text-muted small mb-2 two-line-clamp">{{ product.description }}</p>
-                                <div class="d-flex align-items-center gap-2 mt-auto">
-                                    <span class="text-warning" style="letter-spacing:1.5px;">{{ renderStars(product.rating) }}</span>
-                                    <span class="text-muted" style="font-size:0.78rem;">({{ product.reviews }} reviews)</span>
+                            <div class="filter-body">
+                                <div class="position-relative">
+                                    <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-earth opacity-50"></i>
+                                    <input type="text" class="organic-input w-100 ps-5"
+                                        placeholder="Tên sản phẩm..." v-model="searchQuery" />
                                 </div>
                             </div>
-
-                            <!-- Phần chân (Footer) -->
-                            <div class="card-footer bg-transparent border-top d-flex align-items-center justify-content-between px-3 pb-3 pt-2">
-                                <span class="fw-bold fs-5">${{ product.price.toFixed(2) }}</span>
-                                <button class="btn btn-outline-success btn-sm d-flex align-items-center gap-2 rounded-pill px-3">
-                                    <i class="bi bi-cart3"></i>
-                                    <span>Add to Cart</span>
-                                </button>
-                            </div>
-
                         </div>
+
+                        <!-- Danh mục -->
+                        <div class="organic-filter-card mb-4">
+                            <div class="filter-header">
+                                <i class="bi bi-layers-fill me-2"></i>Danh mục
+                            </div>
+                            <div class="filter-body pb-2">
+                                <div class="cat-item" :class="{ active: selectedCategory === 'Tất cả' }"
+                                    @click="selectedCategory = 'Tất cả'">
+                                    <span class="cat-indicator"></span>
+                                    <span>Tất cả</span>
+                                </div>
+                                <div v-for="cat in categories" :key="cat.id"
+                                    class="cat-item"
+                                    :class="{ active: selectedCategory === cat.name }"
+                                    @click="selectedCategory = cat.name">
+                                    <span class="cat-indicator"></span>
+                                    <span>{{ cat.name }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Khoảng giá (₫) -->
+                        <div class="organic-filter-card mb-4">
+                            <div class="filter-header">
+                                <i class="bi bi-tag-fill me-2"></i>Khoảng giá (₫)
+                            </div>
+                            <div class="filter-body">
+                                <div class="d-flex flex-column gap-3">
+                                    <input type="number" class="organic-input"
+                                        placeholder="Giá tối thiểu" v-model="minPrice" min="0" />
+                                    <div class="text-center text-earth opacity-50"><i class="bi bi-arrow-down"></i></div>
+                                    <input type="number" class="organic-input"
+                                        placeholder="Giá tối đa" v-model="maxPrice" min="0" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nút reset -->
+                        <button class="btn btn-outline-brown w-100 mb-4 fw-bold text-uppercase tracking-wide py-2 rounded-3" @click="clearFilters">
+                            <i class="bi bi-arrow-counterclockwise me-1"></i> Làm mới
+                        </button>
+
                     </div>
                 </div>
 
-                <!-- Phân trang Bootstrap 5 -->
-                <nav v-if="totalPages > 1" class="d-flex justify-content-center mt-4">
-                    <ul class="pagination pagination-sm">
-                        <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                            <button class="page-link shadow-none" @click="currentPage = 1" style="cursor: pointer;">Trang đầu</button>
-                        </li>
-                        <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                            <button class="page-link shadow-none" @click="currentPage--" style="cursor: pointer;">Trước</button>
-                        </li>
-                        <li
-                            v-for="page in totalPages"
-                            :key="page"
-                            class="page-item"
-                            :class="{ active: currentPage === page }"
-                        >
-                            <button class="page-link shadow-none" @click="currentPage = page" style="cursor: pointer;">{{ page }}</button>
-                        </li>
-                        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                            <button class="page-link shadow-none" @click="currentPage++" style="cursor: pointer;">Sau</button>
-                        </li>
-                        <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                            <button class="page-link shadow-none" @click="currentPage = totalPages" style="cursor: pointer;">Trang cuối</button>
-                        </li>
-                    </ul>
-                </nav>
+                <!-- ===== PRODUCT GRID ===== -->
+                <div class="col-lg-9">
 
+                    <!-- Trạng thái kết quả -->
+                    <div class="d-flex align-items-center justify-content-between bg-sand border border-earth-light rounded-3 px-4 py-3 mb-4">
+                        <p class="mb-0 text-earth font-inter">
+                            Đang hiển thị <strong class="text-brown">{{ filtered.length }}</strong> sản phẩm
+                        </p>
+                        <span v-if="selectedCategory !== 'Tất cả'" class="badge bg-olive text-white px-3 py-2 rounded-2 fw-semibold text-uppercase tracking-wide">
+                            {{ selectedCategory }} <i class="bi bi-x-circle ms-2" style="cursor:pointer" @click="selectedCategory='Tất cả'"></i>
+                        </span>
+                    </div>
+
+                    <!-- Loading skeleton -->
+                    <div v-if="isLoading" class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
+                        <div v-for="n in 6" :key="n" class="col">
+                            <div class="card border border-earth-light bg-white rounded-3 shadow-sm p-0">
+                                <div class="skeleton" style="height:220px; border-radius:8px 8px 0 0"></div>
+                                <div class="card-body p-4">
+                                    <div class="skeleton mb-2" style="height:12px;width:40%;border-radius:4px"></div>
+                                    <div class="skeleton mb-2" style="height:18px;border-radius:4px"></div>
+                                    <div class="skeleton" style="height:13px;width:70%;border-radius:4px"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trống -->
+                    <div v-else-if="filtered.length === 0" class="text-center py-6 text-earth border border-earth-light bg-white rounded-3">
+                        <div class="mb-4">
+                            <i class="bi bi-box2-heart fs-1 opacity-50"></i>
+                        </div>
+                        <h4 class="fw-bold mb-2 font-serif text-brown">Không tìm thấy sản phẩm</h4>
+                        <p class="mb-4">Xin lỗi, chúng tôi không có hạt cà phê nào khớp với tìm kiếm của bạn.</p>
+                        <button class="btn btn-outline-brown fw-bold px-4 py-2 rounded-3 text-uppercase tracking-wide" @click="clearFilters">Xóa bộ lọc</button>
+                    </div>
+
+                    <!-- Lưới sản phẩm -->
+                    <div v-else class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
+                        <div class="col" v-for="p in paginated" :key="p.id">
+                            <div class="product-organic-card bg-white rounded-3 border border-earth-light h-100 d-flex flex-column" @click="router.push(`/product/${p.id}`)">
+                                <!-- Ảnh -->
+                                <div class="product-media position-relative overflow-hidden rounded-top-3 border-bottom border-earth-light">
+                                    <img :src="p.image" :alt="p.name" class="product-img w-100" />
+                                    <div class="product-overlay position-absolute top-0 start-0 w-100 h-100"></div>
+                                    <span class="position-absolute top-0 start-0 m-3 badge bg-sand text-brown border border-earth-light rounded-2 px-2 py-1 text-uppercase tracking-wide"
+                                        style="font-size:10px">{{ p.category }}</span>
+                                    <button class="quick-view-btn position-absolute start-50 btn btn-olive rounded-3 px-4 shadow-sm fw-bold text-uppercase tracking-wide"
+                                        @click.stop="router.push(`/product/${p.id}`)">
+                                        Chi tiết
+                                    </button>
+                                </div>
+                                <!-- Body -->
+                                <div class="p-4 d-flex flex-column flex-grow-1">
+                                    <h5 class="fw-bold mb-2 font-serif text-brown">{{ p.name }}</h5>
+                                    <p class="text-earth small mb-3 flex-grow-1 two-line-clamp font-inter lh-lg">{{ p.description }}</p>
+                                    <div class="d-flex align-items-center gap-2 mb-3">
+                                        <span class="text-olive" style="letter-spacing:2px;font-size:14px">{{ renderStars(p.rating || 4) }}</span>
+                                    </div>
+                                    <!-- Footer -->
+                                    <div class="border-top border-earth-light d-flex align-items-center justify-content-between pt-3 mt-auto">
+                                        <span class="fw-bold fs-5 text-brown">{{ formatPrice(p.price) }}</span>
+                                        <button class="btn btn-sand btn-sm rounded-circle shadow-sm text-olive cart-btn"
+                                            @click.stop="router.push(`/product/${p.id}`)">
+                                            <i class="bi bi-cart-plus fs-5"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phân trang -->
+                    <nav v-if="totalPages > 1" class="d-flex justify-content-center mt-5">
+                        <ul class="pagination-organic d-flex gap-2 mb-0 list-unstyled font-serif">
+                            <li>
+                                <button class="page-btn" :disabled="currentPage === 1" @click="currentPage--"><i class="bi bi-chevron-left"></i></button>
+                            </li>
+                            <li v-for="page in totalPages" :key="page">
+                                <button class="page-btn fw-bold" :class="{ active: currentPage === page }" @click="currentPage = page">{{ page }}</button>
+                            </li>
+                            <li>
+                                <button class="page-btn" :disabled="currentPage === totalPages" @click="currentPage++"><i class="bi bi-chevron-right"></i></button>
+                            </li>
+                        </ul>
+                    </nav>
+
+                </div>
             </div>
         </div>
     </div>
 </template>
 
+<script setup>
+import { ref, computed, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { ProductService }  from '../../services/product.service.js'
+import { CategoryService } from '../../services/category.service.js'
+
+const router          = useRouter()
+const productService  = new ProductService()
+const categoryService = new CategoryService()
+
+const allProducts  = ref([])
+const categories   = ref([])
+const isLoading    = ref(true)
+
+const searchQuery        = ref('')
+const selectedCategory   = ref('Tất cả')
+const minPrice           = ref('')
+const maxPrice           = ref('')
+const currentPage        = ref(1)
+const itemsPerPage       = 9
+
+onMounted(async () => {
+    try {
+        const [prodRes, catRes] = await Promise.all([
+            productService.list(),
+            categoryService.list()
+        ])
+        if (prodRes.status === 200) allProducts.value = prodRes.data.filter(p => p.status !== false)
+        if (catRes.status === 200) categories.value = catRes.data
+    } catch (e) {
+        console.error('Lỗi fetch data:', e)
+    } finally {
+        isLoading.value = false
+    }
+})
+
+const filtered = computed(() => {
+    let result = allProducts.value
+    if (searchQuery.value.trim()) {
+        const q = searchQuery.value.toLowerCase()
+        result = result.filter(p => p.name.toLowerCase().includes(q))
+    }
+    if (selectedCategory.value !== 'Tất cả') {
+        result = result.filter(p => p.category === selectedCategory.value)
+    }
+    const min = parseFloat(minPrice.value)
+    if (!isNaN(min)) {
+        result = result.filter(p => p.price >= min)
+    }
+    const max = parseFloat(maxPrice.value)
+    if (!isNaN(max)) {
+        result = result.filter(p => p.price <= max)
+    }
+    return result
+})
+
+const totalPages = computed(() => Math.ceil(filtered.value.length / itemsPerPage))
+const paginated = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage
+    return filtered.value.slice(start, start + itemsPerPage)
+})
+
+watch([searchQuery, selectedCategory, minPrice, maxPrice], () => {
+    currentPage.value = 1
+})
+
+function clearFilters() {
+    searchQuery.value = ''
+    selectedCategory.value = 'Tất cả'
+    minPrice.value = ''
+    maxPrice.value = ''
+}
+
+const formatPrice = n => new Intl.NumberFormat('vi-VN').format(n) + '₫'
+
+function renderStars(r) {
+    return Array.from({ length: 5 }, (_, i) => i < r ? '★' : '☆').join('')
+}
+</script>
+
 <style scoped>
-/* ===== BỐ CỤC (Layout) ===== */
-.sidebar-sticky {
-    position: sticky;
-    top: 24px;
-}
+/* ===== ORGANIC COLOR PALETTE & UTILS ===== */
+.organic-theme { font-family: "Inter", sans-serif; }
+.bg-cream { background-color: #fdfbf7; } 
+.bg-sand { background-color: #f4efe6; }  
+.bg-olive { background-color: #617A55; }
+.text-brown { color: #3e3024; }          
+.text-earth { color: #5f4f40; }          
+.text-olive { color: #617A55 !important; }          
+.border-olive-light { border-color: rgba(97, 122, 85, 0.3) !important; }
+.border-earth-light { border-color: #e5ded3 !important; }
 
-/* ===== CHIP DANH MỤC (Category Chip) ===== */
-.category-chip {
-    cursor: pointer;
-    transition: background 0.2s ease;
-    color: #444;
-    user-select: none;
-    font-size: 0.88rem;
-}
+.font-serif { font-family: "Playfair Display", "Merriweather", serif; }
+.font-inter { font-family: "Inter", sans-serif; }
+.tracking-wide { letter-spacing: 0.1em; }
+.tracking-widest { letter-spacing: 0.15em; }
 
-.category-chip:hover {
-    background-color: rgba(25, 135, 84, 0.07);
-}
+.py-6 { padding-top: 5rem; padding-bottom: 5rem; }
 
-.chip-check {
-    width: 18px;
-    height: 18px;
-    font-size: 0.75rem;
-    transition: all 0.2s ease;
+/* Buttons */
+.btn-olive {
+    background-color: #617A55; border: 1px solid #617A55; color: white; transition: all 0.2s ease;
 }
+.btn-olive:hover { background-color: #4A5D23; border-color: #4A5D23; color: white; }
 
-/* ===== THẸ SẢN PHẨM (Product Card) ===== */
-.product-card {
-    border-radius: 14px;
-    overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+.btn-outline-brown {
+    border: 1px solid #3e3024; color: #3e3024; background: transparent; transition: all 0.2s ease;
 }
+.btn-outline-brown:hover { background: #3e3024; color: #fff; }
 
-.product-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12) !important;
+.btn-sand { background: #f4efe6; border: 1px solid #e5ded3; color: #3e3024; transition: all 0.2s ease; }
+.btn-sand:hover { background: #e5ded3; color: #3e3024; }
+
+/* ===== SIDEBAR FILTERS ===== */
+.sidebar-sticky { position: sticky; top: 20px; }
+
+.organic-filter-card {
+    background: #fff; border: 1px solid #e5ded3; border-radius: 8px; overflow: hidden;
 }
-
-/* Hình ảnh */
-.product-media {
-    height: 220px;
+.filter-header {
+    background: #f4efe6; padding: 14px 20px; font-weight: 700; color: #3e3024;
+    border-bottom: 1px solid #e5ded3; font-family: "Playfair Display", serif;
 }
+.filter-body { padding: 20px; }
 
+.organic-input {
+    background-color: #fdfbf7; border: 1px solid #e5ded3; color: #3e3024;
+    padding: 10px 16px; border-radius: 6px; box-shadow: none; transition: border-color 0.2s; width: 100%;
+}
+.organic-input:focus { border-color: #617A55; outline: none; }
+.organic-input::placeholder { color: #b5ac9d; }
+
+/* Category Items */
+.cat-item {
+    display: flex; align-items: center; padding: 10px 12px; margin-bottom: 8px;
+    border-radius: 6px; cursor: pointer; transition: all 0.2s; color: #5f4f40;
+}
+.cat-item:hover { background: #f4efe6; color: #3e3024; }
+.cat-item.active { background: #f4efe6; color: #617A55; font-weight: 600; }
+.cat-indicator {
+    width: 8px; height: 8px; border-radius: 50%; background: #e5ded3; margin-right: 12px; transition: background 0.2s;
+}
+.cat-item.active .cat-indicator { background: #617A55; }
+
+/* ===== PRODUCT GRID ===== */
+.product-organic-card {
+    cursor: pointer; transition: all 0.3s ease;
+}
+.product-organic-card:hover {
+    transform: translateY(-5px); box-shadow: 0 10px 25px rgba(62,48,36,0.08); border-color: #dcd3c6 !important;
+}
+.product-media { height: 260px; background: #f4efe6; }
 .product-img {
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    transition: transform 0.45s ease;
+    height: 100%; object-fit: cover; display: block;
+    transition: transform 0.6s ease; filter: sepia(0.1);
 }
+.product-organic-card:hover .product-img { transform: scale(1.05); filter: sepia(0); }
 
-.product-card:hover .product-img {
-    transform: scale(1.07);
-}
-
-/* Lớp phủ */
 .product-overlay {
-    background: linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 55%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    pointer-events: none;
+    background: linear-gradient(to top, rgba(62,48,36,0.3) 0%, transparent 50%);
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
 }
+.product-organic-card:hover .product-overlay { opacity: 1; }
 
-.product-card:hover .product-overlay {
-    opacity: 1;
-}
-
-/* Nút Xem nhanh */
 .quick-view-btn {
-    bottom: 14px;
-    transform: translateX(-50%) translateY(12px);
-    opacity: 0;
-    font-size: 0.8rem;
-    font-weight: 600;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    white-space: nowrap;
+    bottom: 20px; transform: translateX(-50%) translateY(15px); opacity: 0;
+    transition: all 0.3s ease; white-space: nowrap;
 }
+.product-organic-card:hover .quick-view-btn { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-.product-card:hover .quick-view-btn {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-}
+.cart-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+.cart-btn:hover { background: #617A55; color: white !important; border-color: #617A55; }
 
-/* Giới hạn số dòng của mô tả (Line clamp) */
 .two-line-clamp {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
+
+/* ===== PAGINATION ====== */
+.pagination-organic .page-btn {
+    width: 40px; height: 40px; border-radius: 4px;
+    border: 1px solid #e5ded3; background: white; color: #5f4f40;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.pagination-organic .page-btn:not(:disabled):hover { background: #f4efe6; border-color: #dcd3c6; }
+.pagination-organic .page-btn.active { background: #3e3024; color: white; border-color: #3e3024; }
+.pagination-organic .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* skeleton */
+.skeleton { background: linear-gradient(90deg, #f4efe6 25%, #e5ded3 50%, #f4efe6 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 </style>

@@ -1,24 +1,10 @@
-<script setup>
-import { onMounted } from 'vue';
-
-onMounted(() => {
-    const el = document.getElementById('carouselExampleIndicators');
-    if (el && window.bootstrap) {
-        new window.bootstrap.Carousel(el, {
-            interval: 3000,
-            ride: 'carousel',
-        });
-    }
-});
-</script>
-
 <template>
-    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+    <div id="carouselExampleIndicators" class="carousel slide organic-theme">
 
         <!-- Indicators -->
         <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
-                class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active"
+                aria-current="true" aria-label="Slide 1"></button>
             <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
                 aria-label="Slide 2"></button>
             <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
@@ -31,21 +17,14 @@ onMounted(() => {
             <div class="carousel-item box-banner active">
                 <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1600&h=700&fit=crop&q=90"
                     class="d-block w-100" alt="Coffee shop ambiance">
-                <div class="carousel-overlay overlay-left"></div>
+                <div class="carousel-overlay overlay-warm"></div>
                 <div class="carousel-caption-custom">
-                    <span class="banner-tag">☕ Welcome to BrewShop</span>
-                    <h1 class="banner-title">Taste the<br><em>Perfect Moment</em></h1>
-                    <p class="banner-subtitle">Handcrafted coffee blends made with love, served fresh every day in a warm, cozy atmosphere.</p>
+                    <span class="banner-tag text-uppercase tracking-widest"><i class="bi bi-shop me-2"></i> Chào mừng đến BrewShop</span>
+                    <h1 class="banner-title font-serif text-sand">Hương Vị<br><span class="text-olive">Nguyên Bản</span></h1>
+                    <p class="banner-subtitle font-inter text-cream-50">Từng hạt cà phê được lựa chọn cẩn thận và rang mộc thủ công, mang đến trải nghiệm thuần khiết nhất từ thiên nhiên.</p>
                     <div class="banner-actions">
-                        <a href="#" class="banner-btn">Explore Menu</a>
-                        <a href="#" class="banner-btn-ghost">Our Story</a>
-                    </div>
-                    <div class="banner-stats">
-                        <div class="stat-item"><strong>500+</strong><span>Blends</span></div>
-                        <div class="stat-divider"></div>
-                        <div class="stat-item"><strong>15k+</strong><span>Customers</span></div>
-                        <div class="stat-divider"></div>
-                        <div class="stat-item"><strong>4.9★</strong><span>Rating</span></div>
+                        <RouterLink to="/product" class="btn btn-olive banner-btn text-uppercase tracking-wide">Xem Thực Đơn</RouterLink>
+                        <RouterLink to="/about" class="btn btn-outline-sand banner-btn-ghost text-uppercase tracking-wide">Câu Chuyện</RouterLink>
                     </div>
                 </div>
             </div>
@@ -54,14 +33,13 @@ onMounted(() => {
             <div class="carousel-item box-banner">
                 <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1600&h=700&fit=crop&q=90"
                     class="d-block w-100" alt="Premium coffee beans">
-                <div class="carousel-overlay overlay-center"></div>
+                <div class="carousel-overlay overlay-warm-center"></div>
                 <div class="carousel-caption-custom caption-center">
-                    <span class="banner-tag">🫘 Single Origin</span>
-                    <h1 class="banner-title">Pure Coffee,<br><em>Pure Life</em></h1>
-                    <p class="banner-subtitle">Single-origin beans sourced from the finest farms, roasted to perfection for an unforgettable cup.</p>
-                    <div class="banner-actions">
-                        <a href="#" class="banner-btn">Shop Beans</a>
-                        <a href="#" class="banner-btn-ghost">Learn More</a>
+                    <span class="banner-tag text-uppercase tracking-widest"><i class="bi bi-tree me-2"></i> Single Origin</span>
+                    <h1 class="banner-title font-serif text-sand">Mộc Mạc &<br><span class="text-olive">Tinh Tế</span></h1>
+                    <p class="banner-subtitle font-inter text-cream-50">Khám phá bộ sưu tập cà phê đặc sản nguồn gốc đơn (Single Origin) từ những nông trại hữu cơ hàng đầu.</p>
+                    <div class="banner-actions justify-content-center">
+                        <RouterLink to="/product" class="btn btn-olive banner-btn text-uppercase tracking-wide">Mua Hạt Ngay</RouterLink>
                     </div>
                 </div>
             </div>
@@ -70,14 +48,13 @@ onMounted(() => {
             <div class="carousel-item box-banner">
                 <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=1600&h=700&fit=crop&q=90"
                     class="d-block w-100" alt="Coffee art latte">
-                <div class="carousel-overlay overlay-left"></div>
+                <div class="carousel-overlay overlay-warm"></div>
                 <div class="carousel-caption-custom">
-                    <span class="banner-tag">🎁 Special Offer</span>
-                    <h1 class="banner-title">Enjoy<br><em>Daily Deals</em></h1>
-                    <p class="banner-subtitle">Fresh promotions every day — don't miss your favorite blend on sale. Limited time only.</p>
+                    <span class="banner-tag text-uppercase tracking-widest"><i class="bi bi-cup-hot me-2"></i> Ưu đãi mỗi ngày</span>
+                    <h1 class="banner-title font-serif text-sand">Thưởng Thức<br><span class="text-olive">Đậm Đà</span></h1>
+                    <p class="banner-subtitle font-inter text-cream-50">Tận hưởng những mẻ rang mới nhất cùng mức giá ưu đãi dành riêng cho những người sành cà phê thực thụ.</p>
                     <div class="banner-actions">
-                        <a href="#" class="banner-btn banner-btn-red">Get Deal Now</a>
-                        <a href="#" class="banner-btn-ghost">View All Offers</a>
+                        <RouterLink to="/product" class="btn btn-olive banner-btn text-uppercase tracking-wide">Khám Phá Ưu Đãi</RouterLink>
                     </div>
                 </div>
             </div>
@@ -99,290 +76,145 @@ onMounted(() => {
     </div>
 </template>
 
+<script setup>
+import { onMounted, onBeforeUnmount } from 'vue';
+import { Carousel } from 'bootstrap';
+
+let carouselInstance = null;
+
+onMounted(() => {
+    const el = document.getElementById('carouselExampleIndicators');
+    if (el) {
+        carouselInstance = new Carousel(el, {
+            interval: 5000,
+            ride: 'carousel',
+            pause: 'hover',
+            wrap: true
+        });
+        carouselInstance.cycle();
+    }
+});
+
+onBeforeUnmount(() => {
+    if (carouselInstance) {
+        carouselInstance.dispose();
+        carouselInstance = null;
+    }
+});
+</script>
+
 <style scoped>
+/* ===== ORGANIC COLOR PALETTE & UTILS ===== */
+.organic-theme { font-family: "Inter", sans-serif; }
+.font-serif { font-family: "Playfair Display", "Merriweather", serif; }
+.font-inter { font-family: "Inter", sans-serif; }
+
+.text-olive { color: #617A55 !important; }
+.text-sand { color: #f4efe6 !important; }
+.text-cream-50 { color: rgba(253, 251, 247, 0.8) !important; }
+.tracking-widest { letter-spacing: 0.15em; }
+.tracking-wide { letter-spacing: 0.1em; }
+
 /* ===== BASE ===== */
 .carousel { position: relative; }
-
 .carousel-inner { position: relative; width: 100%; overflow: hidden; }
 
 /* ===== SLIDE ===== */
-.box-banner {
-    height: 620px;
-    overflow: hidden;
-    position: relative;
-}
-
+.box-banner { height: 650px; overflow: hidden; position: relative; background: #2c241b; }
 .box-banner img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center top;
-    transform: scale(1.08);
-    transition: transform 7s ease;
-    will-change: transform;
+    width: 100%; height: 100%; object-fit: cover; object-position: center top;
+    transform: scale(1.05); transition: transform 8s ease; will-change: transform;
+    filter: sepia(0.3) brightness(0.8);
 }
-
 .carousel-item.active img { transform: scale(1); }
 
 /* ===== OVERLAYS ===== */
-.overlay-left {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        105deg,
-        rgba(8, 4, 2, 0.78) 0%,
-        rgba(8, 4, 2, 0.45) 50%,
-        rgba(8, 4, 2, 0.05) 100%
-    );
+.overlay-warm {
+    position: absolute; inset: 0;
+    background: linear-gradient(105deg, rgba(62, 48, 36, 0.85) 0%, rgba(62, 48, 36, 0.5) 50%, rgba(62, 48, 36, 0.1) 100%);
     z-index: 1;
 }
-
-.overlay-center {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(
-        ellipse at center,
-        rgba(5, 3, 1, 0.72) 0%,
-        rgba(5, 3, 1, 0.35) 60%,
-        transparent 100%
-    );
+.overlay-warm-center {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at center, rgba(62, 48, 36, 0.8) 0%, rgba(62, 48, 36, 0.4) 60%, transparent 100%);
     z-index: 1;
 }
 
 /* ===== CAPTION ===== */
 .carousel-caption-custom {
-    position: absolute;
-    top: 50%;
-    left: 8%;
-    transform: translateY(-50%);
-    z-index: 2;
-    max-width: 560px;
-    animation: fadeSlideIn 0.9s ease forwards;
+    position: absolute; top: 50%; left: 8%; transform: translateY(-50%);
+    z-index: 2; max-width: 600px;
+    animation: fadeSlideIn 1s ease forwards;
 }
-
-.caption-center {
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-}
-
+.caption-center { left: 50%; transform: translate(-50%, -50%); text-align: center; }
 .carousel-item:not(.active) .carousel-caption-custom { opacity: 0; }
 
 @keyframes fadeSlideIn {
     from { opacity: 0; transform: translateY(calc(-50% + 30px)); }
-    to   { opacity: 1; transform: translateY(-50%); }
+    to { opacity: 1; transform: translateY(-50%); }
 }
 
 /* ===== TAG ===== */
 .banner-tag {
-    display: inline-block;
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255,255,255,0.22);
-    color: #fff;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    padding: 5px 16px;
-    border-radius: 50px;
-    margin-bottom: 16px;
+    display: inline-block; background: transparent; border: 1px solid #617A55; color: #617A55;
+    font-size: 0.8rem; font-weight: 700; padding: 6px 18px; border-radius: 4px; margin-bottom: 20px;
 }
 
 /* ===== TITLE ===== */
 .banner-title {
-    font-size: clamp(2.2rem, 4.5vw, 3.6rem);
-    font-weight: 900;
-    color: #fff;
-    line-height: 1.15;
-    margin-bottom: 16px;
-    text-shadow: 0 4px 24px rgba(0,0,0,0.5);
-    letter-spacing: -0.02em;
-}
-
-.banner-title em {
-    font-style: normal;
-    background: linear-gradient(90deg, #e8a84e, #f5c878);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 700; line-height: 1.2; margin-bottom: 20px; text-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
 /* ===== SUBTITLE ===== */
-.banner-subtitle {
-    font-size: 1.05rem;
-    color: rgba(255,255,255,0.78);
-    line-height: 1.7;
-    margin-bottom: 30px;
-    max-width: 440px;
-}
-
+.banner-subtitle { font-size: 1.1rem; line-height: 1.6; margin-bottom: 35px; max-width: 500px; }
 .caption-center .banner-subtitle { margin-inline: auto; }
 
 /* ===== ACTIONS ===== */
-.banner-actions {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    flex-wrap: wrap;
-    margin-bottom: 36px;
-}
+.banner-actions { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 30px; }
 
-.banner-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 13px 32px;
-    background: linear-gradient(135deg, #c8832a, #e8a84e);
-    color: #fff;
-    font-weight: 700;
-    font-size: 0.9rem;
-    letter-spacing: 0.04em;
-    border-radius: 50px;
-    text-decoration: none;
-    box-shadow: 0 6px 24px rgba(200,131,42,0.45);
-    transition: all 0.3s ease;
-    white-space: nowrap;
+/* Nút bấm Organic */
+.btn-olive {
+    background-color: #617A55; border: 1px solid #617A55; color: white;
+    padding: 14px 32px; font-weight: 600; font-size: 0.9rem; border-radius: 4px;
+    transition: all 0.3s ease; text-decoration: none; display: inline-block;
 }
+.btn-olive:hover { background-color: #4A5D23; border-color: #4A5D23; color: white; transform: translateY(-2px); }
 
-.banner-btn:hover {
-    background: linear-gradient(135deg, #e8a84e, #f5c878);
-    transform: translateY(-3px);
-    box-shadow: 0 10px 32px rgba(200,131,42,0.6);
-    color: #fff;
+.btn-outline-sand {
+    background-color: transparent; border: 1px solid #f4efe6; color: #f4efe6;
+    padding: 14px 32px; font-weight: 600; font-size: 0.9rem; border-radius: 4px;
+    transition: all 0.3s ease; text-decoration: none; display: inline-block;
 }
-
-.banner-btn-red {
-    background: linear-gradient(135deg, #c0392b, #e74c3c) !important;
-    box-shadow: 0 6px 24px rgba(231,76,60,0.45) !important;
-}
-.banner-btn-red:hover {
-    background: linear-gradient(135deg, #e74c3c, #ff6b6b) !important;
-    box-shadow: 0 10px 32px rgba(231,76,60,0.6) !important;
-}
-
-.banner-btn-ghost {
-    display: inline-flex;
-    align-items: center;
-    padding: 12px 28px;
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(8px);
-    color: #fff;
-    font-weight: 600;
-    font-size: 0.9rem;
-    border-radius: 50px;
-    text-decoration: none;
-    border: 1.5px solid rgba(255,255,255,0.3);
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.banner-btn-ghost:hover {
-    background: rgba(255,255,255,0.2);
-    border-color: rgba(255,255,255,0.6);
-    color: #fff;
-    transform: translateY(-2px);
-}
-
-/* ===== STATS ===== */
-.banner-stats {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.stat-item {
-    display: flex;
-    flex-direction: column;
-}
-.stat-item strong {
-    color: #fff;
-    font-size: 1.25rem;
-    font-weight: 800;
-    line-height: 1;
-}
-.stat-item span {
-    color: rgba(255,255,255,0.55);
-    font-size: 0.75rem;
-    margin-top: 3px;
-    letter-spacing: 0.05em;
-}
-.stat-divider {
-    width: 1px;
-    height: 32px;
-    background: rgba(255,255,255,0.2);
-}
+.btn-outline-sand:hover { background-color: #f4efe6; color: #3e3024; transform: translateY(-2px); }
 
 /* ===== INDICATORS ===== */
-.carousel-indicators {
-    position: absolute;
-    bottom: 24px;
-    left: 0; right: 0;
-    z-index: 3;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin: 0;
-    padding: 0;
-}
-
+.carousel-indicators { position: absolute; bottom: 30px; z-index: 3; gap: 10px; margin: 0; padding: 0; }
 .carousel-indicators button {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.4);
-    border: none;
-    transition: all 0.35s ease;
-    padding: 0;
-    cursor: pointer;
+    width: 12px; height: 12px; border-radius: 50%; background: transparent; border: 1px solid #f4efe6;
+    transition: all 0.3s ease; padding: 0; cursor: pointer; opacity: 0.6;
 }
-
-.carousel-indicators button.active {
-    background: #e8a84e;
-    width: 30px;
-    border-radius: 5px;
-}
+.carousel-indicators button.active { background: #617A55; border-color: #617A55; opacity: 1; transform: scale(1.2); }
 
 /* ===== CONTROLS ===== */
-.carousel-control-prev,
-.carousel-control-next {
-    width: 52px;
-    opacity: 1;
-    z-index: 3;
-}
-
+.carousel-control-prev, .carousel-control-next { width: 60px; opacity: 1; z-index: 3; }
 .ctrl-btn {
-    width: 46px;
-    height: 46px;
-    background: rgba(255,255,255,0.12);
-    backdrop-filter: blur(8px);
-    border: 1.5px solid rgba(255,255,255,0.25);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #fff;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
+    width: 50px; height: 50px; background: transparent; border: 1px solid rgba(244, 239, 230, 0.5);
+    border-radius: 4px; display: flex; align-items: center; justify-content: center;
+    color: #f4efe6; font-size: 1.2rem; transition: all 0.3s ease;
 }
-
-.carousel-control-prev:hover .ctrl-btn,
-.carousel-control-next:hover .ctrl-btn {
-    background: rgba(232,168,78,0.85);
-    border-color: #e8a84e;
-    transform: scale(1.08);
+.carousel-control-prev:hover .ctrl-btn, .carousel-control-next:hover .ctrl-btn {
+    background: #617A55; border-color: #617A55; color: white; transform: scale(1.05);
 }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
-    .box-banner { height: 460px; }
+    .box-banner { height: 500px; }
     .carousel-caption-custom { left: 5%; max-width: 90%; }
     .caption-center { left: 50%; }
-    .banner-stats { display: none; }
 }
-
 @media (max-width: 480px) {
-    .box-banner { height: 380px; }
-    .banner-actions { flex-direction: column; align-items: flex-start; }
+    .box-banner { height: 450px; }
+    .banner-actions { flex-direction: column; align-items: flex-start; width: 100%; }
+    .banner-btn, .banner-btn-ghost { width: 100%; text-align: center; }
 }
 </style>

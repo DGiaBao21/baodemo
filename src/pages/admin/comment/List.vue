@@ -1,19 +1,33 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import { CommentService } from '../../../services/comment.service.js'
 
-// Mock data bình luận
-const comments = ref([
-    { id: 1, postTitle: 'Bí quyết làm chủ JavaScript trong 30 ngày', author: 'Trần Bình',   email: 'binh@gmail.com', content: 'Bài viết rất hữu ích ạ!',                   status: true,  createdAt: '2025-01-11' },
-    { id: 2, postTitle: 'Bí quyết làm chủ JavaScript trong 30 ngày', author: 'Lê An',       email: 'lean@gmail.com', content: 'Xin thêm lộ trình cho React với ad.',        status: true,  createdAt: '2025-01-12' },
-    { id: 3, postTitle: 'Top 5 quán cà phê làm việc lý tưởng',       author: 'Hoàng Minh',  email: 'minh@gmail.com', content: 'Quán số 2 đi cuối tuần hơi đông nha.',       status: false, createdAt: '2025-01-16' },
-    { id: 4, postTitle: 'Xu hướng thiết kế UI/UX nổi bật năm 2026',  author: 'Thúy Vy',     email: 'vy@gmail.com',   content: 'Đúng xu hướng mình đang nghiên cứu.',        status: true,  createdAt: '2025-01-21' },
-    { id: 5, postTitle: 'Hiểu về AI và Machine Learning trong 5 phút',author: 'Quốc Bảo',   email: 'bao@gmail.com',  content: 'Ví dụ rất dễ hiểu, cảm ơn tác giả.',        status: true,  createdAt: '2025-02-11' },
-    { id: 6, postTitle: 'Lợi ích của việc dậy sớm từ 5 giờ sáng',    author: 'Hải Yến',     email: 'yen@gmail.com',  content: 'Thèm ngủ lắm ad ơi, làm sao duy trì được?', status: false, createdAt: '2025-02-20' },
-])
+const commentService = new CommentService()
+
+// ─── State ──────────────────────────────────────────
+const comments  = ref([])
+const isLoading = ref(false)
+const error     = ref(null)
+
+const getData = async () => {
+    isLoading.value = true
+    error.value = null
+    try {
+        const result = await commentService.list()
+        if (result.status === 200) comments.value = result.data
+    } catch (e) {
+        error.value = 'Không thể tải dữ liệu.'
+        console.error(e)
+    } finally {
+        isLoading.value = false
+    }
+}
+
+onMounted(() => { getData() })
 
 // Search
-const searchQuery = ref('')
+const searchQuery  = ref('')
 const filterStatus = ref('all')
 
 const filtered = computed(() => {
@@ -29,7 +43,7 @@ const filtered = computed(() => {
     return list
 })
 
-const currentPage = ref(1)
+const currentPage  = ref(1)
 const itemsPerPage = ref(5)
 
 const totalPages = computed(() => Math.ceil(filtered.value.length / itemsPerPage.value))
@@ -40,22 +54,31 @@ const paginatedComments = computed(() => {
     return filtered.value.slice(start, end)
 })
 
-watch([searchQuery, filterStatus], () => {
-    currentPage.value = 1
-})
+watch([searchQuery, filterStatus], () => { currentPage.value = 1 })
 
 // Toggle status
-function toggleStatus(c) { c.status = !c.status }
+const toggleStatus = async (c) => {
+    c.status = !c.status
+    try {
+        await commentService.patch(c.id, { status: c.status })
+    } catch (e) { c.status = !c.status; console.error(e) }
+}
 
 // Delete modal
 const deleteTarget    = ref(null)
 const showDeleteModal = ref(false)
+const isDeleting      = ref(false)
+
 function openDeleteModal(c)  { deleteTarget.value = c; showDeleteModal.value = true }
 function closeDeleteModal()  { deleteTarget.value = null; showDeleteModal.value = false }
-function confirmDelete() {
-    const idx = comments.value.findIndex(c => c.id === deleteTarget.value.id)
-    if (idx !== -1) comments.value.splice(idx, 1)
-    closeDeleteModal()
+
+const confirmDelete = async () => {
+    isDeleting.value = true
+    try {
+        await commentService.delete(deleteTarget.value.id)
+        comments.value = comments.value.filter(c => c.id !== deleteTarget.value.id)
+    } catch (e) { console.error(e) }
+    finally { isDeleting.value = false; closeDeleteModal() }
 }
 </script>
 

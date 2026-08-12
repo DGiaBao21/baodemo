@@ -1,17 +1,32 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import { UserService } from '../../../services/user.service.js'
 
-// ─── Dữ liệu giả định (Mock data) ──────────────────────────────
-const users = ref([
-    { id: 1, name: 'Nguyễn Văn An',   email: 'an.nguyen@gmail.com',   phone: '0901234567', role: 'admin', status: true,  createdAt: '2025-01-05' },
-    { id: 2, name: 'Trần Thị Bình',   email: 'binh.tran@gmail.com',   phone: '0912345678', role: 'user',  status: true,  createdAt: '2025-01-18' },
-    { id: 3, name: 'Lê Hoàng Cường',  email: 'cuong.le@gmail.com',    phone: '0923456789', role: 'user',  status: false, createdAt: '2025-02-01' },
-    { id: 4, name: 'Phạm Thị Dung',   email: 'dung.pham@gmail.com',   phone: '0934567890', role: 'user',  status: true,  createdAt: '2025-02-14' },
-    { id: 5, name: 'Hoàng Văn Em',    email: 'em.hoang@gmail.com',    phone: '0945678901', role: 'user',  status: true,  createdAt: '2025-03-03' },
-    { id: 6, name: 'Ngô Thị Phương',  email: 'phuong.ngo@gmail.com',  phone: '0956789012', role: 'admin', status: true,  createdAt: '2025-03-20' },
-    { id: 7, name: 'Đặng Minh Quân',  email: 'quan.dang@gmail.com',   phone: '0967890123', role: 'user',  status: false, createdAt: '2025-04-07' },
-    { id: 8, name: 'Vũ Thị Hoa',      email: 'hoa.vu@gmail.com',      phone: '0978901234', role: 'user',  status: true,  createdAt: '2025-04-22' },
-])
+const userService = new UserService()
+
+// Lấy thông tin admin đang đăng nhập
+const currentUser = ref(JSON.parse(localStorage.getItem('auth_user')) || null)
+
+// ─── State ────────────────────────────────────────────
+const users     = ref([])
+const isLoading = ref(false)
+const error     = ref(null)
+
+const getData = async () => {
+    isLoading.value = true
+    error.value = null
+    try {
+        const result = await userService.list()
+        if (result.status === 200) users.value = result.data
+    } catch (e) {
+        error.value = 'Không thể tải dữ liệu. Vui lòng kiểm tra server.'
+        console.error(e)
+    } finally {
+        isLoading.value = false
+    }
+}
+
+onMounted(() => { getData() })
 
 const roleOptions = ['Tất cả', 'admin', 'user']
 
@@ -48,8 +63,35 @@ watch([searchQuery, filterRole], () => {
     currentPage.value = 1
 })
 
-// ─── Chuyển đổi trạng thái (Chặn / Mở chặn) ─────────────────────
-function toggleStatus(u) { u.status = !u.status }
+// ─── Toggle trạng thái (gọi API) ──────────────────────────
+const toggleStatus = async (u) => {
+    u.status = !u.status
+    try {
+        await userService.patch(u.id, { status: u.status })
+    } catch (e) {
+        u.status = !u.status
+        console.error(e)
+    }
+}
+
+// ─── Xóa ────────────────────────────────────────────────────
+const selectedUser    = ref(null)
+const isDeleting      = ref(false)
+
+const openDeleteModal = (user) => { selectedUser.value = user }
+
+const handleDelete = async () => {
+    if (!selectedUser.value) return
+    isDeleting.value = true
+    try {
+        const result = await userService.delete(selectedUser.value.id)
+        if (result.status === 200) {
+            users.value = users.value.filter(u => u.id !== selectedUser.value.id)
+            selectedUser.value = null
+        }
+    } catch (e) { console.error(e) }
+    finally { isDeleting.value = false }
+}
 </script>
 
 <template>
@@ -116,7 +158,7 @@ function toggleStatus(u) { u.status = !u.status }
                             <th style="width:130px">Trạng thái (Chặn / Mở)</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style="min-height: 325px; display: table-row-group;">
                         <!-- Trạng thái danh sách trống -->
                         <tr v-if="filtered.length === 0">
                             <td colspan="7" class="text-center text-muted py-5">
@@ -130,8 +172,17 @@ function toggleStatus(u) { u.status = !u.status }
                             <td class="text-muted">{{ (currentPage - 1) * itemsPerPage + idx + 1 }}</td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <div class="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0"
-                                        style="width:36px; height:36px">
+                                    <!-- Avatar thật hoặc fallback icon -->
+                                    <img
+                                        v-if="u.avatar"
+                                        :src="u.avatar"
+                                        :alt="u.name"
+                                        class="rounded-circle object-fit-cover flex-shrink-0"
+                                        style="width:36px;height:36px;border:2px solid #e8eaf6"
+                                    />
+                                    <div v-else
+                                        class="rounded-circle bg-secondary bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0"
+                                        style="width:36px;height:36px">
                                         <i class="bi bi-person text-secondary"></i>
                                     </div>
                                     <span class="fw-semibold">{{ u.name }}</span>
@@ -158,6 +209,7 @@ function toggleStatus(u) { u.status = !u.status }
                                         :id="`status-${u.id}`"
                                         :checked="u.status"
                                         @change="toggleStatus(u)"
+                                        :disabled="currentUser && currentUser.id === u.id"
                                     />
                                     <label class="form-check-label cursor-pointer" :for="`status-${u.id}`">
                                         <span :class="u.status ? 'badge text-bg-success' : 'badge text-bg-danger'">
@@ -171,9 +223,9 @@ function toggleStatus(u) { u.status = !u.status }
                 </table>
             </div>
             <!-- Pagination Footer -->
-            <div v-if="totalPages > 1" class="card-footer bg-white border-top py-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
-                <span class="text-muted small">Hiển thị trang {{ currentPage }} / {{ totalPages }} (tổng {{ filtered.length }} tài khoản)</span>
-                <nav>
+            <div class="card-footer bg-white border-top py-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+                <span class="text-muted small">Hiển thị trang {{ currentPage }} / {{ totalPages || 1 }} (tổng {{ filtered.length }} tài khoản)</span>
+                <nav v-if="totalPages > 1">
                     <ul class="pagination pagination-sm mb-0">
                         <li class="page-item" :class="{ disabled: currentPage === 1 }">
                             <button class="page-link shadow-none" @click="currentPage = 1" style="cursor: pointer;">Đầu</button>

@@ -1,3 +1,22 @@
+<script setup>
+import { ref, onMounted, onUnmounted } from 'vue'
+
+const openDropdown = ref('')
+
+const toggleDropdown = (name) => {
+    openDropdown.value = openDropdown.value === name ? '' : name
+}
+
+const closeDropdowns = (e) => {
+    if (!e.target.closest('.dropdown-container')) {
+        openDropdown.value = ''
+    }
+}
+
+onMounted(() => window.addEventListener('click', closeDropdowns))
+onUnmounted(() => window.removeEventListener('click', closeDropdowns))
+</script>
+
 <template>
     <nav class="navbar navbar-expand bg-white border-bottom border-secondary border-opacity-10 py-2 px-3 align-items-center">
         <div class="container-fluid p-0">
@@ -21,18 +40,17 @@
             <div class="d-flex align-items-center gap-3">
                 
                 <!-- Notification Bell Icon (Bootstrap Dropdown) -->
-                <div class="dropdown">
+                <div class="dropdown dropdown-container">
                     <button 
                         class="btn btn-link text-secondary p-2 rounded-circle hover-bg-light position-relative border-0 shadow-none" 
                         type="button" 
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
+                        @click="toggleDropdown('notifications')"
                     >
                         <i class="bi bi-bell fs-5"></i>
                         <!-- Red Pulsing dot -->
                         <span class="position-absolute top-1 start-75 translate-middle p-1 bg-danger border border-light rounded-circle" style="width: 7px; height: 7px;"></span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 mt-2" style="width: 320px; font-size: 13px;">
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 mt-2" :class="{ show: openDropdown === 'notifications' }" style="width: 320px; font-size: 13px;">
                         <li><h6 class="dropdown-header fw-bold text-dark px-2 pb-2">Thông báo mới nhất</h6></li>
                         <li><hr class="dropdown-divider my-2"></li>
                         <li>
@@ -59,17 +77,16 @@
                 </div>
 
                 <!-- Messages/Comments Icon -->
-                <div class="dropdown">
+                <div class="dropdown dropdown-container">
                     <button 
                         class="btn btn-link text-secondary p-2 rounded-circle hover-bg-light position-relative border-0 shadow-none" 
                         type="button"
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
+                        @click="toggleDropdown('messages')"
                     >
                         <i class="bi bi-chat-dots fs-5"></i>
                         <span class="position-absolute top-1 start-75 translate-middle p-1 bg-info border border-light rounded-circle" style="width: 7px; height: 7px;"></span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 mt-2" style="width: 280px; font-size: 13px;">
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 mt-2" :class="{ show: openDropdown === 'messages' }" style="width: 280px; font-size: 13px;">
                         <li><h6 class="dropdown-header fw-bold text-dark px-2 pb-2">Tin nhắn & Phản hồi</h6></li>
                         <li><hr class="dropdown-divider my-1"></li>
                         <li>
@@ -84,13 +101,12 @@
                 </div>
 
                 <!-- User Profile Dropdown -->
-                <div class="dropdown border-start ps-3 border-secondary border-opacity-20">
+                <div class="dropdown border-start ps-3 border-secondary border-opacity-20 dropdown-container">
                     <a 
                         class="dropdown-toggle text-dark text-decoration-none d-flex align-items-center gap-2 cursor-pointer" 
                         href="#" 
                         role="button" 
-                        data-bs-toggle="dropdown"
-                        aria-expanded="false"
+                        @click.prevent="toggleDropdown('profile')"
                     >
                         <img 
                             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbZ-x8vy8u3RaZ0iF_cof4U3pTMPa54T_y6w&s"
@@ -104,7 +120,7 @@
                             <span class="text-muted font-monospace" style="font-size: 9.5px;">admin@brewadmin.com</span>
                         </div>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 mt-2" style="min-width: 200px; font-size: 13.5px;">
+                    <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg p-2 mt-2" :class="{ show: openDropdown === 'profile' }" style="min-width: 200px; font-size: 13.5px;">
                         <li>
                             <div class="px-3 py-2 border-bottom mb-2">
                                 <h6 class="fw-bold text-dark mb-1" style="font-size: 13px;">Quản trị viên chính</h6>

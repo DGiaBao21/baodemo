@@ -1,21 +1,36 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { BlogService } from '../../../services/blog.service.js'
+import { BlogCategoryService } from '../../../services/blog-category.service.js'
 
-const router = useRouter()
+const router      = useRouter()
+const blogService = new BlogService()
+const blogCategoryService = new BlogCategoryService()
 
 const form = ref({
-  title: '',
-  category: '',
-  content: '',
+  title:     '',
+  category:  '',
+  content:   '',
   thumbnail: '',
-  status: true,
+  status:    true,
 })
 
-const errors = ref({})
+const errors     = ref({})
 const previewUrl = ref('')
+const isLoading  = ref(false)
 
-const categories = ['Hướng dẫn', 'Sức khỏe', 'Kiến thức', 'Menu', 'Tin tức', 'Khuyến mãi']
+const categories = ref([])
+
+import { onMounted } from 'vue'
+onMounted(async () => {
+    try {
+        const res = await blogCategoryService.list()
+        if (res.status === 200) {
+            categories.value = res.data.filter(c => c.status)
+        }
+    } catch (e) { console.error(e) }
+})
 
 const handleThumbnailInput = (e) => {
   const url = e.target.value
@@ -34,11 +49,26 @@ const validate = () => {
   return Object.keys(errs).length === 0
 }
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (!validate()) return
-  // TODO: gọi API tạo bài viết
-  alert('Thêm bài viết thành công!')
-  router.push('/bloglist')
+  isLoading.value = true
+  try {
+    const payload = {
+      ...form.value,
+      author:    'Admin',
+      authorId:  1,
+      excerpt:   form.value.content.substring(0, 100) + '...',
+      likes:     0,
+      comments:  0,
+      createdAt: new Date().toISOString().split('T')[0],
+    }
+    const result = await blogService.create(payload)
+    if (result.status === 201) router.push('/bloglist')
+  } catch (e) {
+    console.error('Thêm bài viết thất bại', e)
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 
@@ -118,7 +148,7 @@ const handleSubmit = () => {
                   :class="{ 'is-invalid': errors.category }"
                 >
                   <option value="">-- Chọn chủ đề --</option>
-                  <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                  <option v-for="cat in categories" :key="cat.id" :value="cat.name">{{ cat.name }}</option>
                 </select>
                 <div v-if="errors.category" class="invalid-feedback">{{ errors.category }}</div>
               </div>
@@ -176,8 +206,10 @@ const handleSubmit = () => {
           <!-- Actions -->
           <div class="d-flex gap-2">
             <RouterLink to="/bloglist" class="btn btn-outline-secondary flex-fill">Hủy</RouterLink>
-            <button type="submit" class="btn btn-success flex-fill fw-semibold">
-              <i class="bi bi-check-lg me-1"></i> Lưu bài viết
+            <button type="submit" class="btn btn-success flex-fill fw-semibold" :disabled="isLoading">
+              <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              <i v-else class="bi bi-check-lg me-1"></i>
+              {{ isLoading ? 'Đang lưu...' : 'Lưu bài viết' }}
             </button>
           </div>
 

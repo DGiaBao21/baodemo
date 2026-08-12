@@ -1,14 +1,47 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import { currentUser } from '../../composables/auth.js'
+import { CommentService } from '../../services/comment.service.js'
+import { BlogService }    from '../../services/blog.service.js'
 
-// Giả lập bình luận của user hiện tại
-const myComments = ref([
-    { id: 1, postId: 1, postTitle: 'Bí quyết làm chủ JavaScript trong 30 ngày', content: 'Bài viết rất hữu ích ạ!',                   createdAt: '11/01/2025' },
-    { id: 2, postId: 3, postTitle: 'Xu hướng thiết kế UI/UX nổi bật năm 2026',  content: 'Đúng xu hướng mình đang nghiên cứu.',        createdAt: '21/01/2025' },
-    { id: 3, postId: 5, postTitle: 'Hiểu về AI và Machine Learning trong 5 phút',content: 'Ví dụ rất dễ hiểu, cảm ơn tác giả.',        createdAt: '11/02/2025' },
-])
+const commentService = new CommentService()
+const blogService    = new BlogService()
+
+const myComments = ref([])
+const isLoading  = ref(true)
+
+// ── Load tất cả comments + blog titles, lọc theo author ────────
+onMounted(async () => {
+    try {
+        const [cmtRes, blogRes] = await Promise.all([
+            commentService.list(),
+            blogService.list(),
+        ])
+        const allComments = cmtRes.status === 200 ? cmtRes.data : []
+        const allBlogs    = blogRes.status === 200 ? blogRes.data : []
+
+        // Lọc comment của user hiện tại (theo tên hoặc email)
+        const mine = allComments.filter(c =>
+            c.author === currentUser.value?.name ||
+            c.email  === currentUser.value?.email
+        )
+
+        // Gắn postTitle từ blog list
+        myComments.value = mine.map(c => {
+            const blog = allBlogs.find(b => String(b.id) === String(c.blogId))
+            return {
+                ...c,
+                postId:    c.blogId,
+                postTitle: blog?.title || c.postTitle || `Bài viết #${c.blogId}`,
+            }
+        })
+    } catch (e) {
+        console.error('Lỗi tải bình luận:', e)
+    } finally {
+        isLoading.value = false
+    }
+})
 
 // Search
 const searchQuery = ref('')
@@ -24,16 +57,66 @@ const filtered = computed(() => {
 // Delete modal
 const deleteTarget    = ref(null)
 const showDeleteModal = ref(false)
+const isDeleting      = ref(false)
 function openDeleteModal(c)  { deleteTarget.value = c; showDeleteModal.value = true }
 function closeDeleteModal()  { deleteTarget.value = null; showDeleteModal.value = false }
-function confirmDelete() {
-    myComments.value = myComments.value.filter(c => c.id !== deleteTarget.value.id)
-    closeDeleteModal()
+async function confirmDelete() {
+    if (!deleteTarget.value) return
+    isDeleting.value = true
+    try {
+        await commentService.delete(deleteTarget.value.id)
+        myComments.value = myComments.value.filter(c => c.id !== deleteTarget.value.id)
+        closeDeleteModal()
+    } catch (e) {
+        console.error('Xóa thất bại:', e)
+    } finally {
+        isDeleting.value = false
+    }
 }
+// Sửa bình luận
+function startEditComment(c) {
+    c._isEditing = true
+    c._editContent = c.content
+}
+
+function cancelEditComment(c) {
+    c._isEditing = false
+}
+
+async function saveEditComment(c) {
+    if (!c._editContent.trim()) {
+        alert('Nội dung bình luận không được để trống')
+        return
+    }
+    c._isSaving = true
+    try {
+        await commentService.patch(c.id, { content: c._editContent.trim() })
+        c.content = c._editContent.trim()
+        c._isEditing = false
+    } catch (e) {
+        console.error('Cập nhật thất bại:', e)
+        alert('Cập nhật thất bại, vui lòng thử lại.')
+    } finally {
+        c._isSaving = false
+    }
+}
+
+const formatDate = d => d ? new Date(d).toLocaleDateString('vi-VN') : ''
 </script>
 
 <template>
     <div class="container py-5" style="max-width:760px">
+
+        <!-- Loading skeleton -->
+        <div v-if="isLoading" class="d-flex flex-column gap-3">
+            <div v-for="n in 3" :key="n" class="card border-0 shadow-sm rounded-3 p-4">
+                <div class="skeleton mb-2" style="height:14px;width:50%;border-radius:6px"></div>
+                <div class="skeleton mb-3" style="height:16px;border-radius:6px"></div>
+                <div class="skeleton" style="height:12px;width:30%;border-radius:6px"></div>
+            </div>
+        </div>
+
+        <template v-else>
 
         <!-- Header -->
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -89,16 +172,31 @@ function confirmDelete() {
                     </div>
 
                     <!-- Comment content -->
-                    <p class="mb-2 text-secondary">{{ c.content }}</p>
+                    <div v-if="c._isEditing" class="mb-3">
+                        <textarea v-model="c._editContent" class="form-control form-control-sm mb-2" rows="2"></textarea>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary btn-sm px-3" @click="saveEditComment(c)" :disabled="c._isSaving">
+                                <span v-if="c._isSaving" class="spinner-border spinner-border-sm me-1"></span>
+                                Lưu
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm px-3" @click="cancelEditComment(c)" :disabled="c._isSaving">Hủy</button>
+                        </div>
+                    </div>
+                    <p v-else class="mb-2 text-secondary">{{ c.content }}</p>
 
                     <!-- Meta + actions -->
                     <div class="d-flex align-items-center justify-content-between">
                         <span class="text-muted small">
-                            <i class="bi bi-calendar3 me-1"></i>{{ c.createdAt }}
+                            <i class="bi bi-calendar3 me-1"></i>{{ formatDate(c.createdAt) || c.createdAt }}
                         </span>
-                        <button class="btn btn-outline-danger btn-sm" @click="openDeleteModal(c)">
-                            <i class="bi bi-trash me-1"></i>Xóa
-                        </button>
+                        <div v-if="!c._isEditing">
+                            <button class="btn btn-outline-primary btn-sm me-2" @click="startEditComment(c)">
+                                <i class="bi bi-pencil-square me-1"></i>Sửa
+                            </button>
+                            <button class="btn btn-outline-danger btn-sm" @click="openDeleteModal(c)">
+                                <i class="bi bi-trash me-1"></i>Xóa
+                            </button>
+                        </div>
                     </div>
 
                 </div>
@@ -121,9 +219,11 @@ function confirmDelete() {
                             <small class="text-muted">Hành động này không thể hoàn tác.</small>
                         </div>
                         <div class="modal-footer border-0 pt-2">
-                            <button class="btn btn-outline-secondary flex-fill" @click="closeDeleteModal">Hủy</button>
-                            <button class="btn btn-danger flex-fill fw-semibold" @click="confirmDelete">
-                                <i class="bi bi-trash me-1"></i> Xóa
+                            <button class="btn btn-outline-secondary flex-fill" @click="closeDeleteModal" :disabled="isDeleting">Hủy</button>
+                            <button class="btn btn-danger flex-fill fw-semibold" @click="confirmDelete" :disabled="isDeleting">
+                                <span v-if="isDeleting" class="spinner-border spinner-border-sm me-1"></span>
+                                <i v-else class="bi bi-trash me-1"></i>
+                                {{ isDeleting ? 'Đang xóa...' : 'Xóa' }}
                             </button>
                         </div>
                     </div>
@@ -131,5 +231,18 @@ function confirmDelete() {
             </div>
         </Teleport>
 
+        </template><!-- end v-else -->
     </div>
 </template>
+
+<style scoped>
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+    0%   { background-position: 200% 0 }
+    100% { background-position: -200% 0 }
+}
+</style>

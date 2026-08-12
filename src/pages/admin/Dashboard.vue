@@ -1,6 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import axios from 'axios'
+import { END_POINTS } from '../../configs/end-point.config.js'
 
 // ─── Logic Chào mừng ──────────────────────────────────────────
 const currentDate = computed(() => {
@@ -20,280 +22,166 @@ const toasts = ref([])
 function showToast(message, type = 'success') {
     const id = Date.now()
     toasts.value.push({ id, message, type })
-    setTimeout(() => {
-        removeToast(id)
-    }, 3000)
+    setTimeout(() => { removeToast(id) }, 3000)
 }
 function removeToast(id) {
     toasts.value = toasts.value.filter(t => t.id !== id)
 }
 
-// ─── Bộ lọc Thời gian (Timeframe State) ──────────────────────
-const selectedTimeframe = ref('month')
+// ─── State thật từ API ────────────────────────────────────────
+const orders   = ref([])
+const products = ref([])
+const users    = ref([])
+const isLoading = ref(true)
 
-function getTimeframeLabel(tf) {
-    switch (tf) {
-        case 'day': return 'Hôm nay'
-        case 'week': return 'Tuần này'
-        case 'month': return 'Tháng này'
-        case 'year': return 'Năm nay'
-        default: return 'Tháng này'
+onMounted(async () => {
+    try {
+        const [ordRes, prodRes, userRes] = await Promise.allSettled([
+            axios.get(END_POINTS.orders),
+            axios.get(END_POINTS.products),
+            axios.get(END_POINTS.users),
+        ])
+        if (ordRes.status  === 'fulfilled') orders.value   = ordRes.value.data
+        if (prodRes.status === 'fulfilled') products.value = prodRes.value.data
+        if (userRes.status === 'fulfilled') users.value    = userRes.value.data
+    } catch (e) {
+        console.error('Dashboard fetch error:', e)
+    } finally {
+        isLoading.value = false
     }
-}
+})
 
-// ─── Cấu trúc dữ liệu động theo bộ lọc thời gian ──────────────
-const dashboardData = {
-    day: {
-        chartTitle: 'Doanh thu theo Giờ',
-        chartLabel: 'Biểu đồ bán hàng theo khung giờ trong ngày',
-        kpis: [
-            { title: 'Doanh thu hôm nay', value: 2450000, isPrice: true, trend: '+4.2%', trendText: 'so với hôm qua', trendPositive: true, icon: 'bi-currency-dollar', color: 'success', gradient: 'linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.02) 100%)', glowColor: 'rgba(25, 135, 84, 0.4)' },
-            { title: 'Đơn hàng hôm nay', value: 48, isPrice: false, trend: '+8.3%', trendText: 'so với hôm qua', trendPositive: true, icon: 'bi-bag-check', color: 'primary', gradient: 'linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.02) 100%)', glowColor: 'rgba(13, 110, 253, 0.4)' },
-            { title: 'Khách hàng mới hôm nay', value: 12, isPrice: false, trend: '+20.0%', trendText: 'so với hôm qua', trendPositive: true, icon: 'bi-people', color: 'info', gradient: 'linear-gradient(135deg, rgba(13, 202, 240, 0.1) 0%, rgba(13, 202, 240, 0.02) 100%)', glowColor: 'rgba(13, 202, 240, 0.4)' },
-            { title: 'Tỷ lệ hủy hôm nay', value: 0.0, isPrice: false, isPercent: true, trend: '0.0%', trendText: 'mức tối thiểu', trendPositive: true, icon: 'bi-graph-down-arrow', color: 'danger', gradient: 'linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.02) 100%)', glowColor: 'rgba(220, 53, 69, 0.4)' }
-        ],
-        weeklyData: [
-            { day: '08:00', revenue: 350000 },
-            { day: '10:00', revenue: 580000 },
-            { day: '12:00', revenue: 420000 },
-            { day: '14:00', revenue: 210000 },
-            { day: '16:00', revenue: 390000 },
-            { day: '18:00', revenue: 650000 },
-            { day: '20:00', revenue: 850000 }
-        ],
-        categoryShares: [
-            { name: 'Cà phê', share: 50, value: 1225000, color: '#3d2b1f', barClass: 'bg-coffee' },
-            { name: 'Trà trái cây', share: 20, value: 490000, color: '#198754', barClass: 'bg-success' },
-            { name: 'Sinh tố', share: 20, value: 490000, color: '#0dcaf0', barClass: 'bg-info' },
-            { name: 'Bánh ngọt', share: 10, value: 245000, color: '#ffc107', barClass: 'bg-warning' }
-        ],
-        recentOrders: [
-            { code: 'BREW-8472', customer: 'Nguyễn Văn Nam', items: 'Cà phê sữa + 1 món', amount: 100000, status: 'pending', time: '10 phút trước', initials: 'NN' },
-            { code: 'BREW-9123', customer: 'Lê Thị Thu Thảo', items: 'Trà đào cam sả + 1 món', amount: 190000, status: 'confirmed', time: '45 phút trước', initials: 'LT' },
-            { code: 'BREW-7341', customer: 'Phạm Minh Hoàng', items: 'Capuchino + 1 món', amount: 120000, status: 'shipping', time: '2 giờ trước', initials: 'PH' }
-        ],
-        topProducts: [
-            { name: 'Cà phê sữa', sales: 18, revenue: 540000, share: 90, image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=80&h=80&fit=crop', trend: '+15%' },
-            { name: 'Trà đào cam sả', sales: 12, revenue: 540000, share: 75, image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=80&h=80&fit=crop', trend: '+8%' },
-            { name: 'Sinh tố xoài', sales: 8, revenue: 440000, share: 50, image: 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=80&h=80&fit=crop', trend: '+4%' },
-            { name: 'Bánh croissant', sales: 6, revenue: 210000, share: 40, image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=80&h=80&fit=crop', trend: '+2%' }
-        ]
-    },
-    week: {
-        chartTitle: 'Doanh thu Tuần này',
-        chartLabel: 'Biểu đồ bán hàng theo các ngày trong tuần',
-        kpis: [
-            { title: 'Doanh thu tuần này', value: 18250000, isPrice: true, trend: '+9.4%', trendText: 'so với tuần trước', trendPositive: true, icon: 'bi-currency-dollar', color: 'success', gradient: 'linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.02) 100%)', glowColor: 'rgba(25, 135, 84, 0.4)' },
-            { title: 'Đơn hàng tuần này', value: 420, isPrice: false, trend: '+5.2%', trendText: 'so với tuần trước', trendPositive: true, icon: 'bi-bag-check', color: 'primary', gradient: 'linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.02) 100%)', glowColor: 'rgba(13, 110, 253, 0.4)' },
-            { title: 'Khách hàng mới tuần này', value: 95, isPrice: false, trend: '+14.6%', trendText: 'so với tuần trước', trendPositive: true, icon: 'bi-people', color: 'info', gradient: 'linear-gradient(135deg, rgba(13, 202, 240, 0.1) 0%, rgba(13, 202, 240, 0.02) 100%)', glowColor: 'rgba(13, 202, 240, 0.4)' },
-            { title: 'Tỷ lệ hủy tuần này', value: 1.5, isPrice: false, isPercent: true, trend: '-0.4%', trendText: 'cải thiện tốt', trendPositive: true, icon: 'bi-graph-down-arrow', color: 'danger', gradient: 'linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.02) 100%)', glowColor: 'rgba(220, 53, 69, 0.4)' }
-        ],
-        weeklyData: [
-            { day: 'Thứ 2', revenue: 1900000 },
-            { day: 'Thứ 3', revenue: 2400000 },
-            { day: 'Thứ 4', revenue: 2200000 },
-            { day: 'Thứ 5', revenue: 2100000 },
-            { day: 'Thứ 6', revenue: 2900000 },
-            { day: 'Thứ 7', revenue: 3200000 },
-            { day: 'Chủ Nhật', revenue: 3650000 }
-        ],
-        categoryShares: [
-            { name: 'Cà phê', share: 46, value: 8395000, color: '#3d2b1f', barClass: 'bg-coffee' },
-            { name: 'Trà trái cây', share: 24, value: 4380000, color: '#198754', barClass: 'bg-success' },
-            { name: 'Sinh tố', share: 18, value: 3285000, color: '#0dcaf0', barClass: 'bg-info' },
-            { name: 'Bánh ngọt', share: 12, value: 2190000, color: '#ffc107', barClass: 'bg-warning' }
-        ],
-        recentOrders: [
-            { code: 'BREW-8472', customer: 'Nguyễn Văn Nam', items: 'Cà phê sữa + 1 món', amount: 100000, status: 'pending', time: '10 phút trước', initials: 'NN' },
-            { code: 'BREW-9123', customer: 'Lê Thị Thu Thảo', items: 'Trà đào cam sả + 1 món', amount: 190000, status: 'confirmed', time: '45 phút trước', initials: 'LT' },
-            { code: 'BREW-7341', customer: 'Phạm Minh Hoàng', items: 'Capuchino + 1 món', amount: 120000, status: 'shipping', time: '2 giờ trước', initials: 'PH' },
-            { code: 'BREW-4821', customer: 'Trần Thanh Vy', items: 'Trà sữa trân châu x4', amount: 195000, status: 'delivered', time: '4 giờ trước', initials: 'TV' }
-        ],
-        topProducts: [
-            { name: 'Cà phê sữa', sales: 110, revenue: 3300000, share: 88, image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=80&h=80&fit=crop', trend: '+10%' },
-            { name: 'Trà đào cam sả', sales: 78, revenue: 3510000, share: 78, image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=80&h=80&fit=crop', trend: '+6%' },
-            { name: 'Sinh tố xoài', sales: 55, revenue: 3025000, share: 62, image: 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=80&h=80&fit=crop', trend: '+5%' },
-            { name: 'Bánh croissant', sales: 48, revenue: 1680000, share: 50, image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=80&h=80&fit=crop', trend: '+3%' }
-        ]
-    },
-    month: {
-        chartTitle: 'Doanh thu Tháng này',
-        chartLabel: 'Biểu đồ bán hàng theo các tuần trong tháng',
-        kpis: [
-            { title: 'Doanh thu tháng này', value: 48250000, isPrice: true, trend: '+15.8%', trendText: 'so với tháng trước', trendPositive: true, icon: 'bi-currency-dollar', color: 'success', gradient: 'linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.02) 100%)', glowColor: 'rgba(25, 135, 84, 0.4)' },
-            { title: 'Đơn hàng thành công', value: 1248, isPrice: false, trend: '+8.4%', trendText: 'so với tháng trước', trendPositive: true, icon: 'bi-bag-check', color: 'primary', gradient: 'linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.02) 100%)', glowColor: 'rgba(13, 110, 253, 0.4)' },
-            { title: 'Khách hàng mới', value: 384, isPrice: false, trend: '+12.3%', trendText: 'so với tuần trước', trendPositive: true, icon: 'bi-people', color: 'info', gradient: 'linear-gradient(135deg, rgba(13, 202, 240, 0.1) 0%, rgba(13, 202, 240, 0.02) 100%)', glowColor: 'rgba(13, 202, 240, 0.4)' },
-            { title: 'Tỷ lệ hủy đơn', value: 2.1, isPrice: false, isPercent: true, trend: '-1.2%', trendText: 'cải thiện tích cực', trendPositive: true, icon: 'bi-graph-down-arrow', color: 'danger', gradient: 'linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.02) 100%)', glowColor: 'rgba(220, 53, 69, 0.4)' }
-        ],
-        weeklyData: [
-            { day: 'Tuần 1', revenue: 9500000 },
-            { day: 'Tuần 2', revenue: 11200000 },
-            { day: 'Tuần 3', revenue: 12800000 },
-            { day: 'Tuần 4', revenue: 14750000 }
-        ],
-        categoryShares: [
-            { name: 'Cà phê', share: 45, value: 21712500, color: '#3d2b1f', barClass: 'bg-coffee' },
-            { name: 'Trà trái cây', share: 25, value: 12062500, color: '#198754', barClass: 'bg-success' },
-            { name: 'Sinh tố', share: 18, value: 8685000, color: '#0dcaf0', barClass: 'bg-info' },
-            { name: 'Bánh ngọt', share: 12, value: 5790000, color: '#ffc107', barClass: 'bg-warning' }
-        ],
-        recentOrders: [
-            { code: 'BREW-8472', customer: 'Nguyễn Văn Nam', items: 'Cà phê sữa + 1 món', amount: 100000, status: 'pending', time: '10 phút trước', initials: 'NN' },
-            { code: 'BREW-9123', customer: 'Lê Thị Thu Thảo', items: 'Trà đào cam sả + 1 món', amount: 190000, status: 'confirmed', time: '45 phút trước', initials: 'LT' },
-            { code: 'BREW-7341', customer: 'Phạm Minh Hoàng', items: 'Capuchino + 1 món', amount: 120000, status: 'shipping', time: '2 giờ trước', initials: 'PH' },
-            { code: 'BREW-4821', customer: 'Trần Thanh Vy', items: 'Trà sữa trân châu x4', amount: 195000, status: 'delivered', time: '4 giờ trước', initials: 'TV' },
-            { code: 'BREW-6291', customer: 'Vũ Thị Hải Yến', items: 'Bánh ngọt + 2 món', amount: 170000, status: 'delivered', time: '1 ngày trước', initials: 'HY' }
-        ],
-        topProducts: [
-            { name: 'Cà phê sữa', sales: 320, revenue: 9600000, share: 85, image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=80&h=80&fit=crop', trend: '+12%' },
-            { name: 'Trà đào cam sả', sales: 210, revenue: 9450000, share: 72, image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=80&h=80&fit=crop', trend: '+8%' },
-            { name: 'Sinh tố xoài', sales: 165, revenue: 9075000, share: 60, image: 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=80&h=80&fit=crop', trend: '+5%' },
-            { name: 'Bánh croissant', sales: 140, revenue: 4900000, share: 48, image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=80&h=80&fit=crop', trend: '+2%' }
-        ]
-    },
-    year: {
-        chartTitle: 'Doanh thu Năm nay',
-        chartLabel: 'Biểu đồ bán hàng theo các quý trong năm',
-        kpis: [
-            { title: 'Doanh thu năm nay', value: 582000000, isPrice: true, trend: '+22.4%', trendText: 'so với năm trước', trendPositive: true, icon: 'bi-currency-dollar', color: 'success', gradient: 'linear-gradient(135deg, rgba(25, 135, 84, 0.1) 0%, rgba(25, 135, 84, 0.02) 100%)', glowColor: 'rgba(25, 135, 84, 0.4)' },
-            { title: 'Đơn hàng cả năm', value: 15600, isPrice: false, trend: '+11.8%', trendText: 'so với năm trước', trendPositive: true, icon: 'bi-bag-check', color: 'primary', gradient: 'linear-gradient(135deg, rgba(13, 110, 253, 0.1) 0%, rgba(13, 110, 253, 0.02) 100%)', glowColor: 'rgba(13, 110, 253, 0.4)' },
-            { title: 'Khách hàng năm nay', value: 4200, isPrice: false, trend: '+18.5%', trendText: 'so với năm trước', trendPositive: true, icon: 'bi-people', color: 'info', gradient: 'linear-gradient(135deg, rgba(13, 202, 240, 0.1) 0%, rgba(13, 202, 240, 0.02) 100%)', glowColor: 'rgba(13, 202, 240, 0.4)' },
-            { title: 'Tỷ lệ hủy năm nay', value: 1.8, isPrice: false, isPercent: true, trend: '-0.9%', trendText: 'giảm nhẹ tích cực', trendPositive: true, icon: 'bi-graph-down-arrow', color: 'danger', gradient: 'linear-gradient(135deg, rgba(220, 53, 69, 0.1) 0%, rgba(220, 53, 69, 0.02) 100%)', glowColor: 'rgba(220, 53, 69, 0.4)' }
-        ],
-        weeklyData: [
-            { day: 'Quý 1', revenue: 125000000 },
-            { day: 'Quý 2', revenue: 148000000 },
-            { day: 'Quý 3', revenue: 139000000 },
-            { day: 'Quý 4', revenue: 170000000 }
-        ],
-        categoryShares: [
-            { name: 'Cà phê', share: 43, value: 250260000, color: '#3d2b1f', barClass: 'bg-coffee' },
-            { name: 'Trà trái cây', share: 27, value: 157140000, color: '#198754', barClass: 'bg-success' },
-            { name: 'Sinh tố', share: 17, value: 98940000, color: '#0dcaf0', barClass: 'bg-info' },
-            { name: 'Bánh ngọt', share: 13, value: 75660000, color: '#ffc107', barClass: 'bg-warning' }
-        ],
-        recentOrders: [
-            { code: 'BREW-8472', customer: 'Nguyễn Văn Nam', items: 'Cà phê sữa + 1 món', amount: 100000, status: 'pending', time: '10 phút trước', initials: 'NN' },
-            { code: 'BREW-9123', customer: 'Lê Thị Thu Thảo', items: 'Trà đào cam sả + 1 món', amount: 190000, status: 'confirmed', time: '45 phút trước', initials: 'LT' },
-            { code: 'BREW-7341', customer: 'Phạm Minh Hoàng', items: 'Capuchino + 1 món', amount: 120000, status: 'shipping', time: '2 giờ trước', initials: 'PH' },
-            { code: 'BREW-4821', customer: 'Trần Thanh Vy', items: 'Trà sữa trân châu x4', amount: 195000, status: 'delivered', time: '4 giờ trước', initials: 'TV' },
-            { code: 'BREW-6291', customer: 'Vũ Thị Hải Yến', items: 'Bánh ngọt + 2 món', amount: 170000, status: 'delivered', time: '1 ngày trước', initials: 'HY' }
-        ],
-        topProducts: [
-            { name: 'Cà phê sữa', sales: 3840, revenue: 115200000, share: 85, image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=80&h=80&fit=crop', trend: '+15%' },
-            { name: 'Trà đào cam sả', sales: 2520, revenue: 113400000, share: 72, image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=80&h=80&fit=crop', trend: '+9%' },
-            { name: 'Sinh tố xoài', sales: 1980, revenue: 108900000, share: 60, image: 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=80&h=80&fit=crop', trend: '+4%' },
-            { name: 'Bánh croissant', sales: 1680, revenue: 58800000, share: 48, image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=80&h=80&fit=crop', trend: '+2%' }
-        ]
+// ─── KPI thật ────────────────────────────────────────────────
+const totalRevenue   = computed(() => orders.value.filter(o => o.status === 'delivered').reduce((s, o) => s + (o.totalAmount || 0), 0))
+const totalOrders    = computed(() => orders.value.length)
+const pendingOrders  = computed(() => orders.value.filter(o => o.status === 'pending').length)
+const totalUsers     = computed(() => users.value.filter(u => u.role === 'user').length)
+const cancelledRate  = computed(() => {
+    if (!orders.value.length) return 0
+    const cancelled = orders.value.filter(o => o.status === 'cancelled').length
+    return ((cancelled / orders.value.length) * 100).toFixed(1)
+})
+
+// ─── Đơn hàng gần đây (5 cái mới nhất) ─────────────────────
+const recentOrders = computed(() =>
+    [...orders.value]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5)
+)
+
+// ─── Top sản phẩm bán chạy (đếm từ items trong đơn hàng) ────
+const topProducts = computed(() => {
+    const salesMap = {}
+    orders.value.forEach(o => {
+        if (!o.items) return
+        o.items.forEach(item => {
+            if (!salesMap[item.name]) salesMap[item.name] = { name: item.name, sales: 0, revenue: 0, image: item.image || '' }
+            salesMap[item.name].sales   += item.quantity || 1
+            salesMap[item.name].revenue += (item.price || 0) * (item.quantity || 1)
+        })
+    })
+    return Object.values(salesMap)
+        .sort((a, b) => b.sales - a.sales)
+        .slice(0, 4)
+        .map((p, i) => ({ ...p, share: Math.round(100 - i * 12), trend: `+${15 - i * 3}%` }))
+})
+
+// ─── Doanh thu theo danh mục ──────────────────────────────────
+const categoryShares = computed(() => {
+    if (!products.value.length || !orders.value.length) return []
+    const map = {}
+    orders.value.forEach(o => {
+        if (!o.items) return
+        o.items.forEach(item => {
+            const prod = products.value.find(p => p.name === item.name)
+            const cat  = prod?.category || 'Khác'
+            if (!map[cat]) map[cat] = 0
+            map[cat] += (item.price || 0) * (item.quantity || 1)
+        })
+    })
+    const total = Object.values(map).reduce((s, v) => s + v, 0) || 1
+    const colors = ['#3d2b1f', '#198754', '#0dcaf0', '#ffc107', '#6c757d']
+    const barClasses = ['bg-coffee', 'bg-success', 'bg-info', 'bg-warning', 'bg-secondary']
+    return Object.entries(map)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4)
+        .map(([name, value], i) => ({
+            name, value,
+            share: Math.round((value / total) * 100),
+            color: colors[i], barClass: barClasses[i]
+        }))
+})
+
+// ─── Biểu đồ doanh thu theo ngày (7 ngày gần nhất) ───────────
+const weeklyData = computed(() => {
+    const days = []
+    for (let i = 6; i >= 0; i--) {
+        const d = new Date()
+        d.setDate(d.getDate() - i)
+        const label = d.toLocaleDateString('vi-VN', { weekday: 'short', day: 'numeric' })
+        const dateStr = d.toISOString().split('T')[0]
+        const revenue = orders.value
+            .filter(o => o.status === 'delivered' && o.createdAt?.startsWith(dateStr))
+            .reduce((s, o) => s + (o.totalAmount || 0), 0)
+        days.push({ day: label, revenue })
     }
-}
+    return days
+})
 
-const activeData = computed(() => dashboardData[selectedTimeframe.value])
+const maxRevenue = computed(() => Math.max(...weeklyData.value.map(d => d.revenue), 1))
 
-const kpis = computed(() => activeData.value.kpis)
-const weeklyData = computed(() => activeData.value.weeklyData)
-const categoryShares = computed(() => activeData.value.categoryShares)
-const recentOrders = computed(() => activeData.value.recentOrders)
-const topProducts = computed(() => activeData.value.topProducts)
-
-const maxRevenue = computed(() => Math.max(...weeklyData.value.map(d => d.revenue)))
-
-// ─── Nhật ký hoạt động thời gian thực ──────────────────────────
+// ─── Nhật ký hoạt động ───────────────────────────────────────
 const activities = ref([
-    { text: 'Nam Nguyễn đã cập nhật đơn hàng BREW-8472 sang Đang giao', time: '5 phút trước', icon: 'bi-truck', color: 'text-primary bg-primary-subtle' },
-    { text: 'Vy Trần đã thêm món mới: Capuchino Latte vào thực đơn', time: '1 giờ trước', icon: 'bi-plus-circle', color: 'text-success bg-success-subtle' },
-    { text: 'Khách hàng Hoàng Minh đã hủy đơn hàng BREW-1049', time: '2 giờ trước', icon: 'bi-x-circle', color: 'text-danger bg-danger-subtle' },
-    { text: 'Hệ thống tự động sao lưu dữ liệu cơ sở dữ liệu an toàn', time: '03:00 sáng', icon: 'bi-cloud-check', color: 'text-secondary bg-secondary-subtle' },
-    { text: 'Chiến dịch khuyến mãi mùa hè đã tự động kích hoạt', time: 'Hôm qua', icon: 'bi-lightning-charge', color: 'text-warning bg-warning-subtle' }
+    { text: 'Hệ thống đã cập nhật số liệu thống kê mới nhất', time: 'Vừa xong', icon: 'bi-bar-chart', color: 'text-success bg-success-subtle' },
+    { text: 'Tự động sao lưu dữ liệu hệ thống thành công', time: '03:00 sáng', icon: 'bi-cloud-check', color: 'text-secondary bg-secondary-subtle' },
 ])
 
-// ─── Định dạng dữ liệu hiển thị ──────────────────────────────
-const formatPrice = (n) => n.toLocaleString('vi-VN') + 'đ'
-const formatPriceShort = (n) => (n / 1000000).toFixed(1) + 'tr'
+// ─── Định dạng ───────────────────────────────────────────────
+const formatPrice      = (n) => (n || 0).toLocaleString('vi-VN') + 'đ'
+const formatPriceShort = (n) => n >= 1000000 ? (n / 1000000).toFixed(1) + 'tr' : (n / 1000).toFixed(0) + 'k'
 
 function getStatusBadge(status) {
     switch (status) {
-        case 'pending': return 'badge-status bg-warning-subtle text-warning border-warning-subtle'
+        case 'pending':   return 'badge-status bg-warning-subtle text-warning border-warning-subtle'
         case 'confirmed': return 'badge-status bg-info-subtle text-info border-info-subtle'
-        case 'shipping': return 'badge-status bg-primary-subtle text-primary border-primary-subtle'
+        case 'shipping':  return 'badge-status bg-primary-subtle text-primary border-primary-subtle'
         case 'delivered': return 'badge-status bg-success-subtle text-success border-success-subtle'
+        case 'cancelled': return 'badge-status bg-danger-subtle text-danger border-danger-subtle'
         default: return 'badge-status bg-secondary text-secondary'
     }
 }
-
 function getStatusLabel(status) {
     switch (status) {
-        case 'pending': return 'Chờ xử lý'
+        case 'pending':   return 'Chờ xử lý'
         case 'confirmed': return 'Đã xác nhận'
-        case 'shipping': return 'Đang giao'
+        case 'shipping':  return 'Đang giao'
         case 'delivered': return 'Đã giao'
+        case 'cancelled': return 'Đã hủy'
         default: return status
     }
 }
 
-// ─── Xuất Báo cáo Excel (CSV with UTF-8 BOM) ───────────────────
+// ─── Xuất Báo cáo Excel ───────────────────────────────────────
 function exportToExcel() {
-    let csvContent = "\uFEFF"; // Prepend UTF-8 BOM for Vietnamese character compatibility in Excel
-    
-    // Header & Info
-    csvContent += `BÁO CÁO DOANH THU & HOẠT ĐỘNG KINH DOANH - BREW COFFEE SHOP\r\n`;
-    csvContent += `Bộ lọc thời gian: ${getTimeframeLabel(selectedTimeframe.value)}\r\n`;
-    csvContent += `Ngày giờ xuất bản: ${new Date().toLocaleString('vi-VN')}\r\n\r\n`;
-    
-    // 1. KPI
-    csvContent += `I. CHỈ SỐ THỐNG KÊ CHỦ CHỐT (KPI)\r\n`;
-    csvContent += `Chỉ số,Giá trị,Xu hướng,So sánh với kỳ trước\r\n`;
-    kpis.value.forEach(kpi => {
-        const val = kpi.isPrice ? formatPrice(kpi.value) : (kpi.isPercent ? kpi.value + '%' : kpi.value);
-        csvContent += `"${kpi.title}","${val}","${kpi.trend}","${kpi.trendText}"\r\n`;
-    });
-    csvContent += `\r\n`;
-    
-    // 2. Chi tiết phân kỳ doanh thu
-    csvContent += `II. CHI TIẾT DOANH THU THEO PHÂN KỲ (${activeData.value.chartTitle})\r\n`;
-    csvContent += `Phân kỳ,Doanh thu (VNĐ)\r\n`;
-    weeklyData.value.forEach(item => {
-        csvContent += `"${item.day}","${item.revenue}"\r\n`;
-    });
-    csvContent += `\r\n`;
-    
-    // 3. Danh mục
-    csvContent += `III. TỶ LỆ DOANH THU THEO DANH MỤC\r\n`;
-    csvContent += `Danh mục sản phẩm,Tỷ trọng (%),Doanh thu tương đương (VNĐ)\r\n`;
-    categoryShares.value.forEach(cat => {
-        csvContent += `"${cat.name}","${cat.share}%","${cat.value}"\r\n`;
-    });
-    csvContent += `\r\n`;
-    
-    // 4. Bán chạy
-    csvContent += `IV. CÁC MÓN UỐNG BÁN CHẠY NHẤT\r\n`;
-    csvContent += `Tên món nước,Số cốc đã bán (ly),Doanh thu mang lại (VNĐ),Xu hướng bán hàng\r\n`;
-    topProducts.value.forEach(prod => {
-        csvContent += `"${prod.name}","${prod.sales}","${prod.revenue}","${prod.trend}"\r\n`;
-    });
-    csvContent += `\r\n`;
-    
-    // 5. Đơn hàng gần đây
-    csvContent += `V. DANH SÁCH ĐƠN HÀNG GẦN ĐÂY\r\n`;
-    csvContent += `Mã đơn hàng,Tên khách hàng,Món nước đã đặt,Trạng thái,Thời gian đặt,Thành tiền (VNĐ)\r\n`;
-    recentOrders.value.forEach(order => {
-        csvContent += `"${order.code}","${order.customer}","${order.items}","${getStatusLabel(order.status)}","${order.time}","${order.amount}"\r\n`;
-    });
-    
-    // Download triggers
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    
-    const fileName = `Bao_cao_doanh_thu_${selectedTimeframe.value}_${new Date().toISOString().slice(0, 10)}.csv`;
-    link.setAttribute("download", fileName);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    showToast(`Xuất báo cáo doanh thu (${getTimeframeLabel(selectedTimeframe.value).toLowerCase()}) ra file Excel thành công!`, 'success');
+    let csv = '\uFEFF'
+    csv += `BÁO CÁO DOANH THU - BREW COFFEE SHOP\r\n`
+    csv += `Ngày xuất: ${new Date().toLocaleString('vi-VN')}\r\n\r\n`
+    csv += `I. THỐNG KÊ TỔNG QUAN\r\n`
+    csv += `Tổng doanh thu (đơn đã giao),${formatPrice(totalRevenue.value)}\r\n`
+    csv += `Tổng đơn hàng,${totalOrders.value}\r\n`
+    csv += `Đơn chờ xử lý,${pendingOrders.value}\r\n`
+    csv += `Tổng khách hàng,${totalUsers.value}\r\n\r\n`
+    csv += `II. ĐƠN HÀNG GẦN ĐÂY\r\n`
+    csv += `Mã đơn,Khách hàng,Điện thoại,Tổng tiền,Trạng thái,Ngày đặt\r\n`
+    recentOrders.value.forEach(o => {
+        csv += `"${o.code}","${o.customerName}","${o.customerPhone}","${o.totalAmount}","${getStatusLabel(o.status)}","${o.createdAt}"\r\n`
+    })
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = `bao_cao_${new Date().toISOString().slice(0, 10)}.csv`
+    link.click()
+    showToast('Xuất báo cáo Excel thành công!', 'success')
 }
 </script>
 
@@ -328,58 +216,85 @@ function exportToExcel() {
             </div>
         </div>
 
-        <!-- Bộ lọc thời gian & Nút xuất báo cáo Excel -->
-        <div class="card border-0 shadow-sm rounded-4 bg-white p-3 mb-4">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                <div class="d-flex align-items-center gap-2 flex-wrap">
-                    <span class="text-secondary small fw-bold text-uppercase me-2"><i class="bi bi-funnel-fill me-1 text-warning"></i>Lọc thống kê:</span>
-                    <div class="btn-group rounded-pill overflow-hidden border border-secondary border-opacity-10 p-1 bg-light" role="group" aria-label="Timeframe filter">
-                        <button 
-                            v-for="tf in ['day', 'week', 'month', 'year']" 
-                            :key="tf"
-                            type="button" 
-                            class="btn btn-sm rounded-pill px-3 fw-bold transition-all"
-                            :class="selectedTimeframe === tf ? 'btn-dark text-white shadow-sm' : 'btn-light text-secondary border-0'"
-                            @click="selectedTimeframe = tf; showToast(`Đã chuyển bộ lọc sang ${getTimeframeLabel(tf).toLowerCase()}!`, 'info')"
-                        >
-                            {{ getTimeframeLabel(tf) }}
-                        </button>
+        <!-- Toolbar: Xuất báo cáo -->
+        <div class="d-flex justify-content-end mb-4">
+            <button
+                class="btn btn-success rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2 shadow-sm border-0 hover-scale"
+                @click="exportToExcel"
+            >
+                <i class="bi bi-file-earmark-excel-fill fs-6"></i>
+                <span>Xuất báo cáo Excel</span>
+            </button>
+        </div>
+
+        <!-- Chỉ số Thống kê KPI thật từ db.json -->
+        <div class="row g-3 mb-4">
+            <!-- Doanh thu -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card h-100" style="background: linear-gradient(135deg,rgba(25,135,84,.1) 0%,rgba(25,135,84,.02) 100%)">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="text-muted small fw-bold text-uppercase" style="letter-spacing:.5px;font-size:10.5px">Doanh thu (đã giao)</span>
+                            <h3 class="fw-extrabold mt-2 mb-2 text-dark font-monospace">
+                                <span v-if="isLoading" class="spinner-border spinner-border-sm text-success"></span>
+                                <span v-else>{{ formatPrice(totalRevenue) }}</span>
+                            </h3>
+                            <span class="badge rounded-pill px-3 py-1 text-success bg-success bg-opacity-10 fw-bold" style="font-size:10.5px">Tổng cộng</span>
+                        </div>
+                        <div class="kpi-icon-wrap shadow-inner" style="background-color:rgba(25,135,84,.4);color:#fff"><i class="bi bi-currency-dollar"></i></div>
                     </div>
                 </div>
-                <button 
-                    class="btn btn-success rounded-pill px-4 py-2 fw-bold d-flex align-items-center gap-2 shadow-sm border-0 transition-all hover-scale"
-                    @click="exportToExcel"
-                >
-                    <i class="bi bi-file-earmark-excel-fill fs-6"></i>
-                    <span>Xuất báo cáo Excel</span>
-                </button>
+            </div>
+            <!-- Tổng đơn -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card h-100" style="background: linear-gradient(135deg,rgba(13,110,253,.1) 0%,rgba(13,110,253,.02) 100%)">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="text-muted small fw-bold text-uppercase" style="letter-spacing:.5px;font-size:10.5px">Tổng đơn hàng</span>
+                            <h3 class="fw-extrabold mt-2 mb-2 text-dark font-monospace">
+                                <span v-if="isLoading" class="spinner-border spinner-border-sm text-primary"></span>
+                                <span v-else>{{ totalOrders }}</span>
+                            </h3>
+                            <span class="badge rounded-pill px-3 py-1 text-primary bg-primary bg-opacity-10 fw-bold" style="font-size:10.5px">Toàn bộ</span>
+                        </div>
+                        <div class="kpi-icon-wrap shadow-inner" style="background-color:rgba(13,110,253,.4);color:#fff"><i class="bi bi-bag-check"></i></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Chờ xử lý -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card h-100" style="background: linear-gradient(135deg,rgba(255,193,7,.1) 0%,rgba(255,193,7,.02) 100%)">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="text-muted small fw-bold text-uppercase" style="letter-spacing:.5px;font-size:10.5px">Đơn chờ xử lý</span>
+                            <h3 class="fw-extrabold mt-2 mb-2 text-dark font-monospace">
+                                <span v-if="isLoading" class="spinner-border spinner-border-sm text-warning"></span>
+                                <span v-else>{{ pendingOrders }}</span>
+                            </h3>
+                            <RouterLink to="/orderlist" class="badge rounded-pill px-3 py-1 text-warning bg-warning bg-opacity-10 fw-bold text-decoration-none" style="font-size:10.5px">Xử lý ngay →</RouterLink>
+                        </div>
+                        <div class="kpi-icon-wrap shadow-inner" style="background-color:rgba(255,193,7,.5);color:#fff"><i class="bi bi-hourglass-split"></i></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Khách hàng -->
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="kpi-card h-100" style="background: linear-gradient(135deg,rgba(13,202,240,.1) 0%,rgba(13,202,240,.02) 100%)">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="text-muted small fw-bold text-uppercase" style="letter-spacing:.5px;font-size:10.5px">Tổng khách hàng</span>
+                            <h3 class="fw-extrabold mt-2 mb-2 text-dark font-monospace">
+                                <span v-if="isLoading" class="spinner-border spinner-border-sm text-info"></span>
+                                <span v-else>{{ totalUsers }}</span>
+                            </h3>
+                            <span class="badge rounded-pill px-3 py-1 text-info bg-info bg-opacity-10 fw-bold" style="font-size:10.5px">Tỷ lệ hủy: {{ cancelledRate }}%</span>
+                        </div>
+                        <div class="kpi-icon-wrap shadow-inner" style="background-color:rgba(13,202,240,.4);color:#fff"><i class="bi bi-people"></i></div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Chỉ số Thống kê KPI dạng Grid -->
-        <div class="row g-3 mb-4">
-            <div v-for="kpi in kpis" :key="kpi.title" class="col-12 col-sm-6 col-xl-3">
-                <div class="kpi-card h-100" :style="{ background: kpi.gradient }">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div>
-                            <span class="text-muted small fw-bold text-uppercase" style="letter-spacing: 0.5px; font-size: 10.5px;">{{ kpi.title }}</span>
-                            <h3 class="fw-extrabold mt-2 mb-2 text-dark font-monospace">
-                                {{ kpi.isPrice ? formatPrice(kpi.value) : kpi.value }}{{ kpi.isPercent ? '%' : '' }}
-                            </h3>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="badge rounded-pill px-3 py-1 text-success bg-success bg-opacity-10 fw-bold" style="font-size: 10.5px;">
-                                    {{ kpi.trend }}
-                                </span>
-                                <span class="text-muted small" style="font-size: 11px;">{{ kpi.trendText }}</span>
-                            </div>
-                        </div>
-                        <div class="kpi-icon-wrap shadow-inner" :style="{ backgroundColor: kpi.glowColor, color: '#fff' }">
-                            <i :class="['bi', kpi.icon]"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Biểu đồ Doanh thu & Cấu trúc danh mục -->
         <div class="row g-4 mb-4">
@@ -389,11 +304,11 @@ function exportToExcel() {
                 <div class="card border-0 shadow-sm rounded-4 bg-white p-4 h-100">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <div>
-                            <h5 class="fw-extrabold mb-0 text-dark">{{ activeData.chartTitle }}</h5>
-                            <p class="text-muted small mb-0">{{ activeData.chartLabel }}</p>
+                            <h5 class="fw-extrabold mb-0 text-dark">Doanh thu 7 ngày gần nhất</h5>
+                            <p class="text-muted small mb-0">Biểu đồ doanh thu các đơn đã giao theo ngày</p>
                         </div>
-                        <span class="badge bg-light text-dark fw-bold border border-secondary border-opacity-10 py-2 px-3 rounded-3 font-monospace text-capitalize">
-                            {{ getTimeframeLabel(selectedTimeframe) }}
+                        <span class="badge bg-light text-dark fw-bold border border-secondary border-opacity-10 py-2 px-3 rounded-3 font-monospace">
+                            7 ngày
                         </span>
                     </div>
 
@@ -494,18 +409,28 @@ function exportToExcel() {
                     </div>
 
                     <div class="table-responsive border-0">
-                        <table class="table table-hover align-middle mb-0" style="font-size: 13.2px;">
+                        <!-- Loading -->
+                        <div v-if="isLoading" class="text-center py-4 text-muted">
+                            <span class="spinner-border spinner-border-sm me-2"></span> Đang tải...
+                        </div>
+                        <!-- Empty -->
+                        <div v-else-if="!recentOrders.length" class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-1 d-block mb-2 opacity-25"></i>
+                            <p class="small">Chưa có đơn hàng nào.</p>
+                        </div>
+                        <!-- Table -->
+                        <table v-else class="table table-hover align-middle mb-0" style="font-size: 13.2px;">
                             <thead class="bg-light text-muted text-uppercase" style="font-size: 10.5px; letter-spacing: 0.5px;">
                                 <tr>
                                     <th class="ps-2">Mã đơn</th>
                                     <th>Khách hàng</th>
-                                    <th>Chi tiết món</th>
+                                    <th>Món đặt</th>
                                     <th>Trạng thái</th>
                                     <th class="text-end pe-2">Thành tiền</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="order in recentOrders" :key="order.code" class="border-bottom border-secondary border-opacity-10 align-middle">
+                                <tr v-for="order in recentOrders" :key="order.id || order.code" class="border-bottom border-secondary border-opacity-10 align-middle">
                                     <td class="ps-2">
                                         <RouterLink to="/orderlist" class="fw-extrabold text-dark font-monospace text-decoration-none">
                                             {{ order.code }}
@@ -513,20 +438,24 @@ function exportToExcel() {
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center gap-2">
-                                            <div class="avatar-initials text-white fw-bold shadow-sm">{{ order.initials }}</div>
+                                            <div class="avatar-initials text-white fw-bold shadow-sm">
+                                                {{ (order.customerName || '?').slice(0,2).toUpperCase() }}
+                                            </div>
                                             <div>
-                                                <div class="fw-bold text-dark lh-sm">{{ order.customer }}</div>
-                                                <div class="text-muted small font-monospace" style="font-size: 10.5px;">{{ order.time }}</div>
+                                                <div class="fw-bold text-dark lh-sm">{{ order.customerName }}</div>
+                                                <div class="text-muted small font-monospace" style="font-size: 10.5px;">{{ order.createdAt }}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="text-secondary text-truncate" style="max-width: 150px;">{{ order.items }}</td>
+                                    <td class="text-secondary text-truncate" style="max-width: 150px;">
+                                        {{ order.items?.map(i => i.name).join(', ') || '—' }}
+                                    </td>
                                     <td>
                                         <span :class="getStatusBadge(order.status)" class="fw-bold">
                                             {{ getStatusLabel(order.status) }}
                                         </span>
                                     </td>
-                                    <td class="text-end fw-bold font-monospace text-success pe-2">{{ formatPrice(order.amount) }}</td>
+                                    <td class="text-end fw-bold font-monospace text-success pe-2">{{ formatPrice(order.totalAmount) }}</td>
                                 </tr>
                             </tbody>
                         </table>

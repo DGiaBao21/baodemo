@@ -12,6 +12,7 @@ import Login from '../pages/client/Login.vue'
 import Register from '../pages/client/Register.vue'
 import UserProfile from '../pages/client/UserProfile.vue'
 import MyComments from '../pages/client/MyComments.vue'
+import MyPosts from '../pages/client/MyPosts.vue'
 import ProductDetail from '../pages/client/ProductDetail.vue'
 
 // ── Giao diện & Trang quản trị (Admin) ───────────────────────────
@@ -28,6 +29,7 @@ import CatEdit from '../pages/admin/category/Edit.vue'
 import BlogList from '../pages/admin/blog/List.vue'
 import BlogAdd from '../pages/admin/blog/Add.vue'
 import BlogEdit from '../pages/admin/blog/Edit.vue'
+import BlogCatList from '../pages/admin/blogCategory/List.vue'
 
 // Sản phẩm
 import ProductList from '../pages/admin/product/List.vue'
@@ -60,6 +62,7 @@ const routes = [
             { path: 'blog/:id', component: BlogDetail },
             { path: 'profile', component: UserProfile },
             { path: 'my-comments', component: MyComments },
+            { path: 'my-posts', component: MyPosts },
         ]
     },
 
@@ -94,6 +97,7 @@ const routes = [
             { path: '/bloglist', component: BlogList },
             { path: '/blogadd', component: BlogAdd },
             { path: '/blogedit/:id', component: BlogEdit },
+            { path: '/blogcategorylist', component: BlogCatList },
 
             // Bình luận
             { path: '/commentlist', component: CommentList },

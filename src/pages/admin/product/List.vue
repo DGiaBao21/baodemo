@@ -1,20 +1,42 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import { ProductService }  from '../../../services/product.service.js'
+import { CategoryService } from '../../../services/category.service.js'
 
-// ─── Mock data ────────────────────────────────────────────────
-const products = ref([
-    { id: 1, name: 'Cà phê đen',        category: 'Cà phê',    price: 25000, image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=80&h=80&fit=crop', status: true,  createdAt: '2025-01-10' },
-    { id: 2, name: 'Cà phê sữa',        category: 'Cà phê',    price: 30000, image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=80&h=80&fit=crop', status: true,  createdAt: '2025-01-12' },
-    { id: 3, name: 'Trà đào cam sả',    category: 'Trà',       price: 45000, image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=80&h=80&fit=crop', status: true,  createdAt: '2025-01-20' },
-    { id: 4, name: 'Trà sữa trân châu', category: 'Trà',       price: 50000, image: 'https://images.unsplash.com/photo-1558857563-b371033873b8?w=80&h=80&fit=crop', status: false, createdAt: '2025-02-01' },
-    { id: 5, name: 'Sinh tố xoài',      category: 'Sinh tố',   price: 55000, image: 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=80&h=80&fit=crop', status: true,  createdAt: '2025-02-10' },
-    { id: 6, name: 'Nước ép cam',       category: 'Nước ép',   price: 40000, image: 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=80&h=80&fit=crop', status: true,  createdAt: '2025-02-15' },
-    { id: 7, name: 'Bánh croissant',    category: 'Bánh ngọt', price: 35000, image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=80&h=80&fit=crop', status: true,  createdAt: '2025-03-01' },
-    { id: 8, name: 'Capuchino',         category: 'Cà phê',    price: 55000, image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=80&h=80&fit=crop', status: false, createdAt: '2025-03-10' },
-])
+const productService  = new ProductService()
+const categoryService = new CategoryService()
 
-const categoryOptions = ['Tất cả', 'Cà phê', 'Trà', 'Sinh tố', 'Nước ép', 'Bánh ngọt']
+// ─── State ────────────────────────────────────────────────────
+const products  = ref([])
+const isLoading = ref(false)
+const error     = ref(null)
+
+const getData = async () => {
+    isLoading.value = true
+    error.value = null
+    try {
+        const result = await productService.list()
+        if (result.status === 200) products.value = result.data
+    } catch (e) {
+        error.value = 'Không thể tải dữ liệu. Vui lòng kiểm tra server.'
+        console.error(e)
+    } finally {
+        isLoading.value = false
+    }
+}
+
+// Load danh mục cho filter
+const categoryOptions = ref(['Tất cả'])
+onMounted(async () => {
+    await getData()
+    try {
+        const res = await categoryService.list()
+        if (res.status === 200) {
+            categoryOptions.value = ['Tất cả', ...res.data.map(c => c.name)]
+        }
+    } catch (e) { console.error(e) }
+})
 
 // ─── Search & Filter ──────────────────────────────────────────
 const searchQuery = ref('')
@@ -33,7 +55,7 @@ const filtered = computed(() => {
     return list
 })
 
-const currentPage = ref(1)
+const currentPage  = ref(1)
 const itemsPerPage = ref(5)
 
 const totalPages = computed(() => Math.ceil(filtered.value.length / itemsPerPage.value))
@@ -44,28 +66,37 @@ const paginatedProducts = computed(() => {
     return filtered.value.slice(start, end)
 })
 
-watch([searchQuery, filterCat], () => {
-    currentPage.value = 1
-})
+watch([searchQuery, filterCat], () => { currentPage.value = 1 })
 
 // ─── Toggle status ────────────────────────────────────────────
-function toggleStatus(p) { p.status = !p.status }
+const toggleStatus = async (p) => {
+    p.status = !p.status
+    try {
+        await productService.patch(p.id, { status: p.status })
+    } catch (e) { p.status = !p.status; console.error(e) }
+}
 
 // ─── Delete modal ─────────────────────────────────────────────
 const deleteTarget    = ref(null)
 const showDeleteModal = ref(false)
+const isDeleting      = ref(false)
 
 function openDeleteModal(p)  { deleteTarget.value = p; showDeleteModal.value = true }
 function closeDeleteModal()  { deleteTarget.value = null; showDeleteModal.value = false }
-function confirmDelete() {
+
+const confirmDelete = async () => {
     if (!deleteTarget.value) return
-    const idx = products.value.findIndex(p => p.id === deleteTarget.value.id)
-    if (idx !== -1) products.value.splice(idx, 1)
-    closeDeleteModal()
+    isDeleting.value = true
+    try {
+        await productService.delete(deleteTarget.value.id)
+        products.value = products.value.filter(p => p.id !== deleteTarget.value.id)
+    } catch (e) { console.error(e) }
+    finally { isDeleting.value = false; closeDeleteModal() }
 }
 
 // ─── Format price ─────────────────────────────────────────────
 const formatPrice = (n) => n.toLocaleString('vi-VN') + 'đ'
+
 </script>
 
 <template>
@@ -132,7 +163,7 @@ const formatPrice = (n) => n.toLocaleString('vi-VN') + 'đ'
                             <th style="width:110px">Hành động</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style="min-height: 325px; display: table-row-group;">
                         <!-- Empty -->
                         <tr v-if="filtered.length === 0">
                             <td colspan="8" class="text-center text-muted py-5">
@@ -197,9 +228,9 @@ const formatPrice = (n) => n.toLocaleString('vi-VN') + 'đ'
                 </table>
             </div>
             <!-- Pagination Footer -->
-            <div v-if="totalPages > 1" class="card-footer bg-white border-top py-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
-                <span class="text-muted small">Hiển thị trang {{ currentPage }} / {{ totalPages }} (tổng {{ filtered.length }} sản phẩm)</span>
-                <nav>
+            <div class="card-footer bg-white border-top py-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+                <span class="text-muted small">Hiển thị trang {{ currentPage }} / {{ totalPages || 1 }} (tổng {{ filtered.length }} sản phẩm)</span>
+                <nav v-if="totalPages > 1">
                     <ul class="pagination pagination-sm mb-0">
                         <li class="page-item" :class="{ disabled: currentPage === 1 }">
                             <button class="page-link shadow-none" @click="currentPage = 1" style="cursor: pointer;">Đầu</button>

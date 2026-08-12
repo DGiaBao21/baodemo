@@ -1,36 +1,55 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { BlogService } from '../../../services/blog.service.js'
+import { BlogCategoryService } from '../../../services/blog-category.service.js'
 
-const route = useRoute()
-const router = useRouter()
+const route       = useRoute()
+const router      = useRouter()
+const blogService = new BlogService()
+const blogCategoryService = new BlogCategoryService()
 
-// Mock data — thay bằng API call theo route.params.id
-const mockBlogs = [
-  { id: 1, title: 'Bí quyết pha cà phê ngon tại nhà', category: 'Hướng dẫn', content: 'Nội dung bài viết số 1 về cách pha cà phê tại nhà với các dụng cụ đơn giản.', thumbnail: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=200&fit=crop', status: true },
-  { id: 2, title: 'Top 10 loại trà thảo mộc tốt cho sức khỏe', category: 'Sức khỏe', content: 'Nội dung bài viết số 2 về các loại trà thảo mộc.', thumbnail: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=400&h=200&fit=crop', status: true },
-  { id: 3, title: 'Lịch sử hạt cà phê Arabica và Robusta', category: 'Kiến thức', content: 'Nội dung bài viết số 3 về lịch sử cà phê.', thumbnail: 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&h=200&fit=crop', status: false },
-]
+const categories = ref([])
 
-const categories = ['Hướng dẫn', 'Sức khỏe', 'Kiến thức', 'Menu', 'Tin tức', 'Khuyến mãi']
-
-const form = ref({ title: '', category: '', content: '', thumbnail: '', status: true })
-const errors = ref({})
+const form      = ref({ title: '', category: '', content: '', thumbnail: '', status: true, author: '', authorId: '', likes: 0, excerpt: '', createdAt: '' })
+const errors    = ref({})
 const previewUrl = ref('')
-const loading = ref(true)
-const notFound = ref(false)
+const loading   = ref(true)
+const isLoading = ref(false)
+const notFound  = ref(false)
 
-onMounted(() => {
-  const id = Number(route.params.id)
-  const blog = mockBlogs.find(b => b.id === id)
-  if (!blog) {
+onMounted(async () => {
+  try {
+    const result = await blogService.getById(route.params.id)
+    if (result.status === 200) {
+      const b = result.data
+      form.value = {
+        title:     b.title     || '',
+        category:  b.category  || '',
+        content:   b.content   || '',
+        thumbnail: b.thumbnail || '',
+        status:    b.status    ?? true,
+        author:    b.author    || '',
+        authorId:  b.authorId  || '',
+        likes:     b.likes     ?? 0,
+        excerpt:   b.excerpt   || '',
+        createdAt: b.createdAt || ''
+      }
+      previewUrl.value = b.thumbnail || ''
+    }
+  } catch (e) {
     notFound.value = true
+    console.error(e)
+  } finally {
     loading.value = false
-    return
   }
-  form.value = { ...blog }
-  previewUrl.value = blog.thumbnail
-  loading.value = false
+
+  try {
+    const res = await blogCategoryService.list()
+    if (res.status === 200) {
+      categories.value = res.data.filter(c => c.status)
+    }
+  } catch (e) { console.error(e) }
 })
 
 const handleThumbnailInput = (e) => {
@@ -49,12 +68,23 @@ const validate = () => {
   return Object.keys(errs).length === 0
 }
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
   if (!validate()) return
-  // TODO: gọi API cập nhật bài viết theo route.params.id
-  alert('Cập nhật bài viết thành công!')
-  router.push('/bloglist')
+  isLoading.value = true
+  try {
+    const today = new Date().toISOString().split('T')[0]
+    const result = await blogService.update(route.params.id, {
+      ...form.value,
+      createdAt: today
+    })
+    if (result.status === 200) router.push('/bloglist')
+  } catch (e) {
+    console.error('Cập nhật bài viết thất bại', e)
+  } finally {
+    isLoading.value = false
+  }
 }
+
 </script>
 
 <template>
@@ -149,7 +179,7 @@ const handleSubmit = () => {
                     :class="{ 'is-invalid': errors.category }"
                   >
                     <option value="">-- Chọn chủ đề --</option>
-                    <option v-for="cat in categories" :key="cat" :value="cat">{{ cat }}</option>
+                    <option v-for="cat in categories" :key="cat.id" :value="cat.name">{{ cat.name }}</option>
                   </select>
                   <div v-if="errors.category" class="invalid-feedback">{{ errors.category }}</div>
                 </div>
@@ -208,8 +238,10 @@ const handleSubmit = () => {
             <!-- Actions -->
             <div class="d-flex gap-2">
               <RouterLink to="/bloglist" class="btn btn-outline-secondary flex-fill">Hủy</RouterLink>
-              <button type="submit" class="btn btn-warning flex-fill fw-semibold">
-                <i class="bi bi-check-lg me-1"></i> Cập nhật
+              <button type="submit" class="btn btn-warning flex-fill fw-semibold" :disabled="isLoading">
+                <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                <i v-else class="bi bi-check-lg me-1"></i>
+                {{ isLoading ? 'Đang lưu...' : 'Cập nhật' }}
               </button>
             </div>
 

@@ -1,20 +1,39 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import { CategoryService } from '../../../services/category.service.js'
 
-// ─── Mock data ───────────────────────────────────────────────
-const categories = ref([
-    { id: 1, name: 'Cà phê',    description: 'Các loại cà phê đặc trưng',    status: true,  createdAt: '2025-01-10' },
-    { id: 2, name: 'Trà',       description: 'Trà xanh, trà đào, trà sữa',   status: true,  createdAt: '2025-01-15' },
-    { id: 3, name: 'Sinh tố',   description: 'Sinh tố hoa quả tươi',          status: true,  createdAt: '2025-02-03' },
-    { id: 4, name: 'Nước ép',   description: 'Nước ép nguyên chất 100%',      status: false, createdAt: '2025-02-20' },
-    { id: 5, name: 'Bánh ngọt', description: 'Bánh cake, cookie, croissant',  status: true,  createdAt: '2025-03-05' },
-    { id: 6, name: 'Đồ ăn nhẹ',description: 'Snack, sandwich, salad',        status: true,  createdAt: '2025-03-18' },
-    { id: 7, name: 'Đồ uống đá',description: 'Các loại đồ uống có đá',       status: false, createdAt: '2025-04-01' },
-])
+const categoryService = new CategoryService()
 
-// ─── Search ──────────────────────────────────────────────────
+// ─── State ───────────────────────────────────────────────────
+const categories  = ref([])
+const isLoading   = ref(false)
+const error       = ref(null)
+
+// ─── Fetch danh sách ─────────────────────────────────────────
+const getData = async () => {
+    isLoading.value = true
+    error.value = null
+    try {
+        const result = await categoryService.list()
+        if (result.status === 200) {
+            categories.value = result.data
+        }
+    } catch (e) {
+        error.value = 'Không thể tải dữ liệu. Vui lòng kiểm tra json-server đang chạy tại cổng 3000.'
+        console.error(e)
+    } finally {
+        isLoading.value = false
+    }
+}
+
+onMounted(() => {
+    getData()
+})
+
+// ─── Search & Phân trang ──────────────────────────────────────
 const searchQuery = ref('')
+
 const filteredCategories = computed(() => {
     const q = searchQuery.value.trim().toLowerCase()
     if (!q) return categories.value
@@ -24,45 +43,55 @@ const filteredCategories = computed(() => {
     )
 })
 
-const currentPage = ref(1)
+const currentPage  = ref(1)
 const itemsPerPage = ref(5)
 
-const totalPages = computed(() => Math.ceil(filteredCategories.value.length / itemsPerPage.value))
+const totalPages = computed(() =>
+    Math.ceil(filteredCategories.value.length / itemsPerPage.value)
+)
 
 const paginatedCategories = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage.value
-    const end = start + itemsPerPage.value
-    return filteredCategories.value.slice(start, end)
+    return filteredCategories.value.slice(start, start + itemsPerPage.value)
 })
 
-watch(searchQuery, () => {
-    currentPage.value = 1
-})
+watch(searchQuery, () => { currentPage.value = 1 })
 
-// ─── Toggle status ───────────────────────────────────────────
-function toggleStatus(cat) {
+// ─── Toggle status ────────────────────────────────────────────
+const toggleStatus = async (cat) => {
     cat.status = !cat.status
+    try {
+        await categoryService.patch(cat.id, { status: cat.status })
+    } catch (e) {
+        cat.status = !cat.status   // rollback nếu lỗi
+        console.error('Cập nhật trạng thái thất bại', e)
+    }
 }
 
-// ─── Delete confirm modal ─────────────────────────────────────
-const deleteTarget = ref(null)
-const showDeleteModal = ref(false)
+// ─── Xóa ─────────────────────────────────────────────────────
+const selectedCategory = ref(null)
+const isDeleting       = ref(false)
 
-function openDeleteModal(cat) {
-    deleteTarget.value = cat
-    showDeleteModal.value = true
+const openDeleteModal = (category) => {
+    selectedCategory.value = category
 }
 
-function closeDeleteModal() {
-    deleteTarget.value = null
-    showDeleteModal.value = false
-}
-
-function confirmDelete() {
-    if (!deleteTarget.value) return
-    const idx = categories.value.findIndex(c => c.id === deleteTarget.value.id)
-    if (idx !== -1) categories.value.splice(idx, 1)
-    closeDeleteModal()
+const handleDelete = async () => {
+    if (!selectedCategory.value) return
+    isDeleting.value = true
+    try {
+        const result = await categoryService.delete(selectedCategory.value.id)
+        if (result.status === 200) {
+            categories.value = categories.value.filter(
+                c => c.id !== selectedCategory.value.id
+            )
+            selectedCategory.value = null
+        }
+    } catch (e) {
+        console.error('Xóa thất bại', e)
+    } finally {
+        isDeleting.value = false
+    }
 }
 </script>
 
@@ -80,8 +109,28 @@ function confirmDelete() {
             </RouterLink>
         </div>
 
-        <!-- Card -->
-        <div class="card shadow-sm border-0 rounded-3">
+        <!-- Error banner -->
+        <div v-if="error" class="alert alert-danger d-flex align-items-center gap-2 mb-4" role="alert">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <span>{{ error }}</span>
+            <button class="btn btn-sm btn-outline-danger ms-auto" @click="getData">
+                <i class="bi bi-arrow-clockwise me-1"></i>Thử lại
+            </button>
+        </div>
+
+        <!-- Loading skeleton -->
+        <div v-if="isLoading" class="card shadow-sm border-0 rounded-3 p-4">
+            <div v-for="n in 5" :key="n" class="d-flex gap-3 mb-3 align-items-center">
+                <div class="bg-secondary bg-opacity-10 rounded" style="width:32px;height:20px"></div>
+                <div class="bg-secondary bg-opacity-10 rounded flex-fill" style="height:20px"></div>
+                <div class="bg-secondary bg-opacity-10 rounded" style="width:180px;height:20px"></div>
+                <div class="bg-secondary bg-opacity-10 rounded" style="width:90px;height:20px"></div>
+                <div class="bg-secondary bg-opacity-10 rounded" style="width:80px;height:20px"></div>
+            </div>
+        </div>
+
+        <!-- Card bảng -->
+        <div v-else class="card shadow-sm border-0 rounded-3">
 
             <!-- Search -->
             <div class="card-header bg-white border-bottom py-3 d-flex align-items-center justify-content-between gap-3">
@@ -112,7 +161,7 @@ function confirmDelete() {
                             <th style="width:120px">Hành động</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style="min-height: 325px; display: table-row-group;">
                         <!-- Không có dữ liệu -->
                         <tr v-if="filteredCategories.length === 0">
                             <td colspan="6" class="text-center text-muted py-5">
@@ -128,7 +177,6 @@ function confirmDelete() {
                             <td class="text-muted">{{ cat.description }}</td>
                             <td class="text-muted">{{ cat.createdAt }}</td>
                             <td>
-                                <!-- Toggle switch -->
                                 <div class="form-check form-switch mb-0" style="min-width:100px">
                                     <input
                                         class="form-check-input"
@@ -156,6 +204,8 @@ function confirmDelete() {
                                 <button
                                     class="btn btn-sm btn-outline-danger"
                                     title="Xóa"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal"
                                     @click="openDeleteModal(cat)"
                                 >
                                     <i class="bi bi-trash"></i>
@@ -165,10 +215,11 @@ function confirmDelete() {
                     </tbody>
                 </table>
             </div>
+
             <!-- Pagination Footer -->
-            <div v-if="totalPages > 1" class="card-footer bg-white border-top py-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
-                <span class="text-muted small">Hiển thị trang {{ currentPage }} / {{ totalPages }} (tổng {{ filteredCategories.length }} danh mục)</span>
-                <nav>
+            <div class="card-footer bg-white border-top py-3 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2">
+                <span class="text-muted small">Hiển thị trang {{ currentPage }} / {{ totalPages || 1 }} (tổng {{ filteredCategories.length }} danh mục)</span>
+                <nav v-if="totalPages > 1">
                     <ul class="pagination pagination-sm mb-0">
                         <li class="page-item" :class="{ disabled: currentPage === 1 }">
                             <button class="page-link shadow-none" @click="currentPage = 1" style="cursor: pointer;">Đầu</button>
@@ -195,28 +246,36 @@ function confirmDelete() {
             </div>
         </div>
 
-        <!-- Delete Confirm Modal -->
+        <!-- Modal xác nhận xóa -->
         <Teleport to="body">
-            <div v-if="showDeleteModal" class="modal fade show d-block" tabindex="-1" style="background: rgba(0, 0, 0, 0.45);" @click.self="closeDeleteModal">
-                <div class="modal-dialog modal-dialog-centered" style="max-width: 400px; margin: 1.75rem auto;">
+            <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
                     <div class="modal-content border-0 shadow-lg rounded-4 p-4 bg-white">
+                        <div class="modal-header border-0 pb-0">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
                         <div class="text-center mb-3">
-                            <div class="mb-3">
-                                <i class="bi bi-exclamation-triangle-fill text-danger fs-1"></i>
-                            </div>
+                            <i class="bi bi-exclamation-triangle-fill text-danger fs-1 mb-3 d-block"></i>
                             <h5 class="fw-bold mb-1">Xác nhận xóa</h5>
                             <p class="text-muted mb-0">
                                 Bạn có chắc muốn xóa danh mục
-                                <strong class="text-dark">{{ deleteTarget?.name }}</strong>?
+                                <strong class="text-dark">{{ selectedCategory?.name }}</strong>?
                                 <br /><small>Hành động này không thể hoàn tác.</small>
                             </p>
                         </div>
                         <div class="d-flex gap-2 mt-4">
-                            <button class="btn btn-outline-secondary flex-fill" @click="closeDeleteModal">
+                            <button class="btn btn-outline-secondary flex-fill" data-bs-dismiss="modal">
                                 Hủy
                             </button>
-                            <button class="btn btn-danger flex-fill fw-semibold" @click="confirmDelete">
-                                <i class="bi bi-trash me-1"></i> Xóa
+                            <button
+                                class="btn btn-danger flex-fill fw-semibold"
+                                :disabled="isDeleting"
+                                data-bs-dismiss="modal"
+                                @click="handleDelete"
+                            >
+                                <span v-if="isDeleting" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                <i v-else class="bi bi-trash me-1"></i>
+                                {{ isDeleting ? 'Đang xóa...' : 'Xóa' }}
                             </button>
                         </div>
                     </div>

@@ -1,6 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
+import { register } from '../../composables/auth.js'
+import axios from 'axios'
+import { END_POINTS } from '../../configs/end-point.config.js'
 
 const router = useRouter()
 
@@ -12,6 +15,7 @@ const form = ref({
     confirmPassword: '',
 })
 const errors      = ref({})
+const apiError    = ref('')
 const showPass    = ref(false)
 const showConfirm = ref(false)
 const loading     = ref(false)
@@ -48,13 +52,33 @@ function validate() {
 }
 
 async function handleSubmit() {
+    apiError.value = ''
     if (!validate()) return
     loading.value = true
-    // Giả lập API đăng ký thành viên
-    await new Promise(r => setTimeout(r, 900))
-    loading.value = false
-    alert('Đăng ký tài khoản thành công! Hãy thực hiện đăng nhập để tham gia Brew Club.')
-    router.push('/login')
+
+    try {
+        // Kiểm tra email đã tồn tại chưa
+        const check = await axios.get(END_POINTS.users, { params: { email: form.value.email } })
+        if (check.data && check.data.length > 0) {
+            errors.value.email = 'Email này đã được đăng ký.'
+            loading.value = false
+            return
+        }
+
+        // Gọi API thật — lưu vào db.json
+        const result = await register(form.value)
+        loading.value = false
+
+        if (!result.ok) {
+            apiError.value = result.message
+            return
+        }
+        // Đăng ký xong → chuyển về trang chủ (đã tự động login)
+        router.push('/')
+    } catch {
+        apiError.value = 'Không thể kết nối server. Vui lòng thử lại.'
+        loading.value = false
+    }
 }
 </script>
 
@@ -75,7 +99,13 @@ async function handleSubmit() {
 
             <!-- Biểu mẫu Đăng ký -->
             <form @submit.prevent="handleSubmit" novalidate>
-                
+
+                <!-- Lỗi hệ thống -->
+                <div v-if="apiError" class="alert alert-danger border-0 rounded-3 small py-2 px-3 mb-3 d-flex align-items-center gap-2">
+                    <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+                    <span class="fw-semibold">{{ apiError }}</span>
+                </div>
+
                 <div class="row g-3">
                     <!-- Họ và tên -->
                     <div class="col-12">

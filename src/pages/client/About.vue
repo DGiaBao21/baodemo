@@ -1,46 +1,48 @@
 <template>
-    <div class="about-page">
+    <div class="about-page organic-theme">
 
         <!-- ===== HERO ===== -->
-        <section class="about-hero text-white text-center py-5">
-            <div class="container py-4">
-                <span class="badge bg-white bg-opacity-10 border border-white border-opacity-25 rounded-pill px-3 py-2 fw-semibold d-inline-block mb-3 reveal">
-                    <i class="bi bi-cup-hot-fill me-1 float-anim"></i> Our Story
+        <section class="about-hero position-relative d-flex align-items-center justify-content-center text-center">
+            <div class="hero-bg"></div>
+            <div class="container position-relative z-2 py-5">
+                <span class="badge organic-badge px-4 py-2 fw-semibold mb-4 reveal text-uppercase tracking-widest">
+                    <i class="bi bi-seedling me-2"></i> Tinh Hoa Cà Phê
                 </span>
-                <h1 class="display-5 fw-bold mb-3 reveal delay-1">Crafting Coffee,<br>Building Community</h1>
-                <p class="lead text-white-50 mx-auto reveal delay-2" style="max-width:580px;">
-                    From a single coffee cart to a beloved roastery — we've spent years sourcing,
-                    roasting, and brewing the world's finest beans.
+                <h1 class="display-3 fw-bold text-white mb-4 reveal delay-1 font-serif">
+                    Hành Trình Mang Lại <br> <span class="text-olive">Hương Vị Hoàn Hảo</span>
+                </h1>
+                <p class="lead text-white-50 mx-auto reveal delay-2 fw-normal" style="max-width:650px;">
+                    Từ những hạt cà phê nguyên bản được chọn lọc khắt khe nhất, chúng tôi tạo ra không chỉ là thức uống, mà là một sự tôn vinh hương vị mộc mạc của thiên nhiên.
                 </p>
             </div>
         </section>
 
         <!-- ===== STATS ===== -->
-        <section class="py-5 bg-white border-bottom">
+        <section class="py-5 bg-cream position-relative z-3" style="margin-top: -40px;">
             <div class="container">
-                <div class="row g-4 text-center">
-                    <div class="col-6 col-md-3">
-                        <div class="stat-card py-4 rounded-3 reveal-scale">
-                            <div class="display-5 fw-bold text-success pulse-ring">12+</div>
-                            <div class="text-muted small text-uppercase mt-2" style="letter-spacing: 0.06em;">Years of Roasting</div>
+                <div class="row g-4 text-center justify-content-center">
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-card p-4 rounded-3 reveal-scale">
+                            <div class="display-5 fw-bold text-brown mb-2 font-serif">10+</div>
+                            <div class="text-earth small fw-semibold text-uppercase tracking-wide">Năm Kinh Nghiệm</div>
                         </div>
                     </div>
-                    <div class="col-6 col-md-3">
-                        <div class="stat-card py-4 rounded-3 reveal-scale delay-1">
-                            <div class="display-5 fw-bold text-success">40+</div>
-                            <div class="text-muted small text-uppercase mt-2" style="letter-spacing: 0.06em;">Coffee Origins</div>
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-card p-4 rounded-3 reveal-scale delay-1">
+                            <div class="display-5 fw-bold text-brown mb-2 font-serif">50+</div>
+                            <div class="text-earth small fw-semibold text-uppercase tracking-wide">Nông Trại Hợp Tác</div>
                         </div>
                     </div>
-                    <div class="col-6 col-md-3">
-                        <div class="stat-card py-4 rounded-3 reveal-scale delay-2">
-                            <div class="display-5 fw-bold text-success">15K+</div>
-                            <div class="text-muted small text-uppercase mt-2" style="letter-spacing: 0.06em;">Happy Customers</div>
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-card p-4 rounded-3 reveal-scale delay-2">
+                            <div class="display-5 fw-bold text-brown mb-2 font-serif">2M+</div>
+                            <div class="text-earth small fw-semibold text-uppercase tracking-wide">Khách Hàng</div>
                         </div>
                     </div>
-                    <div class="col-6 col-md-3">
-                        <div class="stat-card py-4 rounded-3 reveal-scale delay-3">
-                            <div class="display-5 fw-bold text-success">8</div>
-                            <div class="text-muted small text-uppercase mt-2" style="letter-spacing: 0.06em;">Awards Won</div>
+                    <div class="col-6 col-lg-3">
+                        <div class="stat-card p-4 rounded-3 reveal-scale delay-3">
+                            <div class="display-5 fw-bold text-brown mb-2 font-serif">15</div>
+                            <div class="text-earth small fw-semibold text-uppercase tracking-wide">Giải Thưởng</div>
                         </div>
                     </div>
                 </div>
@@ -48,48 +50,44 @@
         </section>
 
         <!-- ===== OUR STORY ===== -->
-        <section class="py-5 bg-light">
-            <div class="container">
+        <section class="py-6 bg-cream">
+            <div class="container py-4">
                 <div class="row align-items-center g-5">
                     <div class="col-lg-6 reveal-left">
-                        <div class="story-img-wrap position-relative">
-                            <img
-                                src="https://i.pinimg.com/736x/3e/a9/9a/3ea99a7e001b76b02ee2dee19a2f1cba.jpg"
-                                alt="Our story"
-                                class="img-fluid rounded-4 shadow"
-                                style="width:100%;height:400px;object-fit:cover;"
-                            />
-                            <!-- Floating badge -->
-                            <div class="story-badge position-absolute bg-success text-white rounded-3 p-3 shadow float-anim">
-                                <i class="bi bi-award-fill fs-4"></i>
-                                <div class="fw-bold mt-1">Est. 2012</div>
-                            </div>
+                        <div class="image-composition position-relative">
+                            <!-- Khung viền mộc mạc đằng sau ảnh -->
+                            <div class="border-frame position-absolute border border-2 border-olive rounded-3" style="inset: 20px -20px -20px 20px; z-index: 1;"></div>
+                            <img src="https://images.unsplash.com/photo-1611162617474-5b21e879e113?auto=format&fit=crop&q=80&w=1000" 
+                                 class="img-fluid rounded-3 shadow-sm position-relative z-2 main-img object-fit-cover" style="height: 550px;" alt="Story" />
                         </div>
                     </div>
                     <div class="col-lg-6 reveal-right">
-                        <span class="badge bg-success bg-opacity-10 text-success fw-semibold mb-3 px-3 py-2" style="font-size:0.78rem;letter-spacing:0.08em;">WHO WE ARE</span>
-                        <h2 class="fw-bold mb-4" style="font-size:2rem;line-height:1.2;">
-                            Passionate About Every Cup We Serve
-                        </h2>
-                        <p class="text-muted mb-3 lh-lg">
-                            BrewShop was born from a simple obsession: the perfect cup of coffee. In 2012, our
-                            founders started with a small roasting drum and a dream of bringing exceptional
-                            single-origin coffees to everyday coffee lovers.
-                        </p>
-                        <p class="text-muted mb-4 lh-lg">
-                            Today, we source beans directly from farmers across Ethiopia, Colombia, Vietnam
-                            and beyond — building lasting relationships that ensure fair pay and sustainable
-                            farming practices.
-                        </p>
-                        <div class="d-flex flex-wrap gap-3">
-                            <div class="d-flex align-items-center gap-2 text-success fw-medium">
-                                <i class="bi bi-check-circle-fill"></i> Direct Trade
-                            </div>
-                            <div class="d-flex align-items-center gap-2 text-success fw-medium">
-                                <i class="bi bi-check-circle-fill"></i> Freshly Roasted
-                            </div>
-                            <div class="d-flex align-items-center gap-2 text-success fw-medium">
-                                <i class="bi bi-check-circle-fill"></i> Carbon Neutral
+                        <div class="ps-lg-5">
+                            <h6 class="text-uppercase fw-bold text-olive mb-3 tracking-widest d-flex align-items-center gap-2">
+                                <span class="line-deco"></span> Câu Chuyện Của Chúng Tôi
+                            </h6>
+                            <h2 class="display-6 fw-bold mb-4 text-brown font-serif line-height-tight">
+                                Đam Mê Gieo Trồng Từ Từng Hạt Đất
+                            </h2>
+                            <p class="text-earth mb-4 lead fw-normal">
+                                BrewShop bắt đầu từ một xưởng rang xay nhỏ vào năm 2014 với mong muốn duy nhất: mang đến hương vị cà phê mộc mạc và chân thật nhất cho người dùng.
+                            </p>
+                            <p class="text-earth mb-5">
+                                Chúng tôi làm việc trực tiếp với các nông trại cà phê từ Đắk Lắk, Cầu Đất đến Ethiopia. Mọi quy trình từ thu hoạch, phơi sấy bằng nắng tự nhiên đến rang xay thủ công đều được trân trọng để giữ trọn vẹn hương vị nguyên bản.
+                            </p>
+                            <div class="d-flex flex-wrap gap-4">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-tree text-olive fs-5"></i>
+                                    <span class="fw-semibold text-brown">Hữu Cơ & Tự Nhiên</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-brightness-high text-olive fs-5"></i>
+                                    <span class="fw-semibold text-brown">Phơi Nắng Truyền Thống</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-fire text-olive fs-5"></i>
+                                    <span class="fw-semibold text-brown">Rang Mộc Mỗi Ngày</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -98,20 +96,20 @@
         </section>
 
         <!-- ===== VALUES ===== -->
-        <section class="py-5 bg-white">
-            <div class="container">
+        <section class="py-6 bg-sand border-top border-bottom border-earth-light">
+            <div class="container py-4">
                 <div class="text-center mb-5 reveal">
-                    <span class="badge bg-success bg-opacity-10 text-success fw-semibold mb-3 px-3 py-2" style="font-size:0.78rem;letter-spacing:0.08em;">OUR VALUES</span>
-                    <h2 class="fw-bold" style="font-size:1.85rem;">What Drives Us Forward</h2>
+                    <h6 class="text-uppercase fw-bold text-olive mb-3 tracking-widest">Giá Trị Cốt Lõi</h6>
+                    <h2 class="display-6 fw-bold text-brown font-serif">Tại Sao Chọn Chúng Tôi?</h2>
                 </div>
                 <div class="row g-4">
                     <div class="col-md-4 reveal" :class="'delay-' + (values.indexOf(val) + 1)" v-for="val in values" :key="val.title">
-                        <div class="value-card h-100 p-4 rounded-4 border text-center">
-                            <div class="mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10" style="width: 64px; height: 64px;">
-                                <i :class="val.icon + ' text-success fs-4'"></i>
+                        <div class="value-card h-100 p-5 rounded-3 bg-cream text-center border border-earth-light">
+                            <div class="value-icon mb-4 mx-auto text-olive">
+                                <i :class="val.icon"></i>
                             </div>
-                            <h5 class="fw-bold mb-2">{{ val.title }}</h5>
-                            <p class="text-muted small lh-lg mb-0">{{ val.desc }}</p>
+                            <h4 class="fw-bold mb-3 text-brown font-serif">{{ val.title }}</h4>
+                            <p class="text-earth mb-0">{{ val.desc }}</p>
                         </div>
                     </div>
                 </div>
@@ -119,26 +117,21 @@
         </section>
 
         <!-- ===== TEAM ===== -->
-        <section class="py-5 bg-light">
-            <div class="container">
+        <section class="py-6 bg-cream">
+            <div class="container py-4">
                 <div class="text-center mb-5 reveal">
-                    <span class="badge bg-success bg-opacity-10 text-success fw-semibold mb-3 px-3 py-2" style="font-size:0.78rem;letter-spacing:0.08em;">THE TEAM</span>
-                    <h2 class="fw-bold" style="font-size:1.85rem;">Meet the Brew Masters</h2>
+                    <h6 class="text-uppercase fw-bold text-olive mb-3 tracking-widest">Gia đình BrewShop</h6>
+                    <h2 class="display-6 fw-bold text-brown font-serif">Những Bàn Tay Tâm Huyết</h2>
                 </div>
                 <div class="row g-4 justify-content-center">
                     <div class="col-sm-6 col-lg-3 reveal-scale" :class="'delay-' + (team.indexOf(member) + 1)" v-for="member in team" :key="member.name">
-                        <div class="team-card text-center p-4 rounded-4 bg-white border h-100">
-                            <img :src="member.avatar" :alt="member.name"
-                                class="rounded-circle mb-3 border border-3 border-success"
-                                style="width: 90px; height: 90px; object-fit: cover;"
-                            />
-                            <h6 class="fw-bold mb-1">{{ member.name }}</h6>
-                            <p class="text-success small fw-medium mb-2">{{ member.role }}</p>
-                            <p class="text-muted small mb-3">{{ member.bio }}</p>
-                            <div class="d-flex justify-content-center gap-2">
-                                <a href="#" class="btn btn-light btn-sm text-secondary rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;"><i class="bi bi-linkedin"></i></a>
-                                <a href="#" class="btn btn-light btn-sm text-secondary rounded-3 d-inline-flex align-items-center justify-content-center" style="width: 32px; height: 32px;"><i class="bi bi-instagram"></i></a>
+                        <div class="team-card text-center p-4 rounded-3 h-100">
+                            <div class="avatar-wrap mx-auto mb-4 overflow-hidden rounded-circle border border-3 border-olive-light">
+                                <img :src="member.avatar" :alt="member.name" class="w-100 h-100 object-fit-cover team-img" />
                             </div>
+                            <h5 class="fw-bold mb-1 text-brown font-serif">{{ member.name }}</h5>
+                            <p class="text-olive fw-semibold small mb-3">{{ member.role }}</p>
+                            <p class="text-earth small mb-0">{{ member.bio }}</p>
                         </div>
                     </div>
                 </div>
@@ -146,13 +139,18 @@
         </section>
 
         <!-- ===== CTA ===== -->
-        <section class="py-5 bg-success text-white text-center">
-            <div class="container py-3 reveal">
-                <i class="bi bi-cup-hot-fill fs-2 mb-3 d-block float-anim"></i>
-                <h2 class="fw-bold mb-3">Ready to Find Your Perfect Roast?</h2>
-                <p class="text-white-50 mb-4">Browse our full collection of single-origin and blended coffees.</p>
-                <RouterLink to="/product" class="btn btn-light text-success fw-bold rounded-pill px-5 py-2">
-                    Shop Now <i class="bi bi-arrow-right ms-2"></i>
+        <section class="py-6 text-center text-white position-relative overflow-hidden cta-section">
+            <div class="cta-bg"></div>
+            <div class="container py-5 position-relative z-2 reveal">
+                <div class="mb-4">
+                    <i class="bi bi-cup-hot-fill text-olive opacity-75" style="font-size: 4rem;"></i>
+                </div>
+                <h2 class="display-5 fw-bold mb-4 font-serif text-white">Bắt Đầu Câu Chuyện Của Bạn</h2>
+                <p class="text-white-50 lead mb-5 mx-auto" style="max-width:600px">
+                    Mỗi tách cà phê là một trải nghiệm mộc mạc và chân thực. Hãy thử và cảm nhận sự khác biệt từ những hạt cà phê rang mộc nguyên chất.
+                </p>
+                <RouterLink to="/product" class="btn btn-olive btn-lg rounded-3 px-5 py-3 fw-bold text-uppercase tracking-wide">
+                    Thưởng Thức Ngay
                 </RouterLink>
             </div>
         </section>
@@ -163,106 +161,122 @@
 <script setup>
 import { useScrollReveal } from '@/composables/useScrollReveal';
 useScrollReveal('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+
 const values = [
     {
-        icon: 'bi bi-globe2',
-        title: 'Ethical Sourcing',
-        desc: 'We partner directly with farmers, ensuring fair wages and sustainable agricultural practices across all our origins.'
+        icon: 'bi bi-globe-americas',
+        title: 'Thương Mại Công Bằng',
+        desc: 'Thu mua trực tiếp từ nông dân với giá tốt, giúp cải thiện đời sống và khuyến khích canh tác bền vững.'
     },
     {
         icon: 'bi bi-fire',
-        title: 'Master Roasting',
-        desc: 'Our roasters obsess over every batch — adjusting temperature, time, and airflow to unlock each bean\'s fullest flavor.'
+        title: 'Rang Mộc Thủ Công',
+        desc: 'Không sao tẩm bơ phết, giữ nguyên vẹn 100% hương vị mộc mạc vốn có của hạt cà phê sau khi rang.'
     },
     {
-        icon: 'bi bi-heart-fill',
-        title: 'Community First',
-        desc: 'Coffee is a shared experience. We reinvest in local communities and donate 1% of profits to clean water initiatives.'
+        icon: 'bi bi-box-seam',
+        title: 'Bao Bì Thân Thiện',
+        desc: 'Sử dụng túi giấy Kraft có thể tái chế, chung tay giảm thiểu rác thải nhựa để bảo vệ môi trường.'
     },
 ];
 
 const team = [
     {
         name: 'Minh Tuan',
-        role: 'Head Roaster',
-        bio: '12 years in specialty coffee. Certified Q-Grader and SCA member.',
-        avatar: 'https://i.pravatar.cc/150?img=11'
+        role: 'Nghệ Nhân Rang',
+        bio: 'Hơn 12 năm gắn bó với lò rang, lắng nghe từng tiếng nổ lách tách của hạt cà phê.',
+        avatar: 'https://i.pravatar.cc/250?img=11'
     },
     {
         name: 'Lan Anh',
-        role: 'Co-Founder & CEO',
-        bio: 'Former barista champion turned entrepreneur with a love for single-origins.',
-        avatar: 'https://i.pravatar.cc/150?img=5'
+        role: 'Người Sáng Lập',
+        bio: 'Dành cả tuổi trẻ lang thang khắp các đồi chè, rẫy cà phê để tìm kiếm hương vị hoàn hảo.',
+        avatar: 'https://i.pravatar.cc/250?img=5'
     },
     {
         name: 'David Nguyen',
-        role: 'Sourcing Director',
-        bio: 'Travels 6 months a year visiting farms in Ethiopia, Colombia, and Vietnam.',
-        avatar: 'https://i.pravatar.cc/150?img=15'
+        role: 'Chuyên Gia Cây Trồng',
+        bio: 'Đồng hành cùng nông dân cải thiện chất lượng đất và giống cây theo chuẩn Organic.',
+        avatar: 'https://i.pravatar.cc/250?img=15'
     },
     {
         name: 'Sophie Le',
-        role: 'Lead Barista Trainer',
-        bio: 'Specializes in brew methods and helps customers find their perfect cup.',
-        avatar: 'https://i.pravatar.cc/150?img=9'
+        role: 'Trưởng Pha Chế',
+        bio: 'Mang tình yêu gửi gắm vào từng shot Espresso và từng nét Latte Art sắc sảo.',
+        avatar: 'https://i.pravatar.cc/250?img=9'
     },
 ];
 </script>
 
 <style scoped>
-/* ===== HERO ===== */
-.about-hero {
-    background: linear-gradient(135deg, #0f3d20 0%, #145c30 50%, #198754 100%);
-    position: relative;
-    overflow: hidden;
-}
+/* ===== ORGANIC COLOR PALETTE & UTILS ===== */
+.bg-cream { background-color: #fdfbf7; } /* Nền be ấm */
+.bg-sand { background-color: #f4efe6; }  /* Nền cát tối hơn chút */
+.text-brown { color: #3e3024; }          /* Nâu đậm cho Heading */
+.text-earth { color: #5f4f40; }          /* Nâu xám cho chữ thường */
+.text-olive { color: #617A55; }          /* Xanh rêu điểm nhấn */
+.border-olive { border-color: #617A55 !important; }
+.border-olive-light { border-color: rgba(97, 122, 85, 0.3) !important; }
+.border-earth-light { border-color: #e5ded3 !important; }
 
-.about-hero::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 40px;
-    background: #fff;
-    clip-path: ellipse(55% 100% at 50% 100%);
+.font-serif { font-family: "Playfair Display", "Merriweather", serif; }
+.py-6 { padding-top: 5rem; padding-bottom: 5rem; }
+.tracking-wide { letter-spacing: 0.1em; }
+.tracking-widest { letter-spacing: 0.15em; }
+.line-height-tight { line-height: 1.3; }
+
+/* Nút bấm */
+.btn-olive {
+    background-color: #617A55; border: 1px solid #617A55; color: white;
+    transition: all 0.3s ease;
+}
+.btn-olive:hover { background-color: #4A5D23; border-color: #4A5D23; color: white; }
+
+/* Đường kẻ trang trí */
+.line-deco { display: inline-block; width: 40px; height: 2px; background-color: #617A55; }
+
+/* ===== HERO ===== */
+.about-hero { min-height: 70vh; overflow: hidden; background: #2c241b; }
+.hero-bg {
+    position: absolute; inset: 0;
+    background: url('https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&q=80&w=2000') center/cover;
+    filter: brightness(0.4) sepia(0.3); /* Tạo màu cổ điển ấm áp */
+}
+.organic-badge {
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fdfbf7;
 }
 
 /* ===== STATS ===== */
 .stat-card {
-    transition: transform 0.25s ease;
+    background: #fff; border: 1px solid #e5ded3;
+    box-shadow: 0 4px 15px rgba(62, 48, 36, 0.05);
+    transition: transform 0.3s ease;
 }
-
-.stat-card:hover {
-    transform: translateY(-4px);
-}
-
-/* ===== STORY ===== */
-.story-badge {
-    bottom: -20px;
-    right: -16px;
-    text-align: center;
-    min-width: 90px;
-}
+.stat-card:hover { transform: translateY(-5px); border-color: #617A55; }
 
 /* ===== VALUES ===== */
 .value-card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    transition: all 0.3s ease;
 }
-
 .value-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08) !important;
-    border-color: #198754 !important;
+    background: #fff; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(62, 48, 36, 0.05);
 }
+.value-icon { font-size: 2.5rem; }
 
 /* ===== TEAM ===== */
 .team-card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    background: transparent; transition: all 0.3s ease;
 }
+.team-card:hover { background: #fff; box-shadow: 0 10px 20px rgba(62, 48, 36, 0.05); }
+.avatar-wrap { width: 140px; height: 140px; }
+.team-img { transition: transform 0.5s ease; filter: sepia(0.2); }
+.team-card:hover .team-img { transform: scale(1.1); filter: sepia(0); }
 
-.team-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08) !important;
+/* ===== CTA ===== */
+.cta-section { background: #3e3024; }
+.cta-bg {
+    position: absolute; inset: 0;
+    background: url('https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&q=80&w=2000') center/cover;
+    opacity: 0.15; filter: sepia(0.5);
 }
 </style>

@@ -26,9 +26,8 @@ async function handleSubmit() {
     apiError.value = ''
     if (!validate()) return
     loading.value = true
-    await new Promise(r => setTimeout(r, 600)) // Giả lập gọi API
 
-    const result = login(form.value.email, form.value.password)
+    const result = await login(form.value.email, form.value.password)
     loading.value = false
 
     if (!result.ok) {
@@ -43,6 +42,7 @@ async function handleSubmit() {
         router.push('/')
     }
 }
+
 </script>
 
 <template>
@@ -60,19 +60,8 @@ async function handleSubmit() {
                 <p class="text-muted small mb-0">Hương vị mộc mạc nguyên bản quyện cùng không gian nghệ thuật</p>
             </div>
 
-            <!-- Gợi ý tài khoản demo -->
-            <div class="card border-0 bg-light rounded-3 p-3 mb-4 border-start border-warning border-3 shadow-sm">
-                <div class="d-flex gap-2">
-                    <i class="bi bi-shield-lock-fill text-warning fs-5"></i>
-                    <div>
-                        <h6 class="fw-bold mb-1 text-dark" style="font-size: 12px; text-transform: uppercase;">Tài khoản thử nghiệm hệ thống:</h6>
-                        <div class="font-monospace text-secondary small" style="font-size: 11px; line-height: 1.5;">
-                            <span class="d-block">🔑 Admin: <strong>admin@gmail.com</strong> / 123456</span>
-                            <span class="d-block">👤 User: <strong>user@gmail.com</strong> / 123456</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        
+
 
             <!-- Biểu mẫu Đăng nhập -->
             <form @submit.prevent="handleSubmit" novalidate>

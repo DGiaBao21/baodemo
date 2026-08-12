@@ -1,59 +1,76 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { ProductService }  from '../../../services/product.service.js'
+import { CategoryService } from '../../../services/category.service.js'
 
-const route  = useRoute()
-const router = useRouter()
+const route           = useRoute()
+const router          = useRouter()
+const productService  = new ProductService()
+const categoryService = new CategoryService()
 
-const categoryOptions = ['Cà phê', 'Trà', 'Sinh tố', 'Nước ép', 'Bánh ngọt', 'Đồ ăn nhẹ', 'Đồ uống đá']
+const categoryOptions = ref([])
 
 // ─── Toast System ─────────────────────────────────────────────
 const toasts = ref([])
 function showToast(message, type = 'success') {
     const id = Date.now()
     toasts.value.push({ id, message, type })
-    setTimeout(() => {
-        removeToast(id)
-    }, 3000)
+    setTimeout(() => { removeToast(id) }, 3000)
 }
 function removeToast(id) {
     toasts.value = toasts.value.filter(t => t.id !== id)
 }
 
-// ─── Mock data (sync with product list & dashboard statistics) 
-const mockProducts = [
-    { id: 1, name: 'Cà phê đen',        category: 'Cà phê',    price: 25000, description: 'Cà phê đen đậm đà nguyên chất từ hạt Robusta Đắk Lắk, hương thơm nồng nàn thơm ngon.', image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=300&h=300&fit=crop', status: true, sales: 180, revenue: 4500000 },
-    { id: 2, name: 'Cà phê sữa',        category: 'Cà phê',    price: 30000, description: 'Cà phê phin truyền thống kết hợp sữa đặc béo ngậy hảo hạng, phù hợp cho mọi lứa tuổi.', image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=300&h=300&fit=crop', status: true, sales: 320, revenue: 9600000 },
-    { id: 3, name: 'Trà đào cam sả',    category: 'Trà',       price: 45000, description: 'Sự kết hợp tuyệt vời từ đào ngâm ngọt giòn, nước cam tươi nguyên chất và hương sả thơm mát nhẹ nhàng.', image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300&h=300&fit=crop', status: true, sales: 210, revenue: 9450000 },
-    { id: 4, name: 'Trà sữa trân châu', category: 'Trà',       price: 50000, description: 'Trà sữa truyền thống thơm ngậy hương hồng trà kết hợp trân châu đen dai dẻo ngọt mềm ngọt ngào.', image: 'https://images.unsplash.com/photo-1558857563-b371033873b8?w=300&h=300&fit=crop', status: false, sales: 85, revenue: 4250000 },
-    { id: 5, name: 'Sinh tố xoài',      category: 'Sinh tố',   price: 55000, description: 'Xoài cát chín mọng xay sữa đặc và đá nhuyễn, cung cấp dồi dào vitamin và bổ dưỡng lành mạnh.', image: 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=300&h=300&fit=crop', status: true, sales: 165, revenue: 9075000 },
-    { id: 6, name: 'Nước ép cam',       category: 'Nước ép',   price: 40000, description: 'Cam sành tươi nguyên chất vắt ép trực tiếp, giữ nguyên hương vị chua ngọt sảng khoái bổ dưỡng.', image: 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=300&h=300&fit=crop', status: true, sales: 90, revenue: 3600000 },
-    { id: 7, name: 'Bánh croissant',    category: 'Bánh ngọt', price: 35000, description: 'Bánh sừng bò ngàn lớp giòn xốp rụm bên ngoài, thơm lừng vị bơ Pháp thượng hạng tan chảy bên trong.', image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=300&h=300&fit=crop', status: true, sales: 140, revenue: 4900000 },
-    { id: 8, name: 'Capuchino',         category: 'Cà phê',    price: 55000, description: 'Cà phê Espresso pha chuẩn ý hòa quyện sữa nóng và lớp bọt sữa vẽ nghệ thuật Latte Art tinh tế.', image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=300&h=300&fit=crop', status: false, sales: 60, revenue: 3300000 }
-]
-
 const form       = ref({ name: '', category: '', price: '', description: '', image: '', status: true, sales: 0, revenue: 0 })
 const errors     = ref({})
 const previewUrl = ref('')
 const loading    = ref(true)
+const isLoading  = ref(false)
 const notFound   = ref(false)
 
-// Dynamic attributes for premium customization
-const customSizes = ref(['M', 'L'])
+const customSizes     = ref(['M', 'L'])
 const customSweetness = ref(['100%', '70%', '50%', 'Không đường'])
-const customIce = ref(['100%', '70%', '50%', 'Không đá'])
+const customIce       = ref(['100%', '70%', '50%', 'Không đá'])
 
-onMounted(() => {
-    const id   = Number(route.params.id)
-    const prod = mockProducts.find(p => p.id === id)
-    if (!prod) {
+onMounted(async () => {
+    try {
+        // Load category và product song song, không để 1 lỗi chặn cả 2
+        const [catRes, prodRes] = await Promise.allSettled([
+            categoryService.list(),
+            productService.getById(route.params.id)
+        ])
+
+        if (catRes.status === 'fulfilled' && catRes.value.status === 200) {
+            categoryOptions.value = catRes.value.data
+        }
+
+        if (prodRes.status === 'fulfilled' && prodRes.value.status === 200) {
+            const p = prodRes.value.data
+            form.value = {
+                name:        p.name        || '',
+                category:    p.category    || '',
+                categoryId:  p.categoryId  || '',
+                price:       p.price       ?? '',
+                description: p.description || '',
+                image:       p.image       || '',
+                status:      p.status      ?? true,
+                rating:      p.rating      ?? 0,
+                reviews:     p.reviews     ?? 0,
+                sales:       p.sales       ?? 0,
+                revenue:     p.revenue     ?? 0,
+                createdAt:   p.createdAt   || ''
+            }
+            previewUrl.value = p.image || ''
+        } else {
+            notFound.value = true
+        }
+    } catch (e) {
         notFound.value = true
-        loading.value  = false
-        return
+        console.error('Lỗi tải dữ liệu sản phẩm:', e)
+    } finally {
+        loading.value = false
     }
-    form.value       = { ...prod }
-    previewUrl.value = prod.image
-    loading.value    = false
 })
 
 function handleImageInput(e) {
@@ -61,9 +78,13 @@ function handleImageInput(e) {
     previewUrl.value  = e.target.value
 }
 
-const formatPrice = (n) => n.toLocaleString('vi-VN') + 'đ'
+const formatPrice = (n) => {
+    if (n === undefined || n === null) return '0đ'
+    return Number(n).toLocaleString('vi-VN') + 'đ'
+}
 
 function validate() {
+
     const errs = {}
     if (!form.value.name.trim())
         errs.name = 'Vui lòng nhập tên sản phẩm.'
@@ -85,20 +106,26 @@ function validate() {
     return Object.keys(errs).length === 0
 }
 
-function handleSubmit() {
+const handleSubmit = async () => {
     if (!validate()) {
         showToast('Vui lòng kiểm tra lại thông tin biểu mẫu!', 'danger')
         return
     }
-    showToast('Đang lưu thông tin sản phẩm...', 'info')
-    
-    // Simulate updating in-memory mock or console log
-    setTimeout(() => {
-        showToast('Cập nhật sản phẩm thành công! Đang chuyển trang...', 'success')
-        setTimeout(() => {
-            router.push('/productlist')
-        }, 1500)
-    }, 1000)
+    isLoading.value = true
+    try {
+        const today  = new Date().toISOString().split('T')[0]
+        const payload = { ...form.value, price: Number(form.value.price), createdAt: today }
+        const result  = await productService.update(route.params.id, payload)
+        if (result.status === 200) {
+            showToast('Cập nhật sản phẩm thành công!', 'success')
+            setTimeout(() => router.push('/productlist'), 1200)
+        }
+    } catch (e) {
+        showToast('Cập nhật thất bại. Vui lòng thử lại!', 'danger')
+        console.error(e)
+    } finally {
+        isLoading.value = false
+    }
 }
 </script>
 
@@ -260,7 +287,7 @@ function handleSubmit() {
                                         :class="{ 'is-invalid': errors.category }"
                                     >
                                         <option value="">-- Chọn danh mục --</option>
-                                        <option v-for="cat in categoryOptions" :key="cat" :value="cat">{{ cat }}</option>
+                                        <option v-for="cat in categoryOptions" :key="cat.id" :value="cat.name">{{ cat.name }}</option>
                                     </select>
                                     <div v-if="errors.category" class="invalid-feedback">{{ errors.category }}</div>
                                 </div>
@@ -358,8 +385,10 @@ function handleSubmit() {
                             <RouterLink to="/productlist" class="btn btn-outline-secondary flex-fill fw-bold py-2 shadow-sm" style="border: 1px solid #ddd; background: #fff;">
                                 Hủy bỏ
                             </RouterLink>
-                            <button type="submit" class="btn btn-dark flex-fill fw-bold py-2 shadow-sm">
-                                <i class="bi bi-check-circle me-1"></i> Cập nhật món
+                            <button type="submit" class="btn btn-dark flex-fill fw-bold py-2 shadow-sm" :disabled="isLoading">
+                                <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                <i v-else class="bi bi-check-circle me-1"></i>
+                                {{ isLoading ? 'Đang lưu...' : 'Cập nhật món' }}
                             </button>
                         </div>
 

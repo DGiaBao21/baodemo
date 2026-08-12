@@ -1,474 +1,317 @@
+<template>
+    <div class="blog-page organic-theme bg-cream">
+
+        <!-- ===== HERO ===== -->
+        <section class="blog-hero position-relative d-flex align-items-center justify-content-center text-center">
+            <!-- Ảnh nền vintage ấm áp -->
+            <div class="hero-bg"></div>
+            <div class="container position-relative z-2 py-6">
+                <span class="badge bg-sand text-olive px-4 py-2 fw-semibold mb-4 reveal border border-olive-light">
+                    <i class="bi bi-journal-text me-2"></i> Trải Nghiệm & Kiến Thức
+                </span>
+                <h1 class="display-3 fw-bold text-white mb-4 reveal delay-1 font-serif text-shadow-sm">
+                    Góc Nhỏ Của <br> <span style="color: #e5ded3;">Người Yêu Cà Phê</span>
+                </h1>
+                
+                <!-- Thanh tìm kiếm kiểu Organic (màu kem sáng) -->
+                <div class="search-wrap mx-auto mt-5 reveal delay-2">
+                    <i class="bi bi-search search-icon text-earth"></i>
+                    <input v-model="searchQuery" type="text" class="search-input" placeholder="Tìm kiếm công thức, câu chuyện..." />
+                </div>
+            </div>
+        </section>
+
+        <div class="container py-5 mt-n4 position-relative z-3">
+
+            <!-- Loading skeleton -->
+            <div v-if="isLoading" class="row g-4 mt-2">
+                <div v-for="n in 6" :key="n" class="col-lg-4 col-md-6">
+                    <div class="post-card bg-white rounded-3 p-0 border border-earth-light">
+                        <div class="skeleton" style="height:220px; border-radius: 8px 8px 0 0"></div>
+                        <div class="p-4">
+                            <div class="skeleton mb-3" style="height:14px;width:60%"></div>
+                            <div class="skeleton mb-2" style="height:20px"></div>
+                            <div class="skeleton mb-3" style="height:20px;width:80%"></div>
+                            <div class="skeleton" style="height:14px;width:40%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <template v-else>
+                <!-- ====== BÀI NỔI BẬT ====== -->
+                <section class="mb-6 reveal" v-if="featuredPost && !searchQuery && activeCategory === 'Tất cả'">
+                    <div class="featured-card rounded-4 overflow-hidden border border-earth-light bg-white d-flex flex-column flex-md-row" @click="router.push(`/blog/${featuredPost.id}`)">
+                        <!-- Ảnh bên trái (chiếm 50% màn hình) -->
+                        <div class="featured-img-wrap w-100 w-md-50 position-relative">
+                            <img :src="featuredPost.thumbnail" :alt="featuredPost.title" class="featured-bg-img w-100 h-100 object-fit-cover" />
+                            <div class="badge-cat position-absolute top-0 start-0 m-3 bg-olive text-white px-3 py-1 rounded-2 small fw-semibold tracking-wide text-uppercase">
+                                {{ featuredPost.category }}
+                            </div>
+                        </div>
+                        <!-- Nội dung bên phải -->
+                        <div class="featured-content w-100 w-md-50 p-4 p-lg-5 d-flex flex-column justify-content-center">
+                            <div class="text-olive small fw-semibold mb-3 d-flex gap-3 text-uppercase tracking-wide">
+                                <span><i class="bi bi-calendar3 me-1"></i>{{ formatDate(featuredPost.createdAt) }}</span>
+                                <span><i class="bi bi-clock me-1"></i>{{ readTime(featuredPost.content) }}</span>
+                            </div>
+                            <h2 class="display-6 fw-bold text-brown mb-3 font-serif">{{ featuredPost.title }}</h2>
+                            <p class="text-earth lead mb-4 font-inter" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                {{ featuredPost.excerpt || featuredPost.content }}
+                            </p>
+                            <div class="d-flex align-items-center gap-3 mt-auto">
+                                <button class="btn btn-outline-brown rounded-3 px-4 py-2 fw-bold d-flex align-items-center gap-2" @click.stop="router.push(`/blog/${featuredPost.id}`)">
+                                    Đọc Tiếp <i class="bi bi-arrow-right"></i>
+                                </button>
+                                <button class="btn btn-sand rounded-circle heart-btn" :class="{ 'liked': likedIds.has(featuredPost.id) }" @click.stop="toggleLike(featuredPost)" title="Yêu thích">
+                                    <i :class="likedIds.has(featuredPost.id) ? 'bi bi-heart-fill text-danger' : 'bi bi-heart'"></i>
+                                </button>
+                                <span class="text-earth fw-bold">{{ featuredPost.likes || 0 }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ====== BỘ LỌC DANH MỤC ====== -->
+                <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap mb-5 reveal">
+                    <button v-for="cat in categories" :key="cat" class="cat-pill-btn font-serif"
+                        :class="{ active: activeCategory === cat }"
+                        @click="activeCategory = cat">{{ cat }}</button>
+                </div>
+
+                <!-- Lưới bài viết rỗng -->
+                <div v-if="filteredPosts.length === 0" class="text-center py-6 text-earth">
+                    <div class="mb-4">
+                        <i class="bi bi-book fs-1 opacity-50"></i>
+                    </div>
+                    <h5 class="fw-bold font-serif mb-2 text-brown">Chưa có ghi chép nào</h5>
+                    <p>Thử tìm bằng một từ khóa khác nhé.</p>
+                </div>
+
+                <!-- ====== LƯỚI BÀI VIẾT ====== -->
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6 reveal-scale" :class="'delay-' + (index % 3 + 1)" v-for="(post, index) in paginatedPosts" :key="post.id">
+                        <div class="post-organic-card bg-white rounded-3 border border-earth-light h-100 d-flex flex-column" @click="router.push(`/blog/${post.id}`)">
+                            <!-- Ảnh thumbnail -->
+                            <div class="post-img-wrapper overflow-hidden position-relative rounded-top-3 border-bottom border-earth-light">
+                                <img :src="post.thumbnail" :alt="post.title" class="post-img w-100 h-100 object-fit-cover" />
+                            </div>
+                            <!-- Nội dung -->
+                            <div class="p-4 d-flex flex-column flex-grow-1">
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <span class="text-olive small fw-bold text-uppercase tracking-wide">{{ post.category }}</span>
+                                    <span class="text-earth small"><i class="bi bi-clock me-1"></i>{{ readTime(post.content) }}</span>
+                                </div>
+                                <h5 class="post-title fw-bold text-brown mb-2 font-serif">{{ post.title }}</h5>
+                                <p class="text-earth small post-desc mb-4 flex-grow-1">{{ post.excerpt || post.content }}</p>
+                                <!-- Footer card -->
+                                <div class="d-flex align-items-center justify-content-between border-top border-earth-light pt-3 mt-auto">
+                                    <span class="text-earth small fw-semibold"><i class="bi bi-person me-1"></i>{{ post.author }}</span>
+                                    <button class="btn btn-sm btn-sand rounded-circle like-sm-btn" :class="{ 'text-danger': likedIds.has(post.id) }" @click.stop="toggleLike(post)">
+                                        <i :class="likedIds.has(post.id) ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phân trang -->
+                <nav v-if="totalPages > 1" class="d-flex justify-content-center mt-6">
+                    <ul class="pagination-organic d-flex gap-2 mb-0 list-unstyled font-serif">
+                        <li>
+                            <button class="page-btn" :disabled="currentPage === 1" @click="currentPage--"><i class="bi bi-chevron-left"></i></button>
+                        </li>
+                        <li v-for="page in totalPages" :key="page">
+                            <button class="page-btn fw-bold" :class="{ active: currentPage === page }" @click="currentPage = page">{{ page }}</button>
+                        </li>
+                        <li>
+                            <button class="page-btn" :disabled="currentPage === totalPages" @click="currentPage++"><i class="bi bi-chevron-right"></i></button>
+                        </li>
+                    </ul>
+                </nav>
+            </template>
+        </div>
+    </div>
+</template>
+
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { BlogService } from '../../services/blog.service.js'
+import { useScrollReveal } from '@/composables/useScrollReveal';
+
+useScrollReveal('.reveal, .reveal-scale');
 
 const router = useRouter()
+const blogService = new BlogService()
 
+const allPosts    = ref([])
+const isLoading   = ref(true)
 const searchQuery = ref('')
 const activeCategory = ref('Tất cả')
-const currentPage = ref(1)
-const itemsPerPage = ref(3)
+const currentPage    = ref(1)
+const itemsPerPage   = 6
 
-const posts = ref([
-    { id: 1, tenBaiViet: "Bí quyết làm chủ JavaScript trong 30 ngày", noiDung: "Học JavaScript không khó nếu bạn có lộ trình đúng đắn. Hãy bắt đầu từ cơ bản như biến, hàm trước khi nhảy vào Async/Await...", theLoai: "Lập trình", hinhAnh: "https://picsum.photos/id/101/800/450", tacGia: "Nguyễn Văn A", soLuotLike: 125, liked: false, mangComment: [{ username: "Trần Bình", content: "Bài viết rất hữu ích ạ!" }, { username: "Lê An", content: "Xin thêm lộ trình cho React với ad." }] },
-    { id: 2, tenBaiViet: "Top 5 quán cà phê làm việc lý tưởng tại Sài Gòn", noiDung: "Không gian yên tĩnh, Wi-Fi tốc độ cao và những ly Latte thơm ngon là tất cả những gì một freelancer cần cho ngày làm việc...", theLoai: "Đời sống", hinhAnh: "https://picsum.photos/id/102/800/450", tacGia: "Trần Thị B", soLuotLike: 84, liked: false, mangComment: [{ username: "Hoàng Minh", content: "Quán số 2 đi cuối tuần hơi đông nha." }] },
-    { id: 3, tenBaiViet: "Xu hướng thiết kế UI/UX nổi bật năm 2026", noiDung: "Năm nay, sự lên ngôi của Minimalist 3D và giao diện tương tác bằng giọng nói đang định hình lại cách trải nghiệm ứng dụng...", theLoai: "Thiết kế", hinhAnh: "https://picsum.photos/id/103/800/450", tacGia: "Phan Công C", soLuotLike: 210, liked: false, mangComment: [{ username: "Thúy Vy", content: "Đúng xu hướng mình đang nghiên cứu." }] },
-    { id: 4, tenBaiViet: "Cẩm nang du lịch tự túc Kyoto mùa hoa anh đào", noiDung: "Kyoto mùa hoa anh đào đẹp như một bức tranh. Để tránh đông đúc, bạn nên ghé thăm các đền chùa vào lúc 6 giờ sáng...", theLoai: "Du lịch", hinhAnh: "https://picsum.photos/id/104/800/450", tacGia: "Phạm Minh D", soLuotLike: 340, liked: false, mangComment: [] },
-    { id: 5, tenBaiViet: "Hiểu về AI và Machine Learning trong 5 phút", noiDung: "AI có thực sự thay thế con người? Hãy cùng phân biệt giữa Trí tuệ nhân tạo (AI), Học máy (Machine Learning) và Học sâu...", theLoai: "Công nghệ", hinhAnh: "https://picsum.photos/id/106/800/450", tacGia: "Nguyễn Vũ E", soLuotLike: 450, liked: false, mangComment: [{ username: "Quốc Bảo", content: "Ví dụ rất dễ hiểu, cảm ơn tác giả." }] },
-    { id: 6, tenBaiViet: "Chế độ ăn Eat Clean cho người bận rộn", noiDung: "Bạn không có thời gian nấu nướng? Phương pháp Meal Prep chính là cứu tinh của bạn. Chuẩn bị thức ăn cho cả tuần chỉ trong 2 tiếng...", theLoai: "Sức khỏe", hinhAnh: "https://picsum.photos/id/107/800/450", tacGia: "Đặng Thu G", soLuotLike: 95, liked: false, mangComment: [{ username: "Ngọc Hân", content: "Mình đã thử và giảm được 2kg trong một tháng nè." }] },
-    { id: 7, tenBaiViet: "Những cuốn sách thay đổi tư duy tài chính của tôi", noiDung: "Thay vì học cách kiếm tiền trước, hãy học cách quản lý tiền. Dưới đây là 3 cuốn sách gối đầu giường về tư duy tài chính...", theLoai: "Sách", hinhAnh: "https://picsum.photos/id/108/800/450", tacGia: "Lý Hoàng H", soLuotLike: 189, liked: false, mangComment: [{ username: "Tuấn Kiệt", content: "Cuốn 'Tâm lý học về tiền' thực sự rất hay." }] },
-    { id: 8, tenBaiViet: "Cách tối ưu SEO On-page cho website mới", noiDung: "Để bài viết đạt thứ hạng cao trên Google, việc tối ưu thẻ Title, Meta Description và cấu trúc Heading là điều bắt buộc...", theLoai: "Marketing", hinhAnh: "https://picsum.photos/id/109/800/450", tacGia: "Vũ Hải L", soLuotLike: 73, liked: false, mangComment: [] },
-    { id: 9, tenBaiViet: "Lợi ích của việc dậy sớm từ 5 giờ sáng", noiDung: "Dậy sớm không chỉ giúp bạn có thêm thời gian, mà đó còn là lúc não bộ hoạt động hiệu quả nhất, không bị xao nhãng...", theLoai: "Phát triển bản thân", hinhAnh: "https://picsum.photos/id/110/800/450", tacGia: "Bùi Tiến M", soLuotLike: 295, liked: false, mangComment: [{ username: "Hải Yến", content: "Thèm ngủ lắm ad ơi, làm sao duy trì được?" }] },
-    { id: 10, tenBaiViet: "Nghệ thuật chụp ảnh ngoại cảnh bằng điện thoại", noiDung: "Bạn không cần một chiếc máy ảnh đắt tiền. Chỉ cần áp dụng quy tắc 1/3 và tận dụng ánh sáng giờ vàng (Golden Hour)...", theLoai: "Nhiếp ảnh", hinhAnh: "https://picsum.photos/id/111/800/450", tacGia: "Đỗ Chí N", soLuotLike: 167, liked: false, mangComment: [{ username: "Mạnh Hùng", content: "Chiều nay phải lôi điện thoại ra test liền." }] }
-])
+// ── Fetch dữ liệu ──────────────────────────────────────────────
+onMounted(async () => {
+    try {
+        const res = await blogService.list()
+        if (res.status === 200) {
+            allPosts.value = res.data.filter(b => b.status !== false)
+        }
+    } catch (e) {
+        console.error('Lỗi tải blog:', e)
+    } finally {
+        isLoading.value = false
+    }
+})
 
+// ── Danh mục động ─────────────────────────────────────────────
 const categories = computed(() => {
-    const cats = [...new Set(posts.value.map(p => p.theLoai))]
+    const cats = [...new Set(allPosts.value.map(p => p.category).filter(Boolean))]
     return ['Tất cả', ...cats]
 })
 
-const featuredPost = computed(() => posts.value[0])
+// ── Bài nổi bật (bài đầu tiên) ────────────────────────────────
+const featuredPost = computed(() => allPosts.value[0] || null)
 
+// ── Lọc + tìm kiếm ────────────────────────────────────────────
 const filteredPosts = computed(() => {
-    let result = posts.value.slice(1)
+    let result = allPosts.value.slice(1)
     if (activeCategory.value !== 'Tất cả') {
-        result = result.filter(p => p.theLoai === activeCategory.value)
+        result = result.filter(p => p.category === activeCategory.value)
     }
     if (searchQuery.value.trim()) {
         const q = searchQuery.value.toLowerCase()
         result = result.filter(p =>
-            p.tenBaiViet.toLowerCase().includes(q) ||
-            p.theLoai.toLowerCase().includes(q) ||
-            p.tacGia.toLowerCase().includes(q)
+            p.title?.toLowerCase().includes(q) ||
+            p.category?.toLowerCase().includes(q) ||
+            p.author?.toLowerCase().includes(q)
         )
     }
     return result
 })
 
-const totalPages = computed(() => Math.ceil(filteredPosts.value.length / itemsPerPage.value))
+const totalPages = computed(() => Math.ceil(filteredPosts.value.length / itemsPerPage))
 
 const paginatedPosts = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage.value
-    const end = start + itemsPerPage.value
-    return filteredPosts.value.slice(start, end)
+    const start = (currentPage.value - 1) * itemsPerPage
+    return filteredPosts.value.slice(start, start + itemsPerPage)
 })
 
-watch([activeCategory, searchQuery], () => {
-    currentPage.value = 1
-})
+watch([activeCategory, searchQuery], () => { currentPage.value = 1 })
 
-const toggleLike = (post) => {
-    post.liked = !post.liked
-    post.soLuotLike += post.liked ? 1 : -1
+// ── Like (local) ───────────────────────────────────────────────
+const likedIds = ref(new Set())
+function toggleLike(post) {
+    if (likedIds.value.has(post.id)) return // Chỉ cho like 1 lần
+    likedIds.value.add(post.id)
+    post.likes = (post.likes || 0) + 1
 }
 
-const readTime = (text) => {
-    const words = text.split(' ').length
-    return Math.max(1, Math.ceil(words / 200)) + ' phút đọc'
-}
+const readTime = text => Math.max(1, Math.ceil((text || '').split(' ').length / 200)) + ' phút đọc'
+const formatDate = d => d ? new Date(d).toLocaleDateString('vi-VN') : ''
 </script>
 
-<template>
-    <!-- Phần giới thiệu (Hero Banner) -->
-    <section class="blog-hero">
-        <div class="container py-5">
-            <div class="text-center mb-4">
-                <span class="badge-pill">📝 Blog của chúng tôi</span>
-                <h1 class="hero-title mt-3">Khám phá kiến thức,<br/>truyền cảm hứng mỗi ngày</h1>
-                <p class="hero-sub">Tổng hợp bài viết chất lượng về lập trình, thiết kế, đời sống và nhiều chủ đề thú vị khác.</p>
-            </div>
-            <!-- Khung tìm kiếm -->
-            <div class="search-wrap mx-auto">
-                <i class="bi bi-search search-icon"></i>
-                <input v-model="searchQuery" type="text" class="search-input" placeholder="Tìm kiếm bài viết..." />
-            </div>
-        </div>
-    </section>
-
-    <div class="container pb-5">
-
-        <!-- Bài viết nổi bật -->
-        <section class="mb-5" v-if="!searchQuery && activeCategory === 'Tất cả'">
-            <div class="section-label mb-3">✨ Bài viết nổi bật</div>
-            <div class="featured-card">
-                <div class="featured-img-wrap">
-                    <img :src="featuredPost.hinhAnh" :alt="featuredPost.tenBaiViet" class="featured-img" />
-                    <span class="featured-badge">{{ featuredPost.theLoai }}</span>
-                </div>
-                <div class="featured-body">
-                    <div class="post-meta mb-2">
-                        <span><i class="bi bi-person-circle me-1"></i>{{ featuredPost.tacGia }}</span>
-                        <span class="mx-2">·</span>
-                        <span><i class="bi bi-clock me-1"></i>{{ readTime(featuredPost.noiDung) }}</span>
-                        <span class="mx-2">·</span>
-                        <span><i class="bi bi-chat-dots me-1"></i>{{ featuredPost.mangComment.length }} bình luận</span>
-                    </div>
-                    <h2 class="featured-title">{{ featuredPost.tenBaiViet }}</h2>
-                    <p class="featured-desc">{{ featuredPost.noiDung }}</p>
-                    <div class="d-flex align-items-center gap-3 mt-4">
-                        <button class="btn-read" @click="router.push(`/blog/${featuredPost.id}`)">Đọc bài viết <i class="bi bi-arrow-right ms-1"></i></button>
-                        <button class="btn-like" :class="{ liked: featuredPost.liked }" @click="toggleLike(featuredPost)">
-                            <i :class="featuredPost.liked ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
-                            {{ featuredPost.soLuotLike }}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Bộ lọc danh mục -->
-        <div class="d-flex align-items-center gap-2 flex-wrap mb-4">
-            <button
-                v-for="cat in categories" :key="cat"
-                class="cat-btn"
-                :class="{ active: activeCategory === cat }"
-                @click="activeCategory = cat"
-            >{{ cat }}</button>
-        </div>
-
-        <!-- Lưới danh sách bài viết -->
-        <div v-if="filteredPosts.length === 0" class="text-center py-5 text-muted">
-            <i class="bi bi-search fs-1 d-block mb-3 opacity-25"></i>
-            <p>Không tìm thấy bài viết nào phù hợp.</p>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-lg-4 col-md-6" v-for="post in paginatedPosts" :key="post.id">
-                <div class="post-card h-100">
-                    <div class="post-img-wrap">
-                        <img :src="post.hinhAnh" :alt="post.tenBaiViet" class="post-img" />
-                        <span class="post-category">{{ post.theLoai }}</span>
-                    </div>
-                    <div class="post-body">
-                        <div class="post-meta mb-2">
-                            <span><i class="bi bi-person me-1"></i>{{ post.tacGia }}</span>
-                            <span class="mx-2">·</span>
-                            <span><i class="bi bi-clock me-1"></i>{{ readTime(post.noiDung) }}</span>
-                        </div>
-                        <h5 class="post-title">{{ post.tenBaiViet }}</h5>
-                        <p class="post-desc">{{ post.noiDung }}</p>
-                        <div class="post-footer">
-                            <button class="btn-read-sm" @click="router.push(`/blog/${post.id}`)">Đọc thêm</button>
-                            <div class="d-flex align-items-center gap-3">
-                                <button class="icon-btn" :class="{ liked: post.liked }" @click="toggleLike(post)">
-                                    <i :class="post.liked ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
-                                    <span>{{ post.soLuotLike }}</span>
-                                </button>
-                                <button class="icon-btn">
-                                    <i class="bi bi-chat-dots"></i>
-                                    <span>{{ post.mangComment.length }}</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Phân trang Bootstrap 5 -->
-        <nav v-if="totalPages > 1" class="d-flex justify-content-center mt-5">
-            <ul class="pagination pagination-sm">
-                <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                    <button class="page-link shadow-none" @click="currentPage = 1" style="cursor: pointer;">Trang đầu</button>
-                </li>
-                <li class="page-item" :class="{ disabled: currentPage === 1 }">
-                    <button class="page-link shadow-none" @click="currentPage--" style="cursor: pointer;">Trước</button>
-                </li>
-                <li
-                    v-for="page in totalPages"
-                    :key="page"
-                    class="page-item"
-                    :class="{ active: currentPage === page }"
-                >
-                    <button class="page-link shadow-none" @click="currentPage = page" style="cursor: pointer;">{{ page }}</button>
-                </li>
-                <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                    <button class="page-link shadow-none" @click="currentPage++" style="cursor: pointer;">Sau</button>
-                </li>
-                <li class="page-item" :class="{ disabled: currentPage === totalPages }">
-                    <button class="page-link shadow-none" @click="currentPage = totalPages" style="cursor: pointer;">Trang cuối</button>
-                </li>
-            </ul>
-        </nav>
-
-    </div>
-</template>
-
 <style scoped>
-/* ---- Phần giới thiệu (Hero) ---- */
-.blog-hero {
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-    color: #fff;
+/* ===== ORGANIC COLOR PALETTE & UTILS ===== */
+.organic-theme { font-family: "Inter", sans-serif; }
+.bg-cream { background-color: #fdfbf7; } 
+.bg-sand { background-color: #f4efe6; }  
+.bg-olive { background-color: #617A55; }
+.text-brown { color: #3e3024; }          
+.text-earth { color: #5f4f40; }          
+.text-olive { color: #617A55; }          
+.border-olive-light { border-color: rgba(97, 122, 85, 0.3) !important; }
+.border-earth-light { border-color: #e5ded3 !important; }
+
+.font-serif { font-family: "Playfair Display", "Merriweather", serif; }
+.font-inter { font-family: "Inter", sans-serif; }
+.py-6 { padding-top: 5rem; padding-bottom: 5rem; }
+.mb-6 { margin-bottom: 5rem; }
+.mt-n4 { margin-top: -3rem !important; }
+.mt-6 { margin-top: 4rem; }
+.tracking-wide { letter-spacing: 0.1em; }
+
+/* ===== HERO ===== */
+.blog-hero { min-height: 50vh; overflow: hidden; background: #2c241b; }
+.hero-bg {
+    position: absolute; inset: 0;
+    background: url('https://images.unsplash.com/photo-1497935586351-b67a49e012bf?auto=format&fit=crop&q=80&w=2000') center/cover;
+    filter: brightness(0.4) sepia(0.4);
 }
-.badge-pill {
-    background: rgba(255,255,255,0.12);
-    border: 1px solid rgba(255,255,255,0.2);
-    padding: 6px 16px;
-    border-radius: 999px;
-    font-size: 13px;
-    backdrop-filter: blur(8px);
-}
-.hero-title {
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    font-weight: 800;
-    line-height: 1.2;
-}
-.hero-sub {
-    color: rgba(255,255,255,0.65);
-    font-size: 16px;
-    max-width: 540px;
-    margin: 0 auto;
-}
-.search-wrap {
-    position: relative;
-    max-width: 520px;
-}
-.search-icon {
-    position: absolute;
-    left: 18px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #aaa;
-    font-size: 17px;
-}
+.text-shadow-sm { text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+
+/* Search Bar */
+.search-wrap { position: relative; max-width: 600px; width: 100%; }
+.search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 18px; }
 .search-input {
-    width: 100%;
-    padding: 14px 20px 14px 48px;
-    border-radius: 50px;
-    border: none;
-    font-size: 15px;
-    outline: none;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    width: 100%; padding: 16px 20px 16px 50px;
+    background: #fdfbf7; border: 2px solid #e5ded3;
+    border-radius: 8px; font-size: 16px; color: #3e3024;
+    outline: none; transition: all 0.3s ease;
 }
+.search-input:focus { border-color: #617A55; }
 
-/* ---- Nhãn phân mục ---- */
-.section-label {
-    font-weight: 700;
-    font-size: 15px;
-    color: #555;
-}
+/* ===== FEATURED POST ====== */
+.featured-card { cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.featured-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(62,48,36,0.1); border-color: #dcd3c6 !important; }
+.featured-img-wrap { min-height: 300px; }
+.featured-bg-img { transition: transform 0.6s ease; filter: sepia(0.1); }
+.featured-card:hover .featured-bg-img { transform: scale(1.05); filter: sepia(0); }
 
-/* ---- Bài nổi bật ---- */
-.featured-card {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 8px 40px rgba(0,0,0,0.12);
-    background: #fff;
+/* Buttons */
+.btn-outline-brown {
+    border: 1px solid #3e3024; color: #3e3024; background: transparent; transition: all 0.2s;
 }
-@media (max-width: 768px) {
-    .featured-card { grid-template-columns: 1fr; }
-}
-.featured-img-wrap {
-    position: relative;
-    overflow: hidden;
-}
-.featured-img {
-    width: 100%;
-    height: 100%;
-    min-height: 280px;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-}
-.featured-card:hover .featured-img { transform: scale(1.04); }
-.featured-badge {
-    position: absolute;
-    top: 16px;
-    left: 16px;
-    background: rgba(15,52,96,0.85);
-    color: #fff;
-    padding: 4px 14px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    backdrop-filter: blur(4px);
-}
-.featured-body {
-    padding: 36px 32px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-.featured-title {
-    font-size: 1.5rem;
-    font-weight: 800;
-    line-height: 1.3;
-    color: #111;
-    margin-bottom: 12px;
-}
-.featured-desc {
-    color: #666;
-    font-size: 14.5px;
-    line-height: 1.7;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    overflow: hidden;
-}
-.post-meta {
-    font-size: 12.5px;
-    color: #888;
-}
+.btn-outline-brown:hover { background: #3e3024; color: #fff; }
+.btn-sand { background: #f4efe6; border: 1px solid #e5ded3; color: #5f4f40; }
+.btn-sand:hover { background: #e5ded3; }
+.heart-btn { width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.3s; }
 
-/* ---- Các nút điều khiển ---- */
-.btn-load-more {
-    background: transparent;
-    color: #0f3460;
-    border: 2px solid #0f3460;
-    padding: 12px 36px;
-    border-radius: 50px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 4px 15px rgba(15, 52, 96, 0.08);
+/* ===== CATEGORY PILLS ====== */
+.cat-pill-btn {
+    background: transparent; border: 1px solid #e5ded3;
+    padding: 8px 24px; border-radius: 4px; font-size: 15px;
+    color: #5f4f40; transition: all 0.2s;
 }
-.btn-load-more:hover {
-    background: #0f3460;
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(15, 52, 96, 0.2);
-}
-.btn-load-more:active {
-    transform: translateY(0);
-}
-.btn-read {
-    background: #0f3460;
-    color: #fff;
-    border: none;
-    padding: 10px 24px;
-    border-radius: 50px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-}
-.btn-read:hover { background: #16213e; transform: translateY(-1px); }
-.btn-like {
-    background: none;
-    border: 1.5px solid #ddd;
-    border-radius: 50px;
-    padding: 8px 16px;
-    font-size: 14px;
-    cursor: pointer;
-    color: #888;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-.btn-like.liked { color: #e74c3c; border-color: #e74c3c; background: #fff5f5; }
-.btn-like:hover { border-color: #e74c3c; color: #e74c3c; }
+.cat-pill-btn:hover { border-color: #3e3024; color: #3e3024; }
+.cat-pill-btn.active { background: #3e3024; color: #fdfbf7; border-color: #3e3024; }
 
-/* ---- Bộ lọc danh mục ---- */
-.cat-btn {
-    background: #f1f3f8;
-    border: none;
-    border-radius: 50px;
-    padding: 7px 18px;
-    font-size: 13px;
-    font-weight: 500;
-    color: #555;
-    cursor: pointer;
-    transition: all 0.2s;
+/* ===== POST GRID ====== */
+.post-organic-card {
+    cursor: pointer; transition: all 0.3s ease;
 }
-.cat-btn:hover { background: #e0e6f0; color: #0f3460; }
-.cat-btn.active { background: #0f3460; color: #fff; }
+.post-organic-card:hover {
+    transform: translateY(-5px); box-shadow: 0 8px 20px rgba(62,48,36,0.06); border-color: #dcd3c6 !important;
+}
+.post-img-wrapper { height: 220px; }
+.post-img { transition: transform 0.6s ease; filter: sepia(0.1); }
+.post-organic-card:hover .post-img { transform: scale(1.05); filter: sepia(0); }
 
-/* ---- Thẻ bài viết ---- */
-.post-card {
-    background: #fff;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.07);
-    transition: transform 0.25s, box-shadow 0.25s;
-    display: flex;
-    flex-direction: column;
+.post-title { font-size: 1.25rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; transition: color 0.2s; }
+.post-organic-card:hover .post-title { color: #617A55 !important; }
+.post-desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.6; }
+
+.like-sm-btn { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+.like-sm-btn:hover { background: #f8d7da; color: #dc3545; border-color: #f8d7da; }
+
+/* ===== PAGINATION ====== */
+.pagination-organic .page-btn {
+    width: 40px; height: 40px; border-radius: 4px;
+    border: 1px solid #e5ded3; background: white; color: #5f4f40;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
 }
-.post-card:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(0,0,0,0.13); }
-.post-img-wrap {
-    position: relative;
-    overflow: hidden;
-    height: 200px;
+.pagination-organic .page-btn:not(:disabled):hover { background: #f4efe6; border-color: #dcd3c6; }
+.pagination-organic .page-btn.active { background: #3e3024; color: white; border-color: #3e3024; }
+.pagination-organic .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* skeleton */
+.skeleton { background: linear-gradient(90deg, #f4efe6 25%, #e5ded3 50%, #f4efe6 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+@media (min-width: 768px) {
+    .w-md-50 { width: 50% !important; }
 }
-.post-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.4s ease;
-}
-.post-card:hover .post-img { transform: scale(1.06); }
-.post-category {
-    position: absolute;
-    top: 12px;
-    left: 12px;
-    background: rgba(15,52,96,0.85);
-    color: #fff;
-    padding: 3px 12px;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 600;
-    backdrop-filter: blur(4px);
-}
-.post-body {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-.post-title {
-    font-size: 15px;
-    font-weight: 700;
-    color: #111;
-    line-height: 1.4;
-    margin-bottom: 8px;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-}
-.post-desc {
-    font-size: 13.5px;
-    color: #777;
-    line-height: 1.6;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    overflow: hidden;
-    flex: 1;
-    margin-bottom: 16px;
-}
-.post-footer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-top: 1px solid #f0f0f0;
-    padding-top: 14px;
-}
-.btn-read-sm {
-    background: none;
-    border: none;
-    color: #0f3460;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 0;
-}
-.btn-read-sm:hover { text-decoration: underline; }
-.icon-btn {
-    background: none;
-    border: none;
-    color: #999;
-    font-size: 13px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    transition: color 0.2s;
-    padding: 0;
-}
-.icon-btn:hover { color: #e74c3c; }
-.icon-btn.liked { color: #e74c3c; }
 </style>

@@ -1,0 +1,1336 @@
+{
+  "categories": [
+    {
+      "name": "Cà phê",
+      "description": "Các loại cà phê đặc trưng",
+      "status": true,
+      "createdAt": "2026-06-09",
+      "id": "1"
+    },
+    {
+      "id": "2",
+      "name": "Trà",
+      "description": "Trà xanh, trà đào, trà sữa",
+      "status": true,
+      "createdAt": "2025-01-15"
+    },
+    {
+      "name": "Sinh tố",
+      "description": "Sinh tố hoa quả tươi",
+      "status": true,
+      "createdAt": "2026-06-09",
+      "id": "3"
+    },
+    {
+      "name": "Nước tố",
+      "description": "Nước ép nguyên chất 100%",
+      "status": true,
+      "createdAt": "2025-02-20",
+      "id": "4"
+    },
+    {
+      "id": "5",
+      "name": "Bánh ngọt",
+      "description": "Bánh ngọt, bánh mì các loại",
+      "status": true,
+      "createdAt": "2025-03-05"
+    },
+    {
+      "name": "Kẹo",
+      "description": "đồ ngọt",
+      "status": true,
+      "createdAt": "2026-06-23",
+      "id": "GXAxTRv6awY"
+    }
+  ],
+  "products": [
+    {
+      "name": "Cà phê đen",
+      "category": "Cà phê",
+      "categoryId": "1",
+      "price": 249000,
+      "description": "Cà phê đen đậm đà nguyên chất từ hạt Robusta Đắk Lắk, hương thơm nồng nàn thơm ngon.",
+      "image": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=300&h=300&fit=crop",
+      "status": true,
+      "rating": 4,
+      "reviews": 112,
+      "sales": 0,
+      "revenue": 0,
+      "createdAt": "2026-06-23",
+      "id": "1"
+    },
+    {
+      "id": "2",
+      "name": "Cà phê sữa",
+      "category": "Cà phê",
+      "categoryId": "1",
+      "price": 30000,
+      "image": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=300&h=300&fit=crop",
+      "description": "Cà phê phin truyền thống kết hợp sữa đặc béo ngậy hảo hạng, phù hợp cho mọi lứa tuổi.",
+      "status": true,
+      "rating": 5,
+      "reviews": 205,
+      "createdAt": "2025-01-12"
+    },
+    {
+      "id": "3",
+      "name": "Capuchino",
+      "category": "Cà phê",
+      "categoryId": "1",
+      "price": 55000,
+      "image": "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=300&h=300&fit=crop",
+      "description": "Cà phê Espresso pha chuẩn Ý hòa quyện sữa nóng và lớp bọt sữa vẽ nghệ thuật Latte Art tinh tế.",
+      "status": true,
+      "rating": 4,
+      "reviews": 87,
+      "createdAt": "2025-01-20"
+    },
+    {
+      "id": "4",
+      "name": "Cold Brew",
+      "category": "Cà phê",
+      "categoryId": "1",
+      "price": 45000,
+      "image": "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=300&h=300&fit=crop",
+      "description": "Cà phê ủ lạnh 24 giờ, vị ngọt tự nhiên, ít axit, thơm mát dễ uống và đặc biệt sảng khoái.",
+      "status": true,
+      "rating": 4,
+      "reviews": 63,
+      "createdAt": "2025-02-01"
+    },
+    {
+      "id": "5",
+      "name": "Trà đào cam sả",
+      "category": "Trà",
+      "categoryId": "2",
+      "price": 45000,
+      "image": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300&h=300&fit=crop",
+      "description": "Sự kết hợp tuyệt vời từ đào ngâm ngọt giòn, nước cam tươi nguyên chất và hương sả thơm mát nhẹ nhàng.",
+      "status": true,
+      "rating": 5,
+      "reviews": 178,
+      "createdAt": "2025-02-05"
+    },
+    {
+      "id": "6",
+      "name": "Trà sữa trân châu",
+      "category": "Trà",
+      "categoryId": "2",
+      "price": 50000,
+      "image": "https://images.unsplash.com/photo-1558857563-b371033873b8?w=300&h=300&fit=crop",
+      "description": "Trà sữa truyền thống thơm ngậy hương hồng trà kết hợp trân châu đen dai dẻo ngọt mềm ngọt ngào.",
+      "status": true,
+      "rating": 4,
+      "reviews": 143,
+      "createdAt": "2025-02-10"
+    },
+    {
+      "id": "7",
+      "name": "Trà xanh matcha",
+      "category": "Trà",
+      "categoryId": "2",
+      "price": 55000,
+      "image": "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=300&h=300&fit=crop",
+      "description": "Matcha Nhật Bản hảo hạng pha cùng sữa tươi và đường nâu, tạo nên hương vị đặc trưng thanh tao.",
+      "status": true,
+      "rating": 4,
+      "reviews": 56,
+      "createdAt": "2025-03-01"
+    },
+    {
+      "id": "8",
+      "name": "Sinh tố xoài",
+      "category": "Sinh tố",
+      "categoryId": "3",
+      "price": 55000,
+      "image": "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=300&h=300&fit=crop",
+      "description": "Xoài cát chín mọng xay cùng sữa đặc và đá nhuyễn, cung cấp dồi dào vitamin và bổ dưỡng lành mạnh.",
+      "status": true,
+      "rating": 4,
+      "reviews": 95,
+      "createdAt": "2025-03-10"
+    },
+    {
+      "id": "9",
+      "name": "Sinh tố bơ",
+      "category": "Sinh tố",
+      "categoryId": "3",
+      "price": 60000,
+      "image": "https://images.unsplash.com/photo-1546173159-315724a31696?w=300&h=300&fit=crop",
+      "description": "Bơ chín béo ngậy xay mịn cùng sữa tươi và mật ong, giàu chất béo lành mạnh và năng lượng dồi dào.",
+      "status": true,
+      "rating": 5,
+      "reviews": 72,
+      "createdAt": "2025-03-15"
+    },
+    {
+      "id": "10",
+      "name": "Nước ép cam",
+      "category": "Nước ép",
+      "categoryId": "4",
+      "price": 40000,
+      "image": "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=300&h=300&fit=crop",
+      "description": "Cam sành tươi nguyên chất vắt ép trực tiếp, giữ nguyên hương vị chua ngọt sảng khoái bổ dưỡng.",
+      "status": true,
+      "rating": 4,
+      "reviews": 88,
+      "createdAt": "2025-04-01"
+    },
+    {
+      "id": "11",
+      "name": "Nước ép dưa hấu",
+      "category": "Nước ép",
+      "categoryId": "4",
+      "price": 35000,
+      "image": "https://images.unsplash.com/photo-1589984662646-e7b2e4962f18?w=300&h=300&fit=crop",
+      "description": "Dưa hấu tươi mát ép nguyên chất không thêm đường, thức uống giải khát hoàn hảo ngày hè oi bức.",
+      "status": true,
+      "rating": 4,
+      "reviews": 61,
+      "createdAt": "2025-04-10"
+    },
+    {
+      "id": "12",
+      "name": "Bánh croissant",
+      "category": "Bánh ngọt",
+      "categoryId": "5",
+      "price": 35000,
+      "image": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=300&h=300&fit=crop",
+      "description": "Bánh sừng bò ngàn lớp giòn xốp bên ngoài, thơm lừng vị bơ Pháp thượng hạng tan chảy bên trong.",
+      "status": true,
+      "rating": 5,
+      "reviews": 134,
+      "createdAt": "2025-04-15"
+    },
+    {
+      "id": "13",
+      "name": "Bánh tiramisu",
+      "category": "Bánh ngọt",
+      "categoryId": "5",
+      "price": 65000,
+      "image": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=300&h=300&fit=crop",
+      "description": "Bánh tiramisu Ý truyền thống với lớp kem mascarpone béo ngậy, cốt bánh thấm cà phê và bột cacao.",
+      "status": true,
+      "rating": 5,
+      "reviews": 49,
+      "createdAt": "2025-05-01"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "name": "ADMIN nè",
+      "email": "admin@gmail.com",
+      "password": "admin123",
+      "phone": "0901234567",
+      "role": "admin",
+      "avatar": "https://res.cloudinary.com/docms9p9h/image/upload/v1781269662/avatars/xu29m0zcludycopggzg4.jpg",
+      "address": "120 Lê Lợi, Quận 1, TP. Hồ Chí Minh",
+      "status": true,
+      "createdAt": "2025-01-05"
+    },
+    {
+      "id": "2",
+      "name": "Trần Thị Bích",
+      "email": "bich.tran@gmail.com",
+      "password": "user123",
+      "phone": "0912345678",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/150?img=5",
+      "address": "45 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh",
+      "status": true,
+      "createdAt": "2025-01-20"
+    },
+    {
+      "id": "3",
+      "name": "Lê Minh Cường",
+      "email": "cuong.le@yahoo.com",
+      "password": "user123",
+      "phone": "0923456789",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/150?img=11",
+      "address": "78 Cách Mạng Tháng 8, Quận 3, TP. Hồ Chí Minh",
+      "status": true,
+      "createdAt": "2025-02-14"
+    },
+    {
+      "id": "4",
+      "name": "Phạm Thị Dung",
+      "email": "dung.pham@gmail.com",
+      "password": "user123",
+      "phone": "0934567890",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/150?img=20",
+      "address": "15 Phan Xích Long, Phú Nhuận, TP. Hồ Chí Minh",
+      "status": true,
+      "createdAt": "2025-03-01"
+    },
+    {
+      "id": "5",
+      "name": "Hoàng Văn Em",
+      "email": "em.hoang@gmail.com",
+      "password": "user123",
+      "phone": "0945678901",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/150?img=33",
+      "address": "200 Nguyễn Oanh, Quận Gò Vấp, TP. Hồ Chí Minh",
+      "status": true,
+      "createdAt": "2025-03-18"
+    },
+    {
+      "id": "6",
+      "name": "Vũ Thị Fương",
+      "email": "fuong.vu@gmail.com",
+      "password": "user123",
+      "phone": "0956789012",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/150?img=44",
+      "address": "33 Đinh Tiên Hoàng, Bình Thạnh, TP. Hồ Chí Minh",
+      "status": true,
+      "createdAt": "2025-04-05"
+    },
+    {
+      "id": "7",
+      "name": "Đỗ Quốc Giang",
+      "email": "giang.do@gmail.com",
+      "password": "user123",
+      "phone": "0967890123",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/150?img=60",
+      "address": "9 Nguyễn Văn Cừ, Quận 5, TP. Hồ Chí Minh",
+      "status": true,
+      "createdAt": "2025-04-22"
+    },
+    {
+      "id": "8",
+      "name": "Ngô Thị Hà",
+      "email": "ha.ngo@gmail.com",
+      "password": "user123",
+      "phone": "0978901234",
+      "role": "staff",
+      "avatar": "https://i.pravatar.cc/150?img=47",
+      "address": "67 Lý Thường Kiệt, Quận 10, TP. Hồ Chí Minh",
+      "status": true,
+      "createdAt": "2025-05-10"
+    },
+    {
+      "name": "Dương Gia Bảo",
+      "email": "bao21@gmail.com",
+      "password": "bao2111",
+      "phone": "0941440790",
+      "role": "user",
+      "avatar": "https://res.cloudinary.com/docms9p9h/image/upload/v1781572090/avatars/p54vaqqbay8cwghvvnea.jpg",
+      "address": "",
+      "status": true,
+      "createdAt": "2026-06-16",
+      "id": "4lQgLMwcLAU"
+    },
+    {
+      "name": "Thư",
+      "email": "thu@gmai.com",
+      "password": "123456",
+      "phone": "0941440790",
+      "role": "user",
+      "avatar": "https://i.pravatar.cc/150?u=thu@gmai.com",
+      "address": "120 Lê Lợi, Quận 1, TP. Hồ Chí Minh",
+      "status": true,
+      "createdAt": "2026-06-23",
+      "id": "VUPVwQSp_Xk"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "1",
+      "productId": "1",
+      "userId": "2",
+      "author": "Trần Thị Bích",
+      "rating": 5,
+      "content": "Cà phê đen đậm đà, uống buổi sáng rất tỉnh táo. Sẽ mua lại!",
+      "createdAt": "2026-03-15"
+    },
+    {
+      "id": "2",
+      "productId": "2",
+      "userId": "3",
+      "author": "Lê Minh Cường",
+      "rating": 4,
+      "content": "Cà phê sữa đúng vị Việt Nam, thơm và ngọt vừa phải. Giao hàng nhanh!",
+      "createdAt": "2026-03-15"
+    },
+    {
+      "id": "3",
+      "productId": "5",
+      "userId": "5",
+      "author": "Hoàng Văn Em",
+      "rating": 5,
+      "content": "Trà đào cam sả mát lạnh, thơm mùi sả. Uống vào ngày hè cực kỳ sảng khoái.",
+      "createdAt": "2026-05-01"
+    },
+    {
+      "id": "4",
+      "productId": "6",
+      "userId": "6",
+      "author": "Vũ Thị Fương",
+      "rating": 4,
+      "content": "Trà sữa trân châu dai ngon, vị trà đậm vừa phải không quá ngọt. Rất thích!",
+      "createdAt": "2026-04-10"
+    },
+    {
+      "id": "5",
+      "productId": "10",
+      "userId": "3",
+      "author": "Lê Minh Cường",
+      "rating": 4,
+      "content": "Nước ép cam tươi, nguyên chất, uống vừa ngon vừa bổ dưỡng.",
+      "createdAt": "2026-05-20"
+    }
+  ],
+  "blogs": [
+    {
+      "id": "1",
+      "title": "Bí quyết pha cà phê ngon tại nhà",
+      "category": "Hướng dẫn",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "thumbnail": "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=360&fit=crop",
+      "content": "Pha cà phê ngon tại nhà không khó nếu bạn biết cách chọn hạt, xay đúng độ và dùng nước đúng nhiệt độ. Đầu tiên, hãy chọn hạt cà phê Arabica hoặc Robusta chất lượng cao và xay ngay trước khi pha.",
+      "excerpt": "Pha cà phê ngon tại nhà không khó nếu bạn biết cách chọn hạt...",
+      "status": true,
+      "likes": 42,
+      "createdAt": "2025-03-10"
+    },
+    {
+      "id": "2",
+      "title": "Top 10 loại trà thảo mộc tốt cho sức khỏe",
+      "category": "Sức khỏe",
+      "author": "Ngô Thị Hà",
+      "authorId": "8",
+      "thumbnail": "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&h=360&fit=crop",
+      "content": "Trà thảo mộc không chỉ thơm ngon mà còn mang lại nhiều lợi ích sức khỏe. Dưới đây là 10 loại trà thảo mộc được ưa chuộng nhất trên thế giới.",
+      "excerpt": "Trà thảo mộc không chỉ thơm ngon mà còn mang lại nhiều lợi ích...",
+      "status": true,
+      "likes": 31,
+      "createdAt": "2025-03-18",
+      "likedBy": [
+        "1",
+        "2",
+        "4lQgLMwcLAU"
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Lịch sử hạt cà phê Arabica và Robusta",
+      "category": "Kiến thức",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "thumbnail": "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=600&h=360&fit=crop",
+      "content": "Arabica và Robusta là hai giống cà phê phổ biến nhất thế giới. Arabica có nguồn gốc từ Ethiopia, mang hương vị tinh tế và chua nhẹ, trong khi Robusta từ Congo, đắng hơn và nhiều caffeine hơn.",
+      "excerpt": "Arabica và Robusta là hai giống cà phê phổ biến nhất thế giới...",
+      "status": true,
+      "likes": 16,
+      "createdAt": "2025-04-02",
+      "likedBy": [
+        "1"
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Menu mùa hè: Thức uống làm mát tuyệt vời",
+      "category": "Menu",
+      "author": "Ngô Thị Hà",
+      "authorId": "8",
+      "thumbnail": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&h=360&fit=crop",
+      "content": "Mùa hè nóng bức, không gì tuyệt hơn là một ly thức uống mát lạnh. Khám phá những món đồ uống hè của chúng tôi từ trà đào, sinh tố xoài đến cold brew cà phê đá.",
+      "excerpt": "Mùa hè nóng bức, không gì tuyệt hơn là một ly thức uống mát lạnh...",
+      "status": true,
+      "likes": 67,
+      "createdAt": "2025-04-20"
+    },
+    {
+      "id": "5",
+      "title": "Cách chọn máy pha cà phê phù hợp",
+      "category": "Hướng dẫn",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "thumbnail": "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=600&h=360&fit=crop",
+      "content": "Thị trường hiện có rất nhiều loại máy pha cà phê từ máy drip, French Press, AeroPress đến máy espresso chuyên nghiệp. Mỗi loại có ưu nhược điểm riêng phù hợp với nhu cầu khác nhau.",
+      "excerpt": "Thị trường hiện có rất nhiều loại máy pha cà phê...",
+      "status": true,
+      "likes": 9,
+      "createdAt": "2025-05-05"
+    },
+    {
+      "id": "6",
+      "title": "Cà phê Cold Brew — cách làm tại nhà",
+      "category": "Hướng dẫn",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "thumbnail": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&h=360&fit=crop",
+      "content": "Cold Brew là phương pháp ủ cà phê nguội trong 12-24 giờ. Kết quả là một loại cà phê có vị ngọt tự nhiên, ít axit và rất thơm. Bạn có thể dễ dàng làm tại nhà chỉ với vài nguyên liệu đơn giản.",
+      "excerpt": "Cold Brew là phương pháp ủ cà phê nguội trong 12-24 giờ...",
+      "status": true,
+      "likes": 32,
+      "createdAt": "2025-05-15",
+      "likedBy": [
+        "1"
+      ]
+    },
+    {
+      "title": "Kỹ thuật rang café là một trong những kiến thức nâng cao của Barista. Am hiểu kỹ thuật này giúp Barista có lợi thế lớn khi ứng tuyển việc làm. Hoặc Barista có thể tự mở quán kinh doanh café chất lượng cao, phù hợp với xu hướng thưởng thức café rang xay tại chỗ như hiện nay.",
+      "category": "Cà phê",
+      "thumbnail": "https://www.huongnghiepaau.com/wp-content/uploads/2020/02/rang-cafe.jpg",
+      "excerpt": "",
+      "content": "Nếu bạn dùng hạt café sống, xay nhuyễn và pha chế, bạn sẽ có một tách café với vị rất đắng, nhiều acid chua, không có mùi thơm hoặc thậm chí là bạn không thể uống được. Rang café là quá trình gia nhiệt làm thay đổi những tính chất vật lý và hóa học của hạt café.\n\nQua quá trình này, những mùi vị tiềm ẩn trong hạt café được khai thác một cách triệt để, hương thơm đặc trưng của hạt café được đánh thức. Đặc biệt, rang café giúp thức uống sau khi pha có độ đắng vừa đủ để bạn cảm nhận được trọn vẹn vị ngon của hạt café.",
+      "status": true,
+      "author": "Trần Thị Bích",
+      "authorId": "2",
+      "createdAt": "2026-06-16T01:31:24.893Z",
+      "likes": 1,
+      "id": "2UI0dkfJQBk",
+      "likedBy": [
+        "1"
+      ]
+    },
+    {
+      "id": "7",
+      "title": "Bí quyết pha Espresso chuẩn vị Ý tại nhà",
+      "category": "Cà phê",
+      "thumbnail": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=600&h=400&fit=crop",
+      "excerpt": "Espresso là nền tảng của nhiều loại cà phê. Hãy cùng tìm hiểu cách chiết xuất một ly Espresso hoàn hảo.",
+      "content": "Nội dung chi tiết của bài viết số 7. Cà phê không chỉ là thức uống mà còn là nghệ thuật.",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "likes": 0
+    },
+    {
+      "id": "8",
+      "title": "Nghệ thuật Latte Art: Từ cơ bản đến nâng cao",
+      "category": "Cà phê",
+      "thumbnail": "https://images.unsplash.com/photo-1550989460-0adf9ea622e2?w=600&h=400&fit=crop",
+      "excerpt": "Hướng dẫn chi tiết cách đánh sữa và đổ hình cơ bản như trái tim, hoa rosetta cho người mới bắt đầu.",
+      "content": "Nội dung chi tiết của bài viết số 8. Cà phê không chỉ là thức uống mà còn là nghệ thuật.",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "likes": 17
+    },
+    {
+      "id": "9",
+      "title": "Cold Brew vs Iced Coffee: Điểm khác biệt là gì?",
+      "category": "Pha chế",
+      "thumbnail": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&h=400&fit=crop",
+      "excerpt": "Cùng là cà phê lạnh nhưng phương pháp pha chế khác nhau mang lại hương vị hoàn toàn khác biệt.",
+      "content": "Nội dung chi tiết của bài viết số 9. Cà phê không chỉ là thức uống mà còn là nghệ thuật.",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "likes": 8
+    },
+    {
+      "id": "10",
+      "title": "Top 5 quán cà phê vintage yên tĩnh giữa lòng Hà Nội",
+      "category": "Pha chế",
+      "thumbnail": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=600&h=400&fit=crop",
+      "excerpt": "Khám phá những không gian hoài cổ, bình yên để thư giãn cuối tuần sau những giờ làm việc căng thẳng.",
+      "content": "Nội dung chi tiết của bài viết số 10. Cà phê không chỉ là thức uống mà còn là nghệ thuật.",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "likes": 17
+    },
+    {
+      "id": "11",
+      "title": "Cà phê vợt - Nét văn hóa độc đáo của Sài Gòn xưa",
+      "category": "Cà phê",
+      "thumbnail": "https://images.unsplash.com/photo-1495474472201-428e122ea5bc?w=600&h=400&fit=crop",
+      "excerpt": "Một góc nhìn về văn hóa thưởng thức cà phê bình dân nhưng đậm đà bản sắc của người dân Sài Thành.",
+      "content": "Nội dung chi tiết của bài viết số 11. Cà phê không chỉ là thức uống mà còn là nghệ thuật.",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "likes": 34
+    },
+    {
+      "id": "12",
+      "title": "Cách phân biệt hạt Arabica và Robusta",
+      "category": "Cà phê",
+      "thumbnail": "https://images.unsplash.com/photo-1611162458324-aae1eb4129a4?w=600&h=400&fit=crop",
+      "excerpt": "Hai dòng hạt phổ biến nhất thế giới có gì khác nhau về hương vị, hàm lượng caffeine và cách trồng?",
+      "content": "Nội dung chi tiết của bài viết số 12. Cà phê không chỉ là thức uống mà còn là nghệ thuật.",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "likes": 4
+    },
+    {
+      "id": "13",
+      "title": "Trà Kombucha: Lợi ích sức khỏe và cách làm tại nhà",
+      "category": "Kiến thức",
+      "thumbnail": "https://images.unsplash.com/photo-1563805042-7684c8a9e9cb?w=600&h=400&fit=crop",
+      "excerpt": "Thức uống lên men giàu probiotic giúp cải thiện hệ tiêu hóa và tăng cường sức đề kháng tự nhiên.",
+      "content": "Nội dung chi tiết của bài viết số 13. Cà phê không chỉ là thức uống mà còn là nghệ thuật.",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "likes": 15
+    },
+    {
+      "id": "14",
+      "title": "Công thức pha trà đào cam sả giải nhiệt mùa hè",
+      "category": "Kiến thức",
+      "thumbnail": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&h=400&fit=crop",
+      "excerpt": "Món nước quốc dân với cách pha cực kỳ đơn giản, nguyên liệu dễ tìm mà thành phẩm lại vô cùng thơm ngon.",
+      "content": "Nội dung chi tiết của bài viết số 14. Cà phê không chỉ là thức uống mà còn là nghệ thuật.",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "likes": 25
+    },
+    {
+      "id": "15",
+      "title": "Lợi ích bất ngờ của việc uống 1 tách cà phê mỗi sáng",
+      "category": "Cà phê",
+      "thumbnail": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&h=400&fit=crop",
+      "excerpt": "Cà phê không chỉ giúp tỉnh táo mà còn mang lại nhiều lợi ích sức khỏe nếu được sử dụng đúng cách.",
+      "content": "Nội dung chi tiết của bài viết số 15. Cà phê không chỉ là thức uống mà còn là nghệ thuật.",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "likes": 44
+    },
+    {
+      "id": "16",
+      "title": "Mở quán cà phê nhỏ cần chuẩn bị những gì?",
+      "category": "Cà phê",
+      "thumbnail": "https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=600&h=400&fit=crop",
+      "excerpt": "Kinh nghiệm xương máu từ việc lập kế hoạch, chọn mặt bằng đến setup menu cho quán cà phê đầu tay.",
+      "content": "Nội dung chi tiết của bài viết số 16. Cà phê không chỉ là thức uống mà còn là nghệ thuật.",
+      "author": "ADMIN nè",
+      "authorId": "1",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "likes": 0
+    },
+    {
+      "title": "Cách Làm Bánh Mì Sandwich Nhanh Gọn Cho Bữa Sángggg",
+      "category": "Bánh mì",
+      "thumbnail": "https://www.huongnghiepaau.com/wp-content/uploads/2019/01/lam-banh-mi-sandwich-don-gian.jpg",
+      "excerpt": "",
+      "content": "Cách làm bánh mì sandwich cho bữa sáng\nLàm bột bánh mì sandwich\nBạn chuẩn bị một cái âu sạch, cho dầu thực vật, sữa, đường cát trắng, muối, nước và men nở vào sau đó dùng muỗng trộn đều tất cả các nguyên liệu trên lên cho hòa quyện.\n\nLấy phần bột mì, bạn chia thành 3 phần bằng nhau, lần lượt cho từng phần vào âu nguyên liệu vừa trộn, tiếp tục trộn bột cho đều. Lưu ý là bạn nhào đều cho đến khi thấy bột không còn vón cục, mịn và không dính tay là được.\n\nNếu có máy trộn bột, bạn có thể tận dụng để phần bột nhào được đẹp mắt và đều hơn. Nếu không có, bạn nhào tầm 15 phút bằng tay là bột có thể dùng được.\n\nỦ bột lần 1\nLấy âu sạch, quét một lớp dầu khắp lòng âu cho mỏng. Sau đó bạn cho khối bột đã nhào vào lật mặt khối bột lên để dầu bao quanh phần bề mặt bột.\n\nỦ bột bằng cách dùng khăn ẩm hoặc màng bọc thực phẩm để bọc kín âu đựng bột lại. Bạn nên ủ bột ở nhiệt độ phòng. Khi nào thấy bột nở gấp đôi là được.\n\nLưu ý: Để kiểm tra bột ủ đã đạt yêu cầu hay chưa, bạn có thể dùng hai ngón tay ấn mạnh vào khối bột sao cho sâu khoảng 2 cm. Nếu bạn thấy vết lõm giữ nguyên thì bột đã đạt yêu cầu, ngược lại nếu bột đàn hồi, phồng trở lại thì cần phải ủ thêm một chút nữa.\n\nỦ bột lần 2\nSau khi bột đã ủ đạt yêu cầu, bạn dùng tay tác động, đấm nhẹ vào khối bột nhằm giúp thoát khí. Nhào lại bột khoảng 1 – 2 phút bằng tay. Nhào xong, tiếp tục để khối bột nghỉ trong 5 phút.\n\nChuẩn bị mặt phẳng, dàn bột ra rồi gập làm 3 cho bột thành 1 khối hình chữ nhật. Bạn đặt bột vào khuôn nướng, lưu ý là kích thước bột cần nhỏ hơn khuôn để bột còn nở.\n\nỦ bột thêm ở nơi ấm áp cho đến khi thấy bột nở gấp đôi.\n\nỦ và nhào bột làm sandwich\n\nỦ và nhào bột là hai bước quan trọng\n\nNướng bánh\nKhi bột tăng kích cỡ khoảng 70 – 80% thì bạn bật lò nhiệt độ 170○C (lưu ý là lò nướng cần được làm nóng sẵn ít nhất 10 phút trước khi nướng bánh).\n\nNướng bánh trong tầm 25 – 30 phút đồng hồ hoặc lâu hơn một chút nếu bạn làm bánh to. Nướng cho đến khi thấy bánh chín vàng mặt.",
+      "status": true,
+      "author": "Thư",
+      "authorId": "VUPVwQSp_Xk",
+      "createdAt": "2026-06-23T06:01:01.006Z",
+      "likes": 0,
+      "id": "MsbjigCfIfg"
+    }
+  ],
+  "comments": [
+    {
+      "id": "1",
+      "blogId": "1",
+      "postTitle": "Bí quyết pha cà phê ngon tại nhà",
+      "author": "Trần Thị Bích",
+      "email": "bich.tran@gmail.com",
+      "content": "Bài viết rất hữu ích ạ! Mình đã thử và cà phê pha ra ngon hơn hẳnnnn",
+      "status": true,
+      "createdAt": "2025-03-12",
+      "avatar": "https://i.pravatar.cc/150?img=5"
+    },
+    {
+      "id": "2",
+      "blogId": "1",
+      "postTitle": "Bí quyết pha cà phê ngon tại nhà",
+      "author": "Hoàng Văn Em",
+      "email": "em.hoang@gmail.com",
+      "content": "Cho mình hỏi thêm về nhiệt độ nước pha cà phê phin được không ạ?",
+      "status": true,
+      "createdAt": "2025-03-14",
+      "avatar": "https://i.pravatar.cc/150?img=33"
+    },
+    {
+      "id": "3",
+      "blogId": "4",
+      "postTitle": "Menu mùa hè: Thức uống làm mát tuyệt vời",
+      "author": "Phạm Thị Dung",
+      "email": "dung.pham@gmail.com",
+      "content": "Trà đào cam sả nhà mình uống thấy ngon lắm, thêm vào menu đi ạ!",
+      "status": true,
+      "createdAt": "2025-04-22",
+      "avatar": "https://i.pravatar.cc/150?img=20"
+    },
+    {
+      "id": "4",
+      "blogId": "2",
+      "postTitle": "Top 10 loại trà thảo mộc tốt cho sức khỏe",
+      "author": "Đỗ Quốc Giang",
+      "email": "giang.do@gmail.com",
+      "content": "Bài viết đúng xu hướng mình đang tìm hiểu về sức khỏe, cảm ơn tác giả.",
+      "status": true,
+      "createdAt": "2025-03-20",
+      "avatar": "https://i.pravatar.cc/150?img=60"
+    },
+    {
+      "id": "5",
+      "blogId": "3",
+      "postTitle": "Lịch sử hạt cà phê Arabica và Robusta",
+      "author": "ADMIN nè",
+      "email": "admin@gmail.com",
+      "content": "Ví dụ rất dễ hiểu, cảm ơn tác giả đã chia sẻ kiến thức thú vị.",
+      "status": true,
+      "createdAt": "2025-04-05",
+      "avatar": "https://res.cloudinary.com/docms9p9h/image/upload/v1781269662/avatars/xu29m0zcludycopggzg4.jpg"
+    },
+    {
+      "id": "6",
+      "blogId": "5",
+      "postTitle": "Cách chọn máy pha cà phê phù hợp",
+      "author": "Hoàng Văn Em",
+      "email": "em.hoang@gmail.com",
+      "content": "Hướng dẫn rất chi tiết, mình sắp mua máy nên bài này hữu ích lắm!",
+      "status": true,
+      "createdAt": "2025-05-08",
+      "avatar": "https://i.pravatar.cc/150?img=33"
+    },
+    {
+      "blogId": "2",
+      "author": "Trần Thị Bích",
+      "email": "bich.tran@gmail.com",
+      "content": "hay",
+      "status": true,
+      "createdAt": "2026-06-16",
+      "_isOwn": true,
+      "id": "tnx5NPYeN68",
+      "avatar": "https://i.pravatar.cc/150?img=5"
+    },
+    {
+      "blogId": "3",
+      "author": "Đỗ Quốc Giang",
+      "email": "giang.do@gmail.com",
+      "content": "bài viết bổ ít. Khá hay",
+      "status": true,
+      "createdAt": "2026-06-16",
+      "_isOwn": true,
+      "id": "F0jQ6Q1aT3M",
+      "avatar": "https://i.pravatar.cc/150?img=60"
+    },
+    {
+      "blogId": "2UI0dkfJQBk",
+      "author": "Phạm Thị Dung",
+      "email": "dung.pham@gmail.com",
+      "content": "Khá hay và bổ ít",
+      "status": true,
+      "createdAt": "2026-06-16",
+      "_isOwn": true,
+      "id": "KUl-hLPImP0",
+      "avatar": "https://i.pravatar.cc/150?img=20"
+    },
+    {
+      "id": "7",
+      "blogId": "7",
+      "author": "Lê Minh Cường",
+      "email": "cuong.le@yahoo.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=11"
+    },
+    {
+      "id": "8",
+      "blogId": "7",
+      "author": "Dương Gia Bảo",
+      "email": "bao21@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://res.cloudinary.com/docms9p9h/image/upload/v1781572090/avatars/p54vaqqbay8cwghvvnea.jpg"
+    },
+    {
+      "id": "9",
+      "blogId": "7",
+      "author": "Trần Thị Bích",
+      "email": "bich.tran@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=5"
+    },
+    {
+      "id": "10",
+      "blogId": "8",
+      "author": "Vũ Thị Fương",
+      "email": "fuong.vu@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=44"
+    },
+    {
+      "id": "11",
+      "blogId": "8",
+      "author": "Dương Gia Bảo",
+      "email": "bao21@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://res.cloudinary.com/docms9p9h/image/upload/v1781572090/avatars/p54vaqqbay8cwghvvnea.jpg"
+    },
+    {
+      "id": "12",
+      "blogId": "8",
+      "author": "Phạm Thị Dung",
+      "email": "dung.pham@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=20"
+    },
+    {
+      "id": "13",
+      "blogId": "9",
+      "author": "Dương Gia Bảo",
+      "email": "bao21@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://res.cloudinary.com/docms9p9h/image/upload/v1781572090/avatars/p54vaqqbay8cwghvvnea.jpg"
+    },
+    {
+      "id": "14",
+      "blogId": "9",
+      "author": "Hoàng Văn Em",
+      "email": "em.hoang@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=33"
+    },
+    {
+      "id": "15",
+      "blogId": "9",
+      "author": "Ngô Thị Hà",
+      "email": "ha.ngo@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=47"
+    },
+    {
+      "id": "16",
+      "blogId": "9",
+      "author": "ADMIN nè",
+      "email": "admin@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://res.cloudinary.com/docms9p9h/image/upload/v1781269662/avatars/xu29m0zcludycopggzg4.jpg"
+    },
+    {
+      "id": "17",
+      "blogId": "10",
+      "author": "ADMIN nè",
+      "email": "admin@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://res.cloudinary.com/docms9p9h/image/upload/v1781269662/avatars/xu29m0zcludycopggzg4.jpg"
+    },
+    {
+      "id": "18",
+      "blogId": "10",
+      "author": "ADMIN nè",
+      "email": "admin@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://res.cloudinary.com/docms9p9h/image/upload/v1781269662/avatars/xu29m0zcludycopggzg4.jpg"
+    },
+    {
+      "id": "19",
+      "blogId": "11",
+      "author": "Ngô Thị Hà",
+      "email": "ha.ngo@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=47"
+    },
+    {
+      "id": "20",
+      "blogId": "11",
+      "author": "Trần Thị Bích",
+      "email": "bich.tran@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=5"
+    },
+    {
+      "id": "21",
+      "blogId": "11",
+      "author": "Ngô Thị Hà",
+      "email": "ha.ngo@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=47"
+    },
+    {
+      "id": "22",
+      "blogId": "11",
+      "author": "Vũ Thị Fương",
+      "email": "fuong.vu@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=44"
+    },
+    {
+      "id": "23",
+      "blogId": "12",
+      "author": "Dương Gia Bảo",
+      "email": "bao21@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://res.cloudinary.com/docms9p9h/image/upload/v1781572090/avatars/p54vaqqbay8cwghvvnea.jpg"
+    },
+    {
+      "id": "24",
+      "blogId": "12",
+      "author": "Phạm Thị Dung",
+      "email": "dung.pham@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=20"
+    },
+    {
+      "id": "25",
+      "blogId": "12",
+      "author": "ADMIN nè",
+      "email": "admin@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://res.cloudinary.com/docms9p9h/image/upload/v1781269662/avatars/xu29m0zcludycopggzg4.jpg"
+    },
+    {
+      "id": "26",
+      "blogId": "12",
+      "author": "Trần Thị Bích",
+      "email": "bich.tran@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=5"
+    },
+    {
+      "id": "27",
+      "blogId": "13",
+      "author": "Trần Thị Bích",
+      "email": "bich.tran@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=5"
+    },
+    {
+      "id": "28",
+      "blogId": "13",
+      "author": "Ngô Thị Hà",
+      "email": "ha.ngo@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=47"
+    },
+    {
+      "id": "29",
+      "blogId": "14",
+      "author": "Trần Thị Bích",
+      "email": "bich.tran@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=5"
+    },
+    {
+      "id": "30",
+      "blogId": "14",
+      "author": "Lê Minh Cường",
+      "email": "cuong.le@yahoo.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=11"
+    },
+    {
+      "id": "31",
+      "blogId": "14",
+      "author": "Hoàng Văn Em",
+      "email": "em.hoang@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=33"
+    },
+    {
+      "id": "32",
+      "blogId": "15",
+      "author": "Ngô Thị Hà",
+      "email": "ha.ngo@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=47"
+    },
+    {
+      "id": "33",
+      "blogId": "16",
+      "author": "Phạm Thị Dung",
+      "email": "dung.pham@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=20"
+    },
+    {
+      "id": "34",
+      "blogId": "16",
+      "author": "Vũ Thị Fương",
+      "email": "fuong.vu@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://i.pravatar.cc/150?img=44"
+    },
+    {
+      "id": "35",
+      "blogId": "16",
+      "author": "ADMIN nè",
+      "email": "admin@gmail.com",
+      "content": "Bài viết rất hay, cảm ơn tác giả!",
+      "createdAt": "2026-06-16T01:48:57.589Z",
+      "status": true,
+      "avatar": "https://res.cloudinary.com/docms9p9h/image/upload/v1781269662/avatars/xu29m0zcludycopggzg4.jpg"
+    },
+    {
+      "blogId": "2UI0dkfJQBk",
+      "author": "Dương Gia Bảo",
+      "email": "bao21@gmail.com",
+      "content": "Cảm ơn bạn",
+      "status": true,
+      "createdAt": "2026-06-16",
+      "parentId": "KUl-hLPImP0",
+      "id": "YAduKoxtePI",
+      "avatar": "https://res.cloudinary.com/docms9p9h/image/upload/v1781572090/avatars/p54vaqqbay8cwghvvnea.jpg"
+    },
+    {
+      "blogId": "2",
+      "author": "Dương Gia Bảo",
+      "email": "bao21@gmail.com",
+      "content": "hay",
+      "status": true,
+      "createdAt": "2026-06-16",
+      "_isOwn": true,
+      "id": "rHytudF1SdI"
+    },
+    {
+      "blogId": "2",
+      "author": "Thư",
+      "email": "thu@gmai.com",
+      "content": "Hayy",
+      "status": true,
+      "createdAt": "2026-06-23",
+      "_isOwn": true,
+      "id": "zLnf4r9vYiU"
+    }
+  ],
+  "orders": [
+    {
+      "id": "1",
+      "code": "BREW-8472",
+      "customerName": "Nguyễn Văn Nam",
+      "customerPhone": "0912345678",
+      "customerEmail": "namnv@gmail.com",
+      "shippingAddress": "120 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh",
+      "items": [
+        {
+          "name": "Cà phê sữa",
+          "price": 30000,
+          "quantity": 2,
+          "image": "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=80&h=80&fit=crop"
+        },
+        {
+          "name": "Bánh croissant",
+          "price": 35000,
+          "quantity": 1,
+          "image": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=80&h=80&fit=crop"
+        }
+      ],
+      "subtotal": 95000,
+      "shippingFee": 15000,
+      "discount": 10000,
+      "totalAmount": 100000,
+      "paymentMethod": "COD",
+      "paymentStatus": false,
+      "status": "shipping",
+      "createdAt": "2026-05-26 10:15",
+      "adminNote": "Khách hẹn giao giờ hành chính"
+    },
+    {
+      "id": "2",
+      "code": "BREW-9123",
+      "customerName": "Lê Thị Thu Thảo",
+      "customerPhone": "0987654321",
+      "customerEmail": "thao.le@gmail.com",
+      "shippingAddress": "45/12 Đường 3/2, Phường 11, Quận 10, TP. Hồ Chí Minh",
+      "items": [
+        {
+          "name": "Trà đào cam sả",
+          "price": 45000,
+          "quantity": 3,
+          "image": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=80&h=80&fit=crop"
+        },
+        {
+          "name": "Sinh tố xoài",
+          "price": 55000,
+          "quantity": 1,
+          "image": "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=80&h=80&fit=crop"
+        }
+      ],
+      "subtotal": 190000,
+      "shippingFee": 20000,
+      "discount": 20000,
+      "totalAmount": 190000,
+      "paymentMethod": "Bank",
+      "paymentStatus": true,
+      "status": "confirmed",
+      "createdAt": "2026-05-26 09:30",
+      "adminNote": "Đã nhận chuyển khoản Vietcombank"
+    },
+    {
+      "id": "3",
+      "code": "BREW-7341",
+      "customerName": "Phạm Minh Hoàng",
+      "customerPhone": "0903112233",
+      "customerEmail": "hoangpm@yahoo.com",
+      "shippingAddress": "Tòa nhà Landmark 81, Phường 22, Quận Bình Thạnh, TP. Hồ Chí Minh",
+      "items": [
+        {
+          "name": "Capuchino",
+          "price": 55000,
+          "quantity": 1,
+          "image": "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=80&h=80&fit=crop"
+        },
+        {
+          "name": "Cà phê đen",
+          "price": 25000,
+          "quantity": 2,
+          "image": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=80&h=80&fit=crop"
+        }
+      ],
+      "subtotal": 105000,
+      "shippingFee": 15000,
+      "discount": 0,
+      "totalAmount": 120000,
+      "paymentMethod": "Momo",
+      "paymentStatus": true,
+      "status": "shipping",
+      "createdAt": "2026-05-25 15:45",
+      "adminNote": "Giao tại quầy lễ tân tầng G"
+    },
+    {
+      "id": "4",
+      "code": "BREW-4821",
+      "customerName": "Trần Thanh Vy",
+      "customerPhone": "0977889900",
+      "customerEmail": "vytran@hotmail.com",
+      "shippingAddress": "Chung cư Sunrise City, Nguyễn Hữu Thọ, Quận 7, TP. Hồ Chí Minh",
+      "items": [
+        {
+          "name": "Trà sữa trân châu",
+          "price": 50000,
+          "quantity": 4,
+          "image": "https://images.unsplash.com/photo-1558857563-b371033873b8?w=80&h=80&fit=crop"
+        }
+      ],
+      "subtotal": 200000,
+      "shippingFee": 25000,
+      "discount": 30000,
+      "totalAmount": 195000,
+      "paymentMethod": "Bank",
+      "paymentStatus": true,
+      "status": "delivered",
+      "createdAt": "2026-05-25 11:20",
+      "adminNote": "Khách quen, giảm giá VIP 15%"
+    },
+    {
+      "id": "5",
+      "code": "BREW-1049",
+      "customerName": "Đỗ Quốc Bảo",
+      "customerPhone": "0944556677",
+      "customerEmail": "baodq@gmail.com",
+      "shippingAddress": "88 Quang Trung, Phường 10, Quận Gò Vấp, TP. Hồ Chí Minh",
+      "items": [
+        {
+          "name": "Nước ép cam",
+          "price": 40000,
+          "quantity": 2,
+          "image": "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=80&h=80&fit=crop"
+        }
+      ],
+      "subtotal": 80000,
+      "shippingFee": 15000,
+      "discount": 0,
+      "totalAmount": 95000,
+      "paymentMethod": "COD",
+      "paymentStatus": false,
+      "status": "cancelled",
+      "createdAt": "2026-05-24 14:05",
+      "adminNote": "Khách hủy vì bận đột xuất"
+    },
+    {
+      "id": "6",
+      "code": "BREW-6291",
+      "customerName": "Vũ Thị Hải Yến",
+      "customerPhone": "0933221100",
+      "customerEmail": "yenhai@gmail.com",
+      "shippingAddress": "250 Trường Chinh, Phường 13, Quận Tân Bình, TP. Hồ Chí Minh",
+      "items": [
+        {
+          "name": "Trà đào cam sả",
+          "price": 45000,
+          "quantity": 1,
+          "image": "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=80&h=80&fit=crop"
+        },
+        {
+          "name": "Capuchino",
+          "price": 55000,
+          "quantity": 1,
+          "image": "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=80&h=80&fit=crop"
+        },
+        {
+          "name": "Bánh croissant",
+          "price": 35000,
+          "quantity": 2,
+          "image": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=80&h=80&fit=crop"
+        }
+      ],
+      "subtotal": 170000,
+      "shippingFee": 15000,
+      "discount": 15000,
+      "totalAmount": 170000,
+      "paymentMethod": "COD",
+      "paymentStatus": true,
+      "status": "delivered",
+      "createdAt": "2026-05-24 09:10",
+      "adminNote": ""
+    },
+    {
+      "code": "BREW-4451",
+      "customerName": "Nguyễn Văn An",
+      "customerPhone": "0941440790",
+      "customerEmail": "admin@gmail.com",
+      "shippingAddress": "sdfghjk",
+      "items": [
+        {
+          "name": "Cold Brew",
+          "price": 45000,
+          "quantity": 1,
+          "size": "M",
+          "sugar": "100%",
+          "ice": "100%",
+          "image": "https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=300&h=300&fit=crop"
+        }
+      ],
+      "subtotal": 45000,
+      "shippingFee": 15000,
+      "discount": 0,
+      "totalAmount": 60000,
+      "paymentMethod": "COD",
+      "paymentStatus": false,
+      "status": "pending",
+      "createdAt": "07:14:39 13/6/2026",
+      "note": "Size: M, Đường: 100%, Đá: 100%",
+      "id": "pw-hCxG3PjE"
+    },
+    {
+      "code": "BREW-3813",
+      "customerName": "Trần Thị Bích",
+      "customerPhone": "0321546969",
+      "customerEmail": "bich.tran@gmail.com",
+      "shippingAddress": "45dgd",
+      "items": [
+        {
+          "name": "Trà xanh matcha",
+          "price": 55000,
+          "quantity": 1,
+          "size": "M",
+          "sugar": "50%",
+          "ice": "50%",
+          "image": "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?w=300&h=300&fit=crop"
+        }
+      ],
+      "subtotal": 55000,
+      "shippingFee": 15000,
+      "discount": 0,
+      "totalAmount": 70000,
+      "paymentMethod": "COD",
+      "paymentStatus": false,
+      "status": "pending",
+      "createdAt": "11:27:47 23/6/2026",
+      "note": "Size: M, Đường: 50%, Đá: 50%",
+      "id": "Lyf0rb861Gs"
+    }
+  ],
+  "blogCategories": [
+    {
+      "id": "1",
+      "name": "Cà phê",
+      "description": "Kiến thức về cà phê",
+      "status": true,
+      "createdAt": "2025-01-01"
+    },
+    {
+      "id": "2",
+      "name": "Pha chế",
+      "description": "Kỹ năng pha chế đồ uống",
+      "status": true,
+      "createdAt": "2025-02-01"
+    },
+    {
+      "id": "3",
+      "name": "Menu",
+      "description": "Giới thiệu menu",
+      "status": true,
+      "createdAt": "2025-03-01"
+    },
+    {
+      "name": "Quán lý",
+      "description": "",
+      "status": true,
+      "createdAt": "2026-06-16",
+      "id": "ES8zfcTGs0g"
+    },
+    {
+      "name": "Bánh mì",
+      "description": "",
+      "status": true,
+      "createdAt": "2026-06-23",
+      "id": "COPNBXENQEQ"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

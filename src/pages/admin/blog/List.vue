@@ -1,19 +1,37 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
+import { BlogService } from '../../../services/blog.service.js'
+
+const blogService = new BlogService()
+
+// Lấy thông tin user hiện tại
+const currentUser = ref(JSON.parse(localStorage.getItem('auth_user')) || null)
+
+// ─── State ──────────────────────────────────────────
+const blogs     = ref([])
+const isLoading = ref(false)
+const error     = ref(null)
 
 const searchQuery  = ref('')
 const filterStatus = ref('all')
 const filterCat    = ref('Tất cả')
 
-const blogs = ref([
-    { id: 1, title: 'Bí quyết pha cà phê ngon tại nhà',          category: 'Hướng dẫn', author: 'Admin',  thumbnail: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=360&fit=crop', status: true,  createdAt: '2025-03-10', comments: 5,  likes: 42 },
-    { id: 2, title: 'Top 10 loại trà thảo mộc tốt cho sức khỏe', category: 'Sức khỏe',  author: 'Editor', thumbnail: 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=600&h=360&fit=crop', status: true,  createdAt: '2025-03-18', comments: 2,  likes: 28 },
-    { id: 3, title: 'Lịch sử hạt cà phê Arabica và Robusta',      category: 'Kiến thức', author: 'Admin',  thumbnail: 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=600&h=360&fit=crop', status: false, createdAt: '2025-04-02', comments: 0,  likes: 15 },
-    { id: 4, title: 'Menu mùa hè: Thức uống làm mát tuyệt vời',   category: 'Menu',      author: 'Editor', thumbnail: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=600&h=360&fit=crop', status: true,  createdAt: '2025-04-20', comments: 8,  likes: 67 },
-    { id: 5, title: 'Cách chọn máy pha cà phê phù hợp',           category: 'Hướng dẫn', author: 'Admin',  thumbnail: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?w=600&h=360&fit=crop', status: false, createdAt: '2025-05-05', comments: 1,  likes: 9  },
-    { id: 6, title: 'Cà phê Cold Brew — cách làm tại nhà',        category: 'Hướng dẫn', author: 'Admin',  thumbnail: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=600&h=360&fit=crop', status: true,  createdAt: '2025-05-15', comments: 3,  likes: 31 },
-])
+const getData = async () => {
+    isLoading.value = true
+    error.value = null
+    try {
+        const result = await blogService.list()
+        if (result.status === 200) blogs.value = result.data
+    } catch (e) {
+        error.value = 'Không thể tải dữ liệu.'
+        console.error(e)
+    } finally {
+        isLoading.value = false
+    }
+}
+
+onMounted(() => { getData() })
 
 const categories = computed(() => ['Tất cả', ...new Set(blogs.value.map(b => b.category))])
 
@@ -31,8 +49,8 @@ const filtered = computed(() => {
     return list
 })
 
-const currentPage = ref(1)
-const itemsPerPage = ref(3)
+const currentPage  = ref(1)
+const itemsPerPage = ref(6)
 
 const totalPages = computed(() => Math.ceil(filtered.value.length / itemsPerPage.value))
 
@@ -42,19 +60,36 @@ const paginatedBlogs = computed(() => {
     return filtered.value.slice(start, end)
 })
 
-watch([searchQuery, filterStatus, filterCat], () => {
-    currentPage.value = 1
-})
+watch([searchQuery, filterStatus, filterCat], () => { currentPage.value = 1 })
 
-function toggleStatus(b) { b.status = !b.status }
+// ─── Toggle status ──────────────────────────────────────
+const toggleStatus = async (b) => {
+    // Với v-model, b.status đã được Vue cập nhật.
+    // Ta gọi API để lưu lại giá trị mới này.
+    try {
+        await blogService.patch(b.id, { status: b.status })
+    } catch (e) { 
+        // Nếu lỗi, hoàn tác lại
+        b.status = !b.status; 
+        console.error(e) 
+    }
+}
 
+// ─── Delete ─────────────────────────────────────────────
 const deleteTarget    = ref(null)
 const showDeleteModal = ref(false)
+const isDeleting      = ref(false)
+
 function openDeleteModal(b)  { deleteTarget.value = b; showDeleteModal.value = true }
 function closeDeleteModal()  { deleteTarget.value = null; showDeleteModal.value = false }
-function confirmDelete() {
-    blogs.value = blogs.value.filter(b => b.id !== deleteTarget.value.id)
-    closeDeleteModal()
+
+const confirmDelete = async () => {
+    isDeleting.value = true
+    try {
+        await blogService.delete(deleteTarget.value.id)
+        blogs.value = blogs.value.filter(b => b.id !== deleteTarget.value.id)
+    } catch (e) { console.error(e) }
+    finally { isDeleting.value = false; closeDeleteModal() }
 }
 </script>
 
@@ -209,7 +244,7 @@ function confirmDelete() {
         </div>
 
         <!-- ── Card Grid ── -->
-        <div class="row g-4">
+        <div class="row g-4" style="min-height: 480px;">
             <div v-for="b in paginatedBlogs" :key="b.id" class="col-xl-4 col-md-6">
                 <div class="card border-0 shadow-sm rounded-4 h-100">
 
@@ -266,18 +301,18 @@ function confirmDelete() {
                             <!-- Toggle hiển thị -->
                             <div class="form-check form-switch mb-0 me-auto">
                                 <input class="form-check-input" type="checkbox" role="switch"
-                                    :id="`tog-${b.id}`" :checked="b.status" @change="toggleStatus(b)" />
+                                    :id="`tog-${b.id}`" v-model="b.status" @change="toggleStatus(b)" />
                                 <label class="form-check-label small" :for="`tog-${b.id}`"
                                     :class="b.status ? 'text-success fw-semibold' : 'text-muted'">
                                     {{ b.status ? 'Hiển thị' : 'Đã ẩn' }}
                                 </label>
                             </div>
 
-                            <RouterLink :to="`/blogedit/${b.id}`"
+                            <RouterLink v-if="currentUser && (b.authorId === currentUser.id || b.author === currentUser.name)" :to="`/blogedit/${b.id}`"
                                 class="btn btn-outline-warning btn-sm" title="Chỉnh sửa">
                                 <i class="bi bi-pencil"></i>
                             </RouterLink>
-                            <button class="btn btn-outline-danger btn-sm" title="Xóa"
+                            <button v-if="currentUser && (b.authorId === currentUser.id || b.author === currentUser.name)" class="btn btn-outline-danger btn-sm" title="Xóa"
                                 @click="openDeleteModal(b)">
                                 <i class="bi bi-trash"></i>
                             </button>
@@ -289,8 +324,8 @@ function confirmDelete() {
         </div>
 
         <!-- Phân trang Bootstrap 5 -->
-        <nav v-if="totalPages > 1" class="d-flex justify-content-center mt-4">
-            <ul class="pagination pagination-sm">
+        <nav class="d-flex justify-content-center mt-4">
+            <ul v-if="totalPages > 1" class="pagination pagination-sm">
                 <li class="page-item" :class="{ disabled: currentPage === 1 }">
                     <button class="page-link shadow-none" @click="currentPage = 1" style="cursor: pointer;">Trang đầu</button>
                 </li>

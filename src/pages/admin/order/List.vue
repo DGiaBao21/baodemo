@@ -1,205 +1,90 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
+import { OrderService } from '../../../services/order.service.js'
+
+const orderService = new OrderService()
 
 // ─── Hệ thống thông báo (Toast System) ─────────────────────────
 const toasts = ref([])
 function showToast(message, type = 'success') {
     const id = Date.now()
     toasts.value.push({ id, message, type })
-    setTimeout(() => {
-        removeToast(id)
-    }, 3000)
+    setTimeout(() => { removeToast(id) }, 3000)
 }
 function removeToast(id) {
     toasts.value = toasts.value.filter(t => t.id !== id)
 }
 
-// ─── Dữ liệu giả định (Mock Data) ───────────────────────────────
-const orders = ref([
-    {
-        id: 1,
-        code: 'BREW-8472',
-        customerName: 'Nguyễn Văn Nam',
-        customerPhone: '0912345678',
-        customerEmail: 'namnv@gmail.com',
-        shippingAddress: '120 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh',
-        items: [
-            { name: 'Cà phê sữa', price: 30000, quantity: 2, image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=80&h=80&fit=crop' },
-            { name: 'Bánh croissant', price: 35000, quantity: 1, image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=80&h=80&fit=crop' }
-        ],
-        subtotal: 95000,
-        shippingFee: 15000,
-        discount: 10000,
-        totalAmount: 100000,
-        paymentMethod: 'COD',
-        paymentStatus: false,
-        status: 'pending',
-        createdAt: '2026-05-26 10:15',
-        adminNote: 'Khách hẹn giao giờ hành chính'
-    },
-    {
-        id: 2,
-        code: 'BREW-9123',
-        customerName: 'Lê Thị Thu Thảo',
-        customerPhone: '0987654321',
-        customerEmail: 'thao.le@gmail.com',
-        shippingAddress: '45/12 Đường 3/2, Phường 11, Quận 10, TP. Hồ Chí Minh',
-        items: [
-            { name: 'Trà đào cam sả', price: 45000, quantity: 3, image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=80&h=80&fit=crop' },
-            { name: 'Sinh tố xoài', price: 55000, quantity: 1, image: 'https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=80&h=80&fit=crop' }
-        ],
-        subtotal: 190000,
-        shippingFee: 20000,
-        discount: 20000,
-        totalAmount: 190000,
-        paymentMethod: 'Bank',
-        paymentStatus: true,
-        status: 'confirmed',
-        createdAt: '2026-05-26 09:30',
-        adminNote: 'Đã nhận chuyển khoản Vietcombank'
-    },
-    {
-        id: 3,
-        code: 'BREW-7341',
-        customerName: 'Phạm Minh Hoàng',
-        customerPhone: '0903112233',
-        customerEmail: 'hoangpm@yahoo.com',
-        shippingAddress: 'Tòa nhà Landmark 81, Phường 22, Quận Bình Thạnh, TP. Hồ Chí Minh',
-        items: [
-            { name: 'Capuchino', price: 55000, quantity: 1, image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=80&h=80&fit=crop' },
-            { name: 'Cà phê đen', price: 25000, quantity: 2, image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=80&h=80&fit=crop' }
-        ],
-        subtotal: 105000,
-        shippingFee: 15000,
-        discount: 0,
-        totalAmount: 120000,
-        paymentMethod: 'Momo',
-        paymentStatus: true,
-        status: 'shipping',
-        createdAt: '2026-05-25 15:45',
-        adminNote: 'Giao tại quầy lễ tân tầng G'
-    },
-    {
-        id: 4,
-        code: 'BREW-4821',
-        customerName: 'Trần Thanh Vy',
-        customerPhone: '0977889900',
-        customerEmail: 'vytran@hotmail.com',
-        shippingAddress: 'Chung cư Sunrise City, Nguyễn Hữu Thọ, Quận 7, TP. Hồ Chí Minh',
-        items: [
-            { name: 'Trà sữa trân châu', price: 50000, quantity: 4, image: 'https://images.unsplash.com/photo-1558857563-b371033873b8?w=80&h=80&fit=crop' }
-        ],
-        subtotal: 200000,
-        shippingFee: 25000,
-        discount: 30000,
-        totalAmount: 195000,
-        paymentMethod: 'Bank',
-        paymentStatus: true,
-        status: 'delivered',
-        createdAt: '2026-05-25 11:20',
-        adminNote: 'Khách quen, giảm giá VIP 15%'
-    },
-    {
-        id: 5,
-        code: 'BREW-1049',
-        customerName: 'Đỗ Quốc Bảo',
-        customerPhone: '0944556677',
-        customerEmail: 'baodq@gmail.com',
-        shippingAddress: '88 Quang Trung, Phường 10, Quận Gò Vấp, TP. Hồ Chí Minh',
-        items: [
-            { name: 'Nước ép cam', price: 40000, quantity: 2, image: 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=80&h=80&fit=crop' }
-        ],
-        subtotal: 80000,
-        shippingFee: 15000,
-        discount: 0,
-        totalAmount: 95000,
-        paymentMethod: 'COD',
-        paymentStatus: false,
-        status: 'cancelled',
-        createdAt: '2026-05-24 14:05',
-        adminNote: 'Khách hủy vì bận đột xuất'
-    },
-    {
-        id: 6,
-        code: 'BREW-6291',
-        customerName: 'Vũ Thị Hải Yến',
-        customerPhone: '0933221100',
-        customerEmail: 'yenhai@gmail.com',
-        shippingAddress: '250 Trường Chinh, Phường 13, Quận Tân Bình, TP. Hồ Chí Minh',
-        items: [
-            { name: 'Trà đào cam sả', price: 45000, quantity: 1, image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=80&h=80&fit=crop' },
-            { name: 'Capuchino', price: 55000, quantity: 1, image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=80&h=80&fit=crop' },
-            { name: 'Bánh croissant', price: 35000, quantity: 2, image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=80&h=80&fit=crop' }
-        ],
-        subtotal: 170000,
-        shippingFee: 15000,
-        discount: 15000,
-        totalAmount: 170000,
-        paymentMethod: 'COD',
-        paymentStatus: true,
-        status: 'delivered',
-        createdAt: '2026-05-24 09:10',
-        adminNote: ''
+// ─── State ───────────────────────────────────────────────────
+const orders    = ref([])
+const isLoading = ref(false)
+const error     = ref(null)
+
+const getData = async () => {
+    isLoading.value = true
+    error.value = null
+    try {
+        const result = await orderService.list()
+        if (result.status === 200) orders.value = result.data
+    } catch (e) {
+        error.value = 'Không thể tải đơn hàng. Vui lòng kiểm tra server.'
+        console.error(e)
+    } finally {
+        isLoading.value = false
     }
-])
+}
+
+onMounted(() => { getData() })
 
 // ─── Tính toán Số liệu thống kê ────────────────────────────────
-const totalOrdersCount = computed(() => orders.value.length)
-const pendingOrdersCount = computed(() => orders.value.filter(o => o.status === 'pending').length)
+const totalOrdersCount    = computed(() => orders.value.length)
+const pendingOrdersCount  = computed(() => orders.value.filter(o => o.status === 'pending').length)
 const shippingOrdersCount = computed(() => orders.value.filter(o => o.status === 'shipping').length)
-const revenueTotal = computed(() => {
+const revenueTotal        = computed(() => {
     return orders.value
         .filter(o => o.status === 'delivered')
         .reduce((sum, o) => sum + o.totalAmount, 0)
 })
 
 // ─── Trạng thái Bộ lọc ─────────────────────────────────────────
-const searchQuery = ref('')
-const filterStatus = ref('all')
+const searchQuery         = ref('')
+const filterStatus        = ref('all')
 const filterPaymentStatus = ref('all')
-const filterPaymentMethod = ref('all')
-const sortBy = ref('newest')
+const sortBy              = ref('newest')
 
 const statusPills = [
-    { key: 'all', label: 'Tất cả', count: computed(() => orders.value.length), color: 'dark' },
-    { key: 'pending', label: 'Chờ xử lý', count: computed(() => orders.value.filter(o => o.status === 'pending').length), color: 'warning' },
+    { key: 'all',       label: 'Tất cả',      count: computed(() => orders.value.length), color: 'dark' },
+    { key: 'pending',   label: 'Chờ xử lý',   count: computed(() => orders.value.filter(o => o.status === 'pending').length),   color: 'warning' },
     { key: 'confirmed', label: 'Đã xác nhận', count: computed(() => orders.value.filter(o => o.status === 'confirmed').length), color: 'info' },
-    { key: 'shipping', label: 'Đang giao', count: computed(() => orders.value.filter(o => o.status === 'shipping').length), color: 'primary' },
-    { key: 'delivered', label: 'Đã giao', count: computed(() => orders.value.filter(o => o.status === 'delivered').length), color: 'success' },
-    { key: 'cancelled', label: 'Đã hủy', count: computed(() => orders.value.filter(o => o.status === 'cancelled').length), color: 'danger' }
+    { key: 'shipping',  label: 'Đang giao',   count: computed(() => orders.value.filter(o => o.status === 'shipping').length),  color: 'primary' },
+    { key: 'delivered', label: 'Đã giao',     count: computed(() => orders.value.filter(o => o.status === 'delivered').length), color: 'success' },
+    { key: 'cancelled', label: 'Đã hủy',      count: computed(() => orders.value.filter(o => o.status === 'cancelled').length), color: 'danger' }
 ]
 
 // Logic lọc dữ liệu
 const filteredOrders = computed(() => {
     let list = [...orders.value]
 
-    // Tìm kiếm
     const q = searchQuery.value.trim().toLowerCase()
     if (q) {
-        list = list.filter(o => 
+        list = list.filter(o =>
             o.code.toLowerCase().includes(q) ||
             o.customerName.toLowerCase().includes(q) ||
             o.customerPhone.includes(q)
         )
     }
 
-    // Lọc theo Trạng thái đơn hàng
     if (filterStatus.value !== 'all') {
         list = list.filter(o => o.status === filterStatus.value)
     }
 
-    // Lọc theo Trạng thái thanh toán
     if (filterPaymentStatus.value !== 'all') {
         const isPaid = filterPaymentStatus.value === 'paid'
         list = list.filter(o => o.paymentStatus === isPaid)
     }
 
-    // Lọc theo Phương thức thanh toán
-    if (filterPaymentMethod.value !== 'all') {
-        list = list.filter(o => o.paymentMethod === filterPaymentMethod.value)
-    }
 
-    // Sắp xếp
+
     if (sortBy.value === 'newest') {
         list.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
     } else if (sortBy.value === 'oldest') {
@@ -213,7 +98,7 @@ const filteredOrders = computed(() => {
     return list
 })
 
-const currentPage = ref(1)
+const currentPage  = ref(1)
 const itemsPerPage = ref(5)
 
 const totalPages = computed(() => Math.ceil(filteredOrders.value.length / itemsPerPage.value))
@@ -224,7 +109,7 @@ const paginatedOrders = computed(() => {
     return filteredOrders.value.slice(start, end)
 })
 
-watch([searchQuery, filterStatus, filterPaymentStatus, filterPaymentMethod, sortBy], () => {
+watch([searchQuery, filterStatus, filterPaymentStatus, sortBy], () => {
     currentPage.value = 1
 })
 
@@ -233,9 +118,9 @@ const formatPrice = (price) => price.toLocaleString('vi-VN') + 'đ'
 
 function getStatusBadge(status) {
     switch (status) {
-        case 'pending': return 'badge text-bg-warning-subtle text-warning border border-warning-subtle'
+        case 'pending':   return 'badge text-bg-warning-subtle text-warning border border-warning-subtle'
         case 'confirmed': return 'badge text-bg-info-subtle text-info border border-info-subtle'
-        case 'shipping': return 'badge text-bg-primary-subtle text-primary border border-primary-subtle'
+        case 'shipping':  return 'badge text-bg-primary-subtle text-primary border border-primary-subtle'
         case 'delivered': return 'badge text-bg-success-subtle text-success border border-success-subtle'
         case 'cancelled': return 'badge text-bg-danger-subtle text-danger border border-danger-subtle'
         default: return 'badge text-bg-secondary'
@@ -244,9 +129,9 @@ function getStatusBadge(status) {
 
 function getStatusSelectClass(status) {
     switch (status) {
-        case 'pending': return 'bg-warning-subtle text-warning border-warning-subtle'
+        case 'pending':   return 'bg-warning-subtle text-warning border-warning-subtle'
         case 'confirmed': return 'bg-info-subtle text-info border-info-subtle'
-        case 'shipping': return 'bg-primary-subtle text-primary border-primary-subtle'
+        case 'shipping':  return 'bg-primary-subtle text-primary border-primary-subtle'
         case 'delivered': return 'bg-success-subtle text-success border-success-subtle'
         case 'cancelled': return 'bg-danger-subtle text-danger border-danger-subtle'
         default: return 'bg-secondary-subtle text-secondary'
@@ -255,9 +140,9 @@ function getStatusSelectClass(status) {
 
 function getStatusLabel(status) {
     switch (status) {
-        case 'pending': return 'Chờ xử lý'
+        case 'pending':   return 'Chờ xử lý'
         case 'confirmed': return 'Đã xác nhận'
-        case 'shipping': return 'Đang giao'
+        case 'shipping':  return 'Đang giao'
         case 'delivered': return 'Đã giao'
         case 'cancelled': return 'Đã hủy'
         default: return status
@@ -265,17 +150,12 @@ function getStatusLabel(status) {
 }
 
 function getPaymentMethodLabel(method) {
-    switch (method) {
-        case 'COD': return 'Tiền mặt (COD)'
-        case 'Bank': return 'Chuyển khoản'
-        case 'Momo': return 'Ví Momo'
-        default: return method
-    }
+    return 'Tiền mặt (COD)'
 }
 
 // ─── Trạng thái Ngăn kéo Chi tiết (Drawer Detail State) ────────
 const selectedOrder = ref(null)
-const noteInput = ref('')
+const noteInput     = ref('')
 
 function openDetails(order) {
     selectedOrder.value = order
@@ -288,10 +168,10 @@ function closeDetails() {
 
 // Hỗ trợ dòng thời gian (Timeline Helper)
 const steps = [
-    { key: 'pending', label: 'Chờ xử lý', icon: 'bi-hourglass-split' },
+    { key: 'pending',   label: 'Chờ xử lý',   icon: 'bi-hourglass-split' },
     { key: 'confirmed', label: 'Đã xác nhận', icon: 'bi-check-circle' },
-    { key: 'shipping', label: 'Đang giao', icon: 'bi-truck' },
-    { key: 'delivered', label: 'Đã giao', icon: 'bi-house-check' }
+    { key: 'shipping',  label: 'Đang giao',   icon: 'bi-truck' },
+    { key: 'delivered', label: 'Đã giao',     icon: 'bi-house-check' }
 ]
 
 const progressPercent = computed(() => {
@@ -317,11 +197,7 @@ function getStepClass(stepKey) {
     if (selectedOrder.value.status === 'cancelled') {
         return 'bg-danger bg-opacity-10 text-danger border-danger'
     }
-    const active = isStepActive(stepKey)
-    if (active) {
-        return 'bg-success text-white'
-    }
-    return 'bg-white text-muted border border-secondary border-opacity-20'
+    return isStepActive(stepKey) ? 'bg-success text-white' : 'bg-white text-muted border border-secondary border-opacity-20'
 }
 
 function getStepIcon(stepKey) {
@@ -329,34 +205,63 @@ function getStepIcon(stepKey) {
     return step ? `bi ${step.icon}` : 'bi bi-dot'
 }
 
-// Các hành động cập nhật trực tiếp trong Ngăn kéo (Drawer)
-function changeStatusInDrawer(newStatus) {
+// ─── Cập nhật trạng thái (gọi API) ────────────────────────────
+const changeStatusInDrawer = async (newStatus) => {
     if (!selectedOrder.value) return
+    const oldStatus = selectedOrder.value.status
     selectedOrder.value.status = newStatus
-    showToast(`Đã chuyển trạng thái đơn hàng sang: ${getStatusLabel(newStatus)}`, 'success')
+    try {
+        await orderService.patch(selectedOrder.value.id, { status: newStatus })
+        showToast(`Đã chuyển trạng thái sang: ${getStatusLabel(newStatus)}`, 'success')
+    } catch (e) {
+        selectedOrder.value.status = oldStatus
+        showToast('Cập nhật thất bại!', 'danger')
+        console.error(e)
+    }
 }
 
-function quickUpdateStatus(order, newStatus) {
+const quickUpdateStatus = async (order, newStatus) => {
+    const oldStatus = order.status
     order.status = newStatus
-    showToast(`Đã cập nhật trạng thái đơn ${order.code} sang: ${getStatusLabel(newStatus)}`, 'success')
+    try {
+        await orderService.patch(order.id, { status: newStatus })
+        showToast(`Đã cập nhật đơn ${order.code}: ${getStatusLabel(newStatus)}`, 'success')
+    } catch (e) {
+        order.status = oldStatus
+        showToast('Cập nhật thất bại!', 'danger')
+        console.error(e)
+    }
 }
 
-function togglePaymentInDrawer(e) {
+const togglePaymentInDrawer = async (e) => {
     if (!selectedOrder.value) return
-    selectedOrder.value.paymentStatus = e.target.checked
-    const msg = selectedOrder.value.paymentStatus ? 'Đã thanh toán' : 'Chưa thanh toán'
-    showToast(`Đã cập nhật trạng thái thanh toán: ${msg}`, 'success')
+    const newVal = e.target.checked
+    selectedOrder.value.paymentStatus = newVal
+    try {
+        await orderService.patch(selectedOrder.value.id, { paymentStatus: newVal })
+        showToast(`Trạng thái thanh toán: ${newVal ? 'Đã thanh toán' : 'Chưa thanh toán'}`, 'success')
+    } catch (e) {
+        selectedOrder.value.paymentStatus = !newVal
+        console.error(e)
+    }
 }
 
-function saveNoteInDrawer() {
+const saveNoteInDrawer = async () => {
     if (!selectedOrder.value) return
-    selectedOrder.value.adminNote = noteInput.value
-    showToast('Đã cập nhật ghi chú nội bộ thành công!', 'success')
+    try {
+        await orderService.patch(selectedOrder.value.id, { adminNote: noteInput.value })
+        selectedOrder.value.adminNote = noteInput.value
+        showToast('Đã cập nhật ghi chú nội bộ thành công!', 'success')
+    } catch (e) {
+        showToast('Lưu ghi chú thất bại!', 'danger')
+        console.error(e)
+    }
 }
 
 // ─── Trạng thái Xóa đơn hàng ──────────────────────────────────
-const deleteTarget = ref(null)
+const deleteTarget    = ref(null)
 const showDeleteModal = ref(false)
+const isDeleting      = ref(false)
 
 function openDeleteModal(order) {
     deleteTarget.value = order
@@ -368,18 +273,25 @@ function closeDeleteModal() {
     showDeleteModal.value = false
 }
 
-function confirmDelete() {
+const confirmDelete = async () => {
     if (!deleteTarget.value) return
-    const idx = orders.value.findIndex(o => o.id === deleteTarget.value.id)
-    if (idx !== -1) {
-        orders.value.splice(idx, 1)
+    isDeleting.value = true
+    try {
+        await orderService.delete(deleteTarget.value.id)
+        orders.value = orders.value.filter(o => o.id !== deleteTarget.value.id)
         showToast(`Đã xóa đơn hàng ${deleteTarget.value.code} khỏi hệ thống`, 'warning')
+        if (selectedOrder.value && selectedOrder.value.id === deleteTarget.value.id) {
+            selectedOrder.value = null
+        }
+    } catch (e) {
+        showToast('Xóa đơn hàng thất bại!', 'danger')
+        console.error(e)
+    } finally {
+        isDeleting.value = false
+        closeDeleteModal()
     }
-    if (selectedOrder.value && selectedOrder.value.id === deleteTarget.value.id) {
-        selectedOrder.value = null
-    }
-    closeDeleteModal()
 }
+
 
 // ─── Tương tác vi mô UX (Micro-interactions) ──────────────────
 const isExporting = ref(false)
@@ -396,9 +308,7 @@ function copyCode(code) {
     navigator.clipboard.writeText(code).then(() => {
         activeCopyId.value = code
         showToast(`Đã sao chép mã đơn hàng: ${code}`, 'success')
-        setTimeout(() => {
-            activeCopyId.value = null
-        }, 1500)
+        setTimeout(() => { activeCopyId.value = null }, 1500)
     }).catch(() => {
         showToast('Sao chép mã đơn hàng thất bại', 'danger')
     })
@@ -407,6 +317,7 @@ function copyCode(code) {
 function printInvoice() {
     showToast('Đang khởi tạo máy in hóa đơn... Vui lòng đợi trong giây lát.', 'info')
 }
+
 </script>
 
 <template>
@@ -563,15 +474,7 @@ function printInvoice() {
                         </select>
                     </div>
 
-                    <!-- Bộ lọc Phương thức thanh toán -->
-                    <div class="col-6 col-md-3 col-xl-2">
-                        <select v-model="filterPaymentMethod" class="form-select bg-light border-0 text-secondary" style="font-size: 13.5px;">
-                            <option value="all">Phương thức thanh toán</option>
-                            <option value="COD">Tiền mặt (COD)</option>
-                            <option value="Bank">Chuyển khoản</option>
-                            <option value="Momo">Ví Momo</option>
-                        </select>
-                    </div>
+
 
                     <!-- Sắp xếp -->
                     <div class="col-12 col-md-2 col-xl-2">

@@ -1,37 +1,49 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { CategoryService } from '../../../services/category.service.js'
 
-const router = useRouter()
+const router          = useRouter()
+const categoryService = new CategoryService()
 
 const form = ref({
-    name: '',
+    name:        '',
     description: '',
-    status: true,
+    status:      true,
 })
 
-const errors = ref({})
+const errors    = ref({})
+const isLoading = ref(false)
 
 function validate() {
     const errs = {}
-    if (!form.value.name.trim()) {
+    if (!form.value.name.trim())
         errs.name = 'Vui lòng nhập tên danh mục.'
-    } else if (form.value.name.trim().length < 2) {
+    else if (form.value.name.trim().length < 2)
         errs.name = 'Tên danh mục phải ít nhất 2 ký tự.'
-    }
-    if (!form.value.description.trim()) {
+    if (!form.value.description.trim())
         errs.description = 'Vui lòng nhập mô tả.'
-    }
     errors.value = errs
     return Object.keys(errs).length === 0
 }
 
-function handleSubmit() {
+const handleSubmit = async () => {
     if (!validate()) return
-    // TODO: gọi API POST /api/admin/categories
-    console.log('Thêm danh mục:', form.value)
-    alert('Thêm danh mục thành công!')
-    router.push('/categorylist')
+    isLoading.value = true
+    try {
+        const payload = {
+            ...form.value,
+            createdAt: new Date().toISOString().split('T')[0],
+        }
+        const result = await categoryService.create(payload)
+        if (result.status === 201) {
+            router.push('/categorylist')
+        }
+    } catch (e) {
+        console.error('Thêm danh mục thất bại', e)
+    } finally {
+        isLoading.value = false
+    }
 }
 </script>
 
@@ -100,25 +112,13 @@ function handleSubmit() {
                                 <label class="form-label fw-semibold">Trạng thái</label>
                                 <div class="d-flex gap-3">
                                     <div class="form-check">
-                                        <input
-                                            class="form-check-input"
-                                            type="radio"
-                                            v-model="form.status"
-                                            :value="true"
-                                            id="statusActive"
-                                        />
+                                        <input class="form-check-input" type="radio" v-model="form.status" :value="true" id="statusActive" />
                                         <label class="form-check-label" for="statusActive">
                                             <span class="badge text-bg-success">Hoạt động</span>
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input
-                                            class="form-check-input"
-                                            type="radio"
-                                            v-model="form.status"
-                                            :value="false"
-                                            id="statusHidden"
-                                        />
+                                        <input class="form-check-input" type="radio" v-model="form.status" :value="false" id="statusHidden" />
                                         <label class="form-check-label" for="statusHidden">
                                             <span class="badge text-bg-secondary">Ẩn</span>
                                         </label>
@@ -128,11 +128,11 @@ function handleSubmit() {
 
                             <!-- Actions -->
                             <div class="d-flex gap-2">
-                                <RouterLink to="/categorylist" class="btn btn-outline-secondary flex-fill">
-                                    Hủy
-                                </RouterLink>
-                                <button type="submit" class="btn btn-success flex-fill fw-semibold">
-                                    <i class="bi bi-check-lg me-1"></i> Lưu danh mục
+                                <RouterLink to="/categorylist" class="btn btn-outline-secondary flex-fill">Hủy</RouterLink>
+                                <button type="submit" class="btn btn-success flex-fill fw-semibold" :disabled="isLoading">
+                                    <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                    <i v-else class="bi bi-check-lg me-1"></i>
+                                    {{ isLoading ? 'Đang lưu...' : 'Lưu danh mục' }}
                                 </button>
                             </div>
 

@@ -1,32 +1,41 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { UserService } from '../../../services/user.service.js'
 
-const route  = useRoute()
-const router = useRouter()
+const route       = useRoute()
+const router      = useRouter()
+const userService = new UserService()
 
-const mockUsers = [
-    { id: 1, name: 'Nguyễn Văn An',  email: 'an.nguyen@gmail.com',  phone: '0901234567', role: 'admin', status: true  },
-    { id: 2, name: 'Trần Thị Bình',  email: 'binh.tran@gmail.com',  phone: '0912345678', role: 'user',  status: true  },
-    { id: 3, name: 'Lê Hoàng Cường', email: 'cuong.le@gmail.com',   phone: '0923456789', role: 'user',  status: false },
-    { id: 4, name: 'Phạm Thị Dung',  email: 'dung.pham@gmail.com',  phone: '0934567890', role: 'user',  status: true  },
-    { id: 5, name: 'Hoàng Văn Em',   email: 'em.hoang@gmail.com',   phone: '0945678901', role: 'user',  status: true  },
-    { id: 6, name: 'Ngô Thị Phương', email: 'phuong.ngo@gmail.com', phone: '0956789012', role: 'admin', status: true  },
-    { id: 7, name: 'Đặng Minh Quân', email: 'quan.dang@gmail.com',  phone: '0967890123', role: 'user',  status: false },
-    { id: 8, name: 'Vũ Thị Hoa',     email: 'hoa.vu@gmail.com',     phone: '0978901234', role: 'user',  status: true  },
-]
+const form      = ref({ name: '', email: '', phone: '', role: 'user', status: true, password: '', avatar: '', address: '', createdAt: '' })
+const errors    = ref({})
+const loading   = ref(true)
+const isLoading = ref(false)
+const notFound  = ref(false)
 
-const form     = ref({ name: '', email: '', phone: '', role: 'user', status: true })
-const errors   = ref({})
-const loading  = ref(true)
-const notFound = ref(false)
-
-onMounted(() => {
-    const id   = Number(route.params.id)
-    const user = mockUsers.find(u => u.id === id)
-    if (!user) { notFound.value = true; loading.value = false; return }
-    form.value  = { ...user }
-    loading.value = false
+onMounted(async () => {
+    try {
+        const result = await userService.getById(route.params.id)
+        if (result.status === 200) {
+            const u = result.data
+            form.value = {
+                name:      u.name      || '',
+                email:     u.email     || '',
+                phone:     u.phone     || '',
+                role:      u.role      || 'user',
+                status:    u.status    ?? true,
+                password:  u.password  || '',
+                avatar:    u.avatar    || '',
+                address:   u.address   || '',
+                createdAt: u.createdAt || ''
+            }
+        }
+    } catch (e) {
+        notFound.value = true
+        console.error(e)
+    } finally {
+        loading.value = false
+    }
 })
 
 function validate() {
@@ -35,28 +44,35 @@ function validate() {
         errs.name = 'Vui lòng nhập họ và tên.'
     else if (form.value.name.trim().length < 2)
         errs.name = 'Họ và tên phải ít nhất 2 ký tự.'
-
     if (!form.value.email.trim())
         errs.email = 'Vui lòng nhập email.'
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.value.email))
         errs.email = 'Email không hợp lệ.'
-
     if (!form.value.phone.trim())
         errs.phone = 'Vui lòng nhập số điện thoại.'
     else if (!/^(0[3-9]\d{8})$/.test(form.value.phone))
         errs.phone = 'Số điện thoại không hợp lệ (10 số, bắt đầu 03-09).'
-
     errors.value = errs
     return Object.keys(errs).length === 0
 }
 
-function handleSubmit() {
+const handleSubmit = async () => {
     if (!validate()) return
-    // TODO: gọi API PUT /api/admin/users/:id
-    console.log('Cập nhật người dùng:', form.value)
-    alert('Cập nhật người dùng thành công!')
-    router.push('/userlist')
+    isLoading.value = true
+    try {
+        const today = new Date().toISOString().split('T')[0]
+        const result = await userService.update(route.params.id, {
+            ...form.value,
+            createdAt: today
+        })
+        if (result.status === 200) router.push('/userlist')
+    } catch (e) {
+        console.error('Cập nhật thất bại', e)
+    } finally {
+        isLoading.value = false
+    }
 }
+
 </script>
 
 <template>
@@ -201,8 +217,10 @@ function handleSubmit() {
                         <!-- Actions -->
                         <div class="d-flex gap-2">
                             <RouterLink to="/userlist" class="btn btn-outline-secondary flex-fill">Hủy</RouterLink>
-                            <button type="submit" class="btn btn-warning flex-fill fw-semibold">
-                                <i class="bi bi-check-lg me-1"></i> Cập nhật
+                            <button type="submit" class="btn btn-warning flex-fill fw-semibold" :disabled="isLoading">
+                                <span v-if="isLoading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                                <i v-else class="bi bi-check-lg me-1"></i>
+                                {{ isLoading ? 'Đang lưu...' : 'Cập nhật' }}
                             </button>
                         </div>
 
